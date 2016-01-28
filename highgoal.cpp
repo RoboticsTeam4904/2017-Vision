@@ -2,7 +2,6 @@
 #include "opencv2/core.hpp"
 #include "opencv2/imgproc.hpp"
 
-
 using namespace cv;
 using namespace std;
 
@@ -46,7 +45,7 @@ void convex_callback(int, void* )
     {  convexHull( Mat(contours[i]), hull[i], false ); }
     
     src_convex = Mat::zeros( threshold_output.size(), CV_8UC3 );
-    for (int i = 0; i<contours.size(); ++i}
+    for (int i = 0; i<contours.size(); ++i)
          {
              drawContours(convex, contours, i, Scalar(255,255,255), CV_FILLED, 8, vector<Vec4i>(), 0, Point() );
          }
@@ -63,18 +62,18 @@ void blob_callback(int, void*)
         dilate(subtracted, result, element);
         
         findContours(result, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, Point(0, 0) );
-        for (int i = 0; i<contours.size(); ++i}
+        for (int i = 0; i<contours.size(); ++i)
              {
                  approxPolyDP(contours[i], poly[i], 3, true);
-                 if (poly[i].size == 4){   //If it is a rectangle
+                 if (poly[i].size() == 4){   //If it is a rectangle
                      line(result, poly[i][0],poly[i][1], Scalar(255,0,0),5);
                      line(result, poly[i][1],poly[i][2], Scalar(255,0,0),5);
                      line(result, poly[i][2],poly[i][3], Scalar(255,0,0),5);
                      line(result, poly[i][3],poly[i][0], Scalar(255,0,0),5);
-                     cout<<"vertex 1: ("<<poly[i][0].x<<","<<poly[i][0].x<<")"<<endl;
-                     cout<<"vertex 2: ("<<poly[i][1].x<<","<<poly[i][1].x<<")"<<endl;
-                     cout<<"vertex 3: ("<<poly[i][2].x<<","<<poly[i][2].x<<")"<<endl;
-                     cout<<"vertex 4: ("<<poly[i][3].x<<","<<poly[i][3].x<<")"<<endl;
+                     cout<<"vertex 1: ("<<poly[i][0].x<<","<<poly[i][0].y<<")"<<endl;
+                     cout<<"vertex 2: ("<<poly[i][1].x<<","<<poly[i][1].y<<")"<<endl;
+                     cout<<"vertex 3: ("<<poly[i][2].x<<","<<poly[i][2].y<<")"<<endl;
+                     cout<<"vertex 4: ("<<poly[i][3].x<<","<<poly[i][3].y<<")"<<endl;
                  }
              }
              
