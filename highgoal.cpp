@@ -1,6 +1,7 @@
-#include "opencv2/highgui.hpp"
-#include "opencv2/core.hpp"
-#include "opencv2/imgproc.hpp"
+#include <opencv2/highgui.hpp>
+#include <opencv2/core.hpp>
+#include <opencv2/imgproc.hpp>
+#include <iostream>
 
 using namespace cv;
 using namespace std;
@@ -44,7 +45,7 @@ void convex_callback(int, void* )
     for( int i = 0; i < contours.size(); ++i )
     {  convexHull( Mat(contours[i]), hull[i], false ); }
     
-    src_convex = Mat::zeros( threshold_output.size(), CV_8UC3 );
+    convex = Mat::zeros( threshold_output.size(), CV_8UC3 );
     for (int i = 0; i<contours.size(); ++i)
          {
              drawContours(convex, contours, i, Scalar(255,255,255), CV_FILLED, 8, vector<Vec4i>(), 0, Point() );
