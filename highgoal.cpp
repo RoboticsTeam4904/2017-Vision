@@ -6,12 +6,12 @@
 using namespace cv;
 using namespace std;
 
-Mat src, src_gray, subtracted, result;
-int thresh = 100;
+Mat src, src_gray, subtracted;
+int thresh = 200;
 int max_thresh = 255;
 
-int blob_size = 20;
-int max_blob = 1000;
+int blob_size = 5;
+int max_blob = 20;
 
 void convex_callback(int, void* );
 void blob_callback(int, void*);
@@ -19,17 +19,24 @@ void blob_callback(int, void*);
 int main(int argc, char** argv)
 {
     src = imread("picture.jpg", CV_LOAD_IMAGE_UNCHANGED);
+        if (src.empty()) //check whether the image is loaded or not
+     {
+          cout << "Error : Image cannot be loaded..!!" << endl;
+          //system("pause"); //wait for a key press
+          return -1;
+     }
+
     cvtColor( src, src_gray, CV_BGR2GRAY );
-    blur( src_gray, src_gray, Size(3,3) );
-    
+    blur( src_gray, src_gray, Size(3,3) ); 
     namedWindow( "window", CV_WINDOW_AUTOSIZE );
-    
+    imshow ("window2",src_gray);    
     createTrackbar( " Threshold:", "window", &thresh, max_thresh, convex_callback );
     createTrackbar( " BlobSize:", "window", &blob_size, max_blob, blob_callback );
     
-    convex_callback(0,0);
-    blob_callback(0,0);
-    
+     convex_callback(0,0);
+     blob_callback(0,0);
+
+    waitKey(0);    
 }
 
 void convex_callback(int, void* )
@@ -39,42 +46,49 @@ void convex_callback(int, void* )
     vector<Vec4i> hierarchy;
     
     threshold( src_gray, threshold_output, thresh, 255, THRESH_BINARY );
+    imshow("threshold",threshold_output);
     findContours( threshold_output, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, Point(0, 0) );
     
     vector<vector<Point> >hull( contours.size() );
     for( int i = 0; i < contours.size(); ++i )
     {  convexHull( Mat(contours[i]), hull[i], false ); }
     
-    convex = Mat::zeros( threshold_output.size(), CV_8UC3 );
+    convex = Mat::zeros( threshold_output.size(), CV_8UC1 );
     for (int i = 0; i<contours.size(); ++i)
          {
-             drawContours(convex, contours, i, Scalar(255,255,255), CV_FILLED, 8, vector<Vec4i>(), 0, Point() );
+             drawContours(convex, hull, i, Scalar(255,255,255), CV_FILLED, 8, vector<Vec4i>(), 0, Point() );
          }
          
     subtract(convex, threshold_output, subtracted);
+    imshow("convex", convex);
+    imshow("subtracted", subtracted);
 }
 
 void blob_callback(int, void*)
-    {
-        vector<vector<Point> > contours, poly;
+    {   vector<vector<Point> > contours;
+    	vector<Point> poly;
         vector<Vec4i> hierarchy;
+        Mat blobed;
         Mat element = getStructuringElement(MORPH_ELLIPSE,Size( 2*blob_size + 1, 2*blob_size+1 ),Point( blob_size, blob_size ) );
-        erode(subtracted, result, element);
-        dilate(subtracted, result, element);
-        
-        findContours(result, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, Point(0, 0) );
+
+        erode(subtracted, blobed, element);
+        dilate(blobed, blobed, element);
+        imshow("blobed", blobed);
+        findContours(blobed, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, Point(0, 0) );
+        Mat result=Mat::zeros(blobed.size(),CV_8UC3);
+
         for (int i = 0; i<contours.size(); ++i)
              {
-                 approxPolyDP(contours[i], poly[i], 3, true);
-                 if (poly[i].size() == 4){   //If it is a rectangle
-                     line(result, poly[i][0],poly[i][1], Scalar(255,0,0),5);
-                     line(result, poly[i][1],poly[i][2], Scalar(255,0,0),5);
-                     line(result, poly[i][2],poly[i][3], Scalar(255,0,0),5);
-                     line(result, poly[i][3],poly[i][0], Scalar(255,0,0),5);
-                     cout<<"vertex 1: ("<<poly[i][0].x<<","<<poly[i][0].y<<")"<<endl;
-                     cout<<"vertex 2: ("<<poly[i][1].x<<","<<poly[i][1].y<<")"<<endl;
-                     cout<<"vertex 3: ("<<poly[i][2].x<<","<<poly[i][2].y<<")"<<endl;
-                     cout<<"vertex 4: ("<<poly[i][3].x<<","<<poly[i][3].y<<")"<<endl;
+                 approxPolyDP(Mat(contours[i]), poly, 3, true);
+                 if (poly.size() == 4){   //If it is a rectangle
+                     line(result, poly[0],poly[1], Scalar(255,0,0),5);
+                     line(result, poly[1],poly[2], Scalar(255,0,0),5);
+                     line(result, poly[2],poly[3], Scalar(255,0,0),5);
+                     line(result, poly[3],poly[0], Scalar(255,0,0),5);
+                     cout<<"vertex 1: ("<<poly[0].x<<","<<poly[0].y<<")"<<endl;
+                     cout<<"vertex 2: ("<<poly[1].x<<","<<poly[1].y<<")"<<endl;
+                     cout<<"vertex 3: ("<<poly[2].x<<","<<poly[2].y<<")"<<endl;
+                     cout<<"vertex 4: ("<<poly[3].x<<","<<poly[3].y<<")"<<endl;
                  }
              }
              
