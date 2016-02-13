@@ -2,6 +2,8 @@
 #include "opencv2/core/core.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
 #include <iostream>
+#define _USE_MATH_DEFINES
+#include <math.h>
 
 using namespace cv;
 using namespace std;
@@ -9,20 +11,25 @@ using namespace std;
 Mat src, src_gray, subtracted;
 int thresh = 200;
 int max_thresh = 255;
+int size_x = -1;
+int size_y = -1;
 
 int blob_size = 5;
 int max_blob = 20;
 
+struct rect_points {
+  Point side_one;
+  Point side_two;
+  Point side_three;
+  Point side_four;
+};
+
 void convex_callback(int, void* );
 void blob_callback(int, void*);
+float angle_measure(rect_points);
+float rotationX(rect_points);
+float rotationY(rect_points);
 
-struct rectangle {
-  Vector side_one;
-  Vector side_two;
-  Vector side_three;
-  Vector side_four;
-
-}
 
 int main(int argc, char** argv)
 {
@@ -33,7 +40,8 @@ int main(int argc, char** argv)
           //system("pause"); //wait for a key press
           return -1;
      }
-
+    size_x = src.width;
+    size_y = src.height;
     cvtColor( src, src_gray, CV_BGR2GRAY );
     blur( src_gray, src_gray, Size(3,3) );
     namedWindow( "window", CV_WINDOW_AUTOSIZE );
@@ -95,7 +103,8 @@ void convex_callback(int, void* )
 
 void blob_callback(int, void*)
     {   vector<vector<Point> > contours;
-    	rectangle poly;
+    	  vector<Point> poly;
+        rect_points goal;
         vector<Vec4i> hierarchy;
         Mat blobed;
         Mat element = getStructuringElement(MORPH_ELLIPSE,Size( 2*blob_size + 1, 2*blob_size+1 ),Point( blob_size, blob_size ) );
@@ -109,22 +118,43 @@ void blob_callback(int, void*)
         for (int i = 0; i<contours.size(); ++i)
              {
                  approxPolyDP(Mat(contours[i]), poly, 3, true);
+                 goal.side_one = poly[0];
+                 goal.side_two = poly[1];
+                 goal.side_three = poly[2];
+                 goal.side_four = poly[3];
 
-                 line(result, poly.side_one,poly.side_two, Scalar(255,0,0),5);
-                 line(result, poly.side_two,poly.side_three, Scalar(255,0,0),5);
-                 line(result, poly.side_three,poly.side_four, Scalar(255,0,0),5);
-                 line(result, poly.side_four,poly.side_one2, Scalar(255,0,0),5);
-                 cout<<"vertex 1: ("<<poly.side_one.x<<","<<poly.side_one.y<<")"<<endl;
-                 cout<<"vertex 2: ("<<poly.side_two.x<<","<<poly.side_two.y<<")"<<endl;
-                 cout<<"vertex 3: ("<<poly.side_three.x<<","<<poly.side_three.y<<")"<<endl;
-                 cout<<"vertex 4: ("<<poly.side_four.x<<","<<poly.side_four.y<<")"<<endl;
+                 line(result, goal.side_one,goal.side_two, Scalar(255,0,0),5);
+                 line(result, goal.side_two,goal.side_three, Scalar(255,0,0),5);
+                 line(result, goal.side_three,goal.side_four, Scalar(255,0,0),5);
+                 line(result, goal.side_four,goal.side_one, Scalar(255,0,0),5);
+                 cout<<"vertex 1: ("<<goal.side_one.x<<","<<goal.side_one.y<<")"<<endl;
+                 cout<<"vertex 2: ("<<goal.side_two.x<<","<<goal.side_two.y<<")"<<endl;
+                 cout<<"vertex 3: ("<<goal.side_three.x<<","<<goal.side_three.y<<")"<<endl;
+                 cout<<"vertex 4: ("<<goal.side_four.x<<","<<goal.side_four.y<<")"<<endl;
+                 cout<<angle_measure(goal)<<endl;
 
              }
 
         imshow("window",result);
     }
 
-void angle_measure(int, void*)
+float angle_measure(rect_points goal)
     {
-
+      float anglea;
+      float angleb;
+      anglea = atan((goal.side_three.y-goal.side_two.y)/(goal.side_two.x-goal.side_three.x))*(180/M_PI);
+      angleb = atan((goal.side_four.y-goal.side_one.y)/(goal.side_four.x-goal.side_one.x))*(180/M_PI);
+      return angleb-anglea;
+    }
+float rotationX(rect_points goal)
+  {
+    float xdiff;
+    xdiff = (size_x/2)-(goal.side_two.x+goal.side_one.x+goal.side_three.x+goal.side_four.x)/4;
+    return xdiff;
+  }
+float rotationY(rect_points goal)
+    {
+      float ydiff;
+      ydiff = (size_y/2)-(goal.side_two.y+goal.side_one.y+goal.side_three.y+goal.side_four.y)/4;
+      return ydiff;
     }
