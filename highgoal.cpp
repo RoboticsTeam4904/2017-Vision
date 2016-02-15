@@ -10,15 +10,23 @@ Mat src, src_gray, subtracted;
 int thresh = 200;
 int max_thresh = 255;
 
-int blob_size = 5;
+int blob_size = 2;
 int max_blob = 20;
 
 void convex_callback(int, void* );
 void blob_callback(int, void*);
 
-int main(int argc, char** argv)
+int main(int argc, char* argv[])
 {
-    src = imread("picture.jpg", CV_LOAD_IMAGE_UNCHANGED);
+	cout<<"argc: "<<argc<<endl;
+	if (argc == 2) {
+		cout<<"using '"<<argv[1]<<"' as source"<<endl<<endl;
+		src = imread(argv[1], CV_LOAD_IMAGE_UNCHANGED);
+	} else {
+		cout<<"loading default picture.jpg"<<endl<<endl;
+    	src = imread("picture.jpg", CV_LOAD_IMAGE_UNCHANGED);
+	}
+
         if (src.empty()) //check whether the image is loaded or not
      {
           cout << "Error : Image cannot be loaded..!!" << endl;
