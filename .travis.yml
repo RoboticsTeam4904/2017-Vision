@@ -8,4 +8,4 @@ before_install:
 script:
     - cmake .
     - make
-
+    - ./highgoal.bin test
