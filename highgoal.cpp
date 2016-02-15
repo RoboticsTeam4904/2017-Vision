@@ -13,11 +13,18 @@ int max_thresh = 255;
 int blob_size = 5;
 int max_blob = 20;
 
+bool gui = true;
+
 void convex_callback(int, void* );
 void blob_callback(int, void*);
 
-int main(int argc, char** argv)
-{
+int main(int argc, char** argv) {
+    if (argc > 1 && strcmp(argv[1], "test")==0) {
+        gui = false;
+        cout<<"*********************************"<<endl;
+        cout<<"Testing mode"<<endl;
+        cout<<"*********************************"<<endl<<endl;
+    }
     src = imread("picture.jpg", CV_LOAD_IMAGE_UNCHANGED);
         if (src.empty()) //check whether the image is loaded or not
      {
@@ -28,15 +35,15 @@ int main(int argc, char** argv)
 
     cvtColor( src, src_gray, CV_BGR2GRAY );
     blur( src_gray, src_gray, Size(3,3) ); 
-    namedWindow( "window", CV_WINDOW_AUTOSIZE );
-    imshow ("src_gray",src_gray);    
-    createTrackbar( " Threshold:", "window", &thresh, max_thresh, convex_callback );
-    createTrackbar( " BlobSize:", "window", &blob_size, max_blob, blob_callback );
+    if (gui) namedWindow( "window", CV_WINDOW_AUTOSIZE );
+    if (gui) imshow ("src_gray",src_gray);    
+    if (gui) createTrackbar( " Threshold:", "window", &thresh, max_thresh, convex_callback );
+    if (gui) createTrackbar( " BlobSize:", "window", &blob_size, max_blob, blob_callback );
     
      convex_callback(0,0);
      blob_callback(0,0);
 
-    waitKey(0);    
+    if (gui) waitKey(0);    
 }
 
 void convex_callback(int, void* )
@@ -46,7 +53,7 @@ void convex_callback(int, void* )
     vector<Vec4i> hierarchy;
     
     threshold( src_gray, threshold_output, thresh, 255, THRESH_BINARY );
-    imshow("threshold",threshold_output);
+    if (gui) imshow("threshold",threshold_output);
     findContours( threshold_output, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, Point(0, 0) );
     
     vector<vector<Point> >hull( contours.size() );
@@ -80,8 +87,8 @@ void convex_callback(int, void* )
 
     }
    // subtract(convex, threshold_output, subtracted);
-    imshow("convex", convex);
-    imshow("subtracted", subtracted);
+    if (gui) imshow("convex", convex);
+    if (gui) imshow("subtracted", subtracted);
     blob_callback(0,0);
 }
 
@@ -94,7 +101,7 @@ void blob_callback(int, void*)
 
         erode(subtracted, blobed, element);
         dilate(blobed, blobed, element);
-        imshow("blobed", blobed);
+        if (gui) imshow("blobed", blobed);
         findContours(blobed, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, Point(0, 0) );
         Mat result=Mat::zeros(blobed.size(),CV_8UC3);
 
@@ -113,5 +120,5 @@ void blob_callback(int, void*)
                  }
              }
              
-        imshow("window",result);
+        if (gui) imshow("window",result);
     }
