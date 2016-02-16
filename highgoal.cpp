@@ -25,6 +25,7 @@ struct rect_points {
     Point side_three;
     Point side_four;
 };
+Smartdashboard.putNumber(float dist(rect_points goal, double size_y, double mountAngleX, double mountAngleY, double degPerPxl, double shiftX, double shiftY, double goalHeight));
 
 bool gui = true;
 bool detailedGUI = false;
