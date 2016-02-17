@@ -1,3 +1,19 @@
+Skip to content
+This repository  
+Search
+Pull requests
+Issues
+Gist
+ @oshlern
+ Watch 3
+  Star 0
+ Fork 0 RoboticsTeam4904/Vision2016
+ Code  Issues 0  Pull requests 1  Wiki  Pulse  Graphs
+Branch: master Find file Copy pathVision2016/highgoal.cpp
+9209a46  an hour ago
+@oshlern oshlern Changed variable declaration in dist.
+5 contributors @widakay @oshlern @techgirl15 @ethlu @Shaheenthebean
+RawBlameHistory     244 lines (191 sloc)  7.12 KB
 #include "opencv2/highgui/highgui.hpp"
 #include "opencv2/core/core.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
@@ -36,6 +52,13 @@ void convex_callback(int, void* );
 void blob_callback(int, void*);
 void analyzeImage(Mat src);
 
+// define mounting variables
+float mountAngleX = 10;
+float mountAngleY = 10;
+float degPerPxl = 0.0213;
+float shiftX = 10;
+float shiftY = 10;
+float goalHeight = 7;
 
 
 
@@ -110,6 +133,7 @@ int main(int argc, char** argv) {
             return -1;
         }
         analyzeImage(src);
+        Smartdashboard.putNumber(float dist(rect_points goal, double size_y, double mountAngleX, double mountAngleY, double degPerPxl, double shiftX, double shiftY, double goalHeight));
     }
 
     return 0;
@@ -218,4 +242,18 @@ void blob_callback(int, void*) {
     }
 
     if (gui) imshow("window",result);
+}
+
+float dist(rect_points goal, int size_y, float mountAngleX, float mountAngleY, float degPerPxl, float shiftX, float shiftY, float goalHeight) {
+    float goalPixelY = 0;
+    float goalAngleY = 0;
+    float cameraDistance = 0;
+    float shift = 0;
+    float cameraAngle = 0;
+    goalPixelY = (goal.side_two.y+goal.side_one.y+goal.side_three.y+goal.side_four.y)/4;
+    goalAngleY = mountAngleY+degPerPxl*(goalPixelY-imageHeight/2);
+    cameraDistance = cot(goalAngleY)*goalHeight;
+    shift = sqrt(shiftX^2+shiftY^2);
+    cameraAngle = mountAngleX+a(shiftY,shiftX);
+    return sqrt(cameraDistance^2+shift^2-2*cameraDistance*shift*cos(cameraAngle));
 }
