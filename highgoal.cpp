@@ -1,19 +1,3 @@
-Skip to content
-This repository  
-Search
-Pull requests
-Issues
-Gist
- @oshlern
- Watch 3
-  Star 0
- Fork 0 RoboticsTeam4904/Vision2016
- Code  Issues 0  Pull requests 1  Wiki  Pulse  Graphs
-Branch: master Find file Copy pathVision2016/highgoal.cpp
-9209a46  an hour ago
-@oshlern oshlern Changed variable declaration in dist.
-5 contributors @widakay @oshlern @techgirl15 @ethlu @Shaheenthebean
-RawBlameHistory     244 lines (191 sloc)  7.12 KB
 #include "opencv2/highgui/highgui.hpp"
 #include "opencv2/core/core.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
