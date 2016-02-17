@@ -117,7 +117,7 @@ int main(int argc, char** argv) {
             return -1;
         }
         analyzeImage(src);
-        Smartdashboard.putNumber(float dist(rect_points goal, double size_y, double mountAngleX, double mountAngleY, double degPerPxl, double shiftX, double shiftY, double goalHeight));
+        Smartdashboard.putNumber(float dist_off_angle(rect_points goal, double size_y, double mountAngleX, double mountAngleY, double degPerPxl, double shiftX, double shiftY, double goalHeight)[0]);
     }
 
     return 0;
@@ -228,16 +228,20 @@ void blob_callback(int, void*) {
     if (gui) imshow("window",result);
 }
 
-float dist(rect_points goal, int size_y, float mountAngleX, float mountAngleY, float degPerPxl, float shiftX, float shiftY, float goalHeight) {
-    float goalPixelY = 0;
-    float goalAngleY = 0;
-    float cameraDistance = 0;
-    float shift = 0;
-    float cameraAngle = 0;
+float dist_off_angle(rect_points goal, int size_y, float mountAngleX, float mountAngleY, float degPerPxl, float shiftX, float shiftY, float goalHeight) {
+    float goalPixelY;
+    float goalAngleY;
+    float cameraDistance;
+    float shift;
+    float cameraAngle;
+    float distance;
+    float offAngle;
     goalPixelY = (goal.side_two.y+goal.side_one.y+goal.side_three.y+goal.side_four.y)/4;
     goalAngleY = mountAngleY+degPerPxl*(goalPixelY-imageHeight/2);
-    cameraDistance = cot(goalAngleY)*goalHeight;
+    cameraDistance = goalHeight/tan(goalAngleY);
     shift = sqrt(shiftX^2+shiftY^2);
-    cameraAngle = mountAngleX+a(shiftY,shiftX);
-    return sqrt(cameraDistance^2+shift^2-2*cameraDistance*shift*cos(cameraAngle));
+    cameraAngle = mountAngleX+atan(shiftY,shiftX);
+    distance = sqrt(cameraDistance^2+shift^2-2*cameraDistance*shift*cos(cameraAngle));
+    offAngle = asin(sin(cameraAngle)*cameraDistance/distance);
+    return [distance, offAngle]
 }
