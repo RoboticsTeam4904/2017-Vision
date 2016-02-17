@@ -240,7 +240,7 @@ float dist_off_angle(rect_points goal, int size_y, float mountAngleX, float moun
     goalAngleY = mountAngleY+degPerPxl*(goalPixelY-imageHeight/2);
     cameraDistance = goalHeight/tan(goalAngleY);
     shift = sqrt(shiftX^2+shiftY^2);
-    cameraAngle = mountAngleX+atan(shiftY,shiftX);
+    cameraAngle = mountAngleX+atan(shiftY/shiftX);
     distance = sqrt(cameraDistance^2+shift^2-2*cameraDistance*shift*cos(cameraAngle));
     offAngle = asin(sin(cameraAngle)*cameraDistance/distance);
     return [distance, offAngle]
