@@ -229,10 +229,15 @@ void blob_callback(int, void*) {
 }
 
 float dist(rect_points goal, int size_y, float mountAngleX, float mountAngleY, float degPerPxl, float shiftX, float shiftY, float goalHeight) {
-    float goalPixelY = (goal.side_two.y+goal.side_one.y+goal.side_three.y+goal.side_four.y)/4;
-    float goalAngleY = mountAngleY+degPerPxl*(goalPixelY-imageHeight/2);
-    float cameraDistance = cot(goalAngleY)*goalHeight;
-    float shift = sqrt(shiftX^2+shiftY^2);
-    float cameraAngle = mountAngleX+a(shiftY,shiftX);
+    float goalPixelY = 0;
+    float goalAngleY = 0;
+    float cameraDistance = 0;
+    float shift = 0;
+    float cameraAngle = 0;
+    goalPixelY = (goal.side_two.y+goal.side_one.y+goal.side_three.y+goal.side_four.y)/4;
+    goalAngleY = mountAngleY+degPerPxl*(goalPixelY-imageHeight/2);
+    cameraDistance = cot(goalAngleY)*goalHeight;
+    shift = sqrt(shiftX^2+shiftY^2);
+    cameraAngle = mountAngleX+a(shiftY,shiftX);
     return sqrt(cameraDistance^2+shift^2-2*cameraDistance*shift*cos(cameraAngle));
 }
