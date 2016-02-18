@@ -44,7 +44,7 @@ int getdir (string dir, vector<string> &files) {
     struct dirent *dirp;
     if ((dp = opendir(dir.c_str())) == NULL) {
         cout << "Error opening " << dir << endl;
-        return errno;
+        return -1;
     }
 
     while ((dirp = readdir(dp)) != NULL) {
@@ -213,7 +213,7 @@ void blob_callback(int, void*) {
         cout<<"vertex 3: ("<<goal.side_three.x<<","<<goal.side_three.y<<")"<<endl;
         cout<<"vertex 4: ("<<goal.side_four.x<<","<<goal.side_four.y<<")"<<endl;
         cout<<"angle"<<endl;
-        cout<<angle_measure(goal)<<endl;
+        //cout<<angle_measure(goal)<<endl;
 
     }
 
