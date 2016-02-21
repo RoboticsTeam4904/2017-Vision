@@ -75,7 +75,7 @@ int getdir (string dir, vector<string> &files) {
 
 
 int main(int argc, char** argv) {
-    string image = "img0506.jpg";
+    string image = "latest.jpg";
 
     if (argc == 1) {
         detailedGUI = true;
