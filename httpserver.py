@@ -3,7 +3,7 @@ import subprocess
 app = Flask(__name__)
 
 @app.route('/autonomous')
-def hello_world():
+def webpage():
     process = subprocess.Popen(["./highgoal.bin", "latest"], stdout=subprocess.PIPE)
     response = process.stdout.read()
 
