@@ -61,7 +61,7 @@ int getdir (string dir, vector<string> &files) {
     struct dirent *dirp;
     if ((dp = opendir(dir.c_str())) == NULL) {
         cout << "Error opening " << dir << endl;
-        return errno;
+        return -1;
     }
 
     while ((dirp = readdir(dp)) != NULL) {
