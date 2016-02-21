@@ -53,6 +53,7 @@ float cameraHeight = 296.0; // 296 milimeters
 float milimetersPerInch = 25.4;
 
 rect_points goal;
+vector<vector<Point> > contours;
 
 
 int getdir (string dir, vector<string> &files) {
@@ -145,21 +146,33 @@ void analyzeImage(Mat src) {
     if (gui) createTrackbar( " Threshold:", "window", &thresh, max_thresh, convex_callback );
     if (gui) createTrackbar( " BlobSize:", "window", &blob_size, max_blob, blob_callback );
 
-
-
-
     cvtColor( src, src_gray, CV_BGR2GRAY );
     blur( src_gray, src_gray, Size(3,3) );
 
     convex_callback(0,0);
     blob_callback(0,0);
+    if (contours.size()!==0) {
+      existingGoal=1;
+    }
+    if (contours.size()>1) {
+      int largest_contour_index = 0;
+      double largest_area = 0.0;
+      for( int i = 0; i< contours.size(); i++ ) {
+        //  Find the area of contour
+        double a=contourArea(contours[i],false);
+        if(a>largest_area){
+            // Store the index of largest contour
+            largest_contour_index=i;
+        }
+      }
+      contours=countours[largest_contour_index];
+    }
     if (existingGoal) {
       pair<float,float> tempvar = off_angle();
       offAngle = tempvar.first;
       distance = tempvar.second;
     }
-    // cout<<offAngle<<"::"<<distance<<endl;
-    cout<<existingGoal<<"::"<<distance<<"::"<<offAngle<<endl;
+    cout<<existingGoal<<"::"<<offAngle<<"::"<<distance<<endl;
     if (gui) waitKey(0);
 }
 
@@ -208,7 +221,6 @@ void convex_callback(int, void* ) {
 }
 
 void blob_callback(int, void*) {
-    vector<vector<Point> > contours;
     vector<Point> poly;
     vector<Vec4i> hierarchy;
     Mat blobed;
