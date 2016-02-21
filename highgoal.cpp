@@ -54,7 +54,7 @@ float milimetersPerInch = 25.4;
 
 rect_points goal;
 vector<vector<Point> > contours;
-
+vector<Point> largest_contour;
 
 int getdir (string dir, vector<string> &files) {
     DIR *dp;
@@ -75,7 +75,7 @@ int getdir (string dir, vector<string> &files) {
 
 
 int main(int argc, char** argv) {
-    string image = "img0198.jpg";
+    string image = "img0506.jpg";
 
     if (argc == 1) {
         detailedGUI = true;
@@ -151,21 +151,20 @@ void analyzeImage(Mat src) {
 
     convex_callback(0,0);
     blob_callback(0,0);
-    if (contours.size()!==0) {
+
+    if (contours.size()!=0) {
       existingGoal=1;
     }
     if (contours.size()>1) {
-      int largest_contour_index = 0;
       double largest_area = 0.0;
       for( int i = 0; i< contours.size(); i++ ) {
         //  Find the area of contour
         double a=contourArea(contours[i],false);
-        if(a>largest_area){
-            // Store the index of largest contour
-            largest_contour_index=i;
+        if(a>largest_area) {
+            largest_contour=contours[i];
+            largest_area=a;
         }
       }
-      contours=countours[largest_contour_index];
     }
     if (existingGoal) {
       pair<float,float> tempvar = off_angle();
@@ -179,7 +178,7 @@ void analyzeImage(Mat src) {
 
 void convex_callback(int, void* ) {
     Mat threshold_output, convex;
-    vector<vector<Point> > contours;
+    // vector<vector<Point> > contours;
     vector<Vec4i> hierarchy;
 
     threshold( src_gray, threshold_output, thresh, 255, THRESH_BINARY );
