@@ -36,19 +36,21 @@ void convex_callback(int, void* );
 void blob_callback(int, void*);
 void analyzeImage(Mat src);
 
+pair<float,float> off_angle();
+
 // define mounting variables
 float mountAngleX = 0.0;
 float mountAngleY = 70.0;
-int nativeResX= 2592;
-int nativeResY= 1944;
-float nativeAngleX= 53.5;
-float nativeAngleY= 41.41;
-// float degPerPxlX = 0.0999;
-// float degPerPxlY = 0.0213;
-float shiftX = 13.25; //inches
-float shiftY = 2.5;
-float goalHeight = 7.5; //feet
-float cameraHeight = 296; //milimeters
+int nativeResX = 2592;
+int nativeResY = 1944;
+float nativeAngleX = 53.5;
+float nativeAngleY = 41.41;
+float shiftX = 336.55; //13.25 inches   everything in milimeters
+float shiftY = 63.5; //2.5 inches
+float goalHeight = 2286.0; // 7.5 feet
+float cameraHeight = 296.0; // 296 milimeters
+
+float milimetersPerInch = 25.4;
 
 rect_points goal;
 
@@ -114,7 +116,6 @@ int main(int argc, char** argv) {
                 done = true;
             }
         }
-      }
 
     }
 
@@ -125,12 +126,7 @@ int main(int argc, char** argv) {
             return -1;
         }
         analyzeImage(src);
-        // float temparr[] = dist_off_angle(goal, size_x, size_y, mountAngleX, mountAngleY, nativeResX, nativeResY, nativeAngleX, nativeAngleY, shiftX, shiftY, goalHeight, cameraHeight);
-        // int temparr [] = dist_off_angle();
-        // float distance = temparr[0];
-        // float offAngle = temparr[1];
-        float offAngle = off_angle();
-
+      }
     return 0;
 }
 
@@ -155,6 +151,12 @@ void analyzeImage(Mat src) {
 
     convex_callback(0,0);
     blob_callback(0,0);
+
+    pair<float,float> tempvar = off_angle();
+    float offAngle = tempvar.first;
+    float distance = tempvar.second;
+    cout<<offAngle<<"::"<<distance<<endl;
+    cout<<nativeAngleX<<endl;
     if (gui) waitKey(0);
 }
 
@@ -230,31 +232,30 @@ void blob_callback(int, void*) {
         cout<<"vertex 2: ("<<goal.side_two.x<<","<<goal.side_two.y<<")"<<endl;
         cout<<"vertex 3: ("<<goal.side_three.x<<","<<goal.side_three.y<<")"<<endl;
         cout<<"vertex 4: ("<<goal.side_four.x<<","<<goal.side_four.y<<")"<<endl;
-        cout<<"angle"<<endl;
-        cout<<angle_measure(goal)<<endl;
 
     }
 
     if (gui) imshow("window",result);
 }
 
-// float[] dist_off_angle(rect_points goal, int size_x, int size_y, float mountAngleX, float mountAngleY, int nativeResX, int nativeResY, float nativeAngleX, float nativeAngleY, float shiftX, float shiftY, float goalHeight, float cameraHeight) {
-// int dist_off_angle() [] {
-float off_angle() {
-    float degPerPxlX = nativeAngleX*size_x/nativeResX;
-    float degPerPxlY = nativeAngleY*size_y/nativeResY;
-    float goalPixelY = (goal.side_two.y+goal.side_one.y+goal.side_three.y+goal.side_four.y)/4;
+pair<float,float> off_angle() {
+    float degPerPxlX = nativeAngleX/size_x;
+    float degPerPxlY = nativeAngleY/size_y;
+    float goalPixelY = size_y-(goal.side_two.y+goal.side_one.y+goal.side_three.y+goal.side_four.y)/4;
+    cout<<goalPixelY<<endl;
+    cout<<size_y<<endl;
     float goalAngleY = mountAngleY+degPerPxlY*(goalPixelY-size_y/2);
+    cout<<"angleFromPhotoY "<<degPerPxlY*(goalPixelY-size_y/2)<<endl;
     float goalPixelX = (goal.side_two.x+goal.side_one.x+goal.side_three.x+goal.side_four.x)/4;
     float goalAngleX = mountAngleX+degPerPxlX*(goalPixelX-size_x/2);
-    float cameraDistance = (goalHeight-cameraHeight)/tan(goalAngleY);
+    cout<<"goalAngleY "<<goalAngleY<<endl;
+    cout<<"cameraDistanceRatio "<<tan(goalAngleY*(M_PI/180))<<endl;
+    float cameraDistance = (goalHeight-cameraHeight)/tan(goalAngleY*(M_PI/180));
+    cout<<"cameraDistance "<<cameraDistance<<endl;
     float shift = sqrt(shiftX*shiftX+shiftY*shiftY);
-    float cameraAngle = goalAngleX-atan(shiftY/shiftX);
-    float distance = sqrt(cameraDistance*cameraDistance+shift*shift-2*cameraDistance*shift*cos(cameraAngle));
-    float offAngle = asin(sin(cameraAngle)*cameraDistance/distance);
-    // int toReturn [2];
-    // toReturn[0] = distance;
-    // toReturn[1] = offAngle;
-    // return toReturn;
-    return offAngle;
+    float cameraAngle = goalAngleX+90-atan(shiftY/shiftX)*180/M_PI;
+    float distance = sqrt(cameraDistance*cameraDistance+shift*shift-2*cameraDistance*shift*cos(cameraAngle*M_PI/180));
+    float offAngle = asin(sin(cameraAngle*M_PI/180)*cameraDistance/distance);
+    distance = distance/milimetersPerInch;
+    return make_pair(offAngle,distance);
 }
