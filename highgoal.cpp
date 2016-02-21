@@ -37,15 +37,20 @@ void blob_callback(int, void*);
 void analyzeImage(Mat src);
 
 // define mounting variables
-float mountAngleX = 10;
-float mountAngleY = 10;
-float degPerPxlX = 0.0999;
-float degPerPxlY = 0.0213;
-float shiftX = 10;
-float shiftY = 10;
-float goalHeight = 7;
-float cameraHeight = 1;
+float mountAngleX = 0.0;
+float mountAngleY = 70.0;
+int nativeResX= 2592;
+int nativeResY= 1944;
+float nativeAngleX= 53.5;
+float nativeAngleY= 41.41;
+// float degPerPxlX = 0.0999;
+// float degPerPxlY = 0.0213;
+float shiftX = 13.25; //inches
+float shiftY = 2.5;
+float goalHeight = 7.5; //feet
+float cameraHeight = 296; //milimeters
 
+rect_points goal;
 
 
 int getdir (string dir, vector<string> &files) {
@@ -109,6 +114,7 @@ int main(int argc, char** argv) {
                 done = true;
             }
         }
+      }
 
     }
 
@@ -119,9 +125,10 @@ int main(int argc, char** argv) {
             return -1;
         }
         analyzeImage(src);
-        float distance = dist_off_angle(rect_points goal, int size_x, int size_y, float mountAngleX, float mountAngleY, float degPerPxlX, float degPerPxlY, float shiftX, float shiftY, float goalHeight, float cameraHeight)[0];
-
-    }
+        // float temparr[] = dist_off_angle(goal, size_x, size_y, mountAngleX, mountAngleY, nativeResX, nativeResY, nativeAngleX, nativeAngleY, shiftX, shiftY, goalHeight, cameraHeight);
+        int temparr [] = dist_off_angle();
+        float distance = temparr[0];
+        float offAngle = temparr[1];
 
     return 0;
 }
@@ -197,7 +204,6 @@ void convex_callback(int, void* ) {
 void blob_callback(int, void*) {
     vector<vector<Point> > contours;
     vector<Point> poly;
-    rect_points goal;
     vector<Vec4i> hierarchy;
     Mat blobed;
     Mat element = getStructuringElement(MORPH_ELLIPSE,Size( 2*blob_size + 1, 2*blob_size+1 ),Point( blob_size, blob_size ) );
@@ -231,22 +237,21 @@ void blob_callback(int, void*) {
     if (gui) imshow("window",result);
 }
 
-float dist_off_angle(rect_points goal, int size_x, int size_y, float mountAngleX, float mountAngleY, float degPerPxlX, float degPerPxlY, float shiftX, float shiftY, float goalHeight, float cameraHeight) {
-    float goalPixelY;
-    float goalAngleY;
-    float cameraDistance;
-    float shift;
-    float cameraAngle;
-    float distance;
-    float offAngle;
-    goalPixelY = (goal.side_two.y+goal.side_one.y+goal.side_three.y+goal.side_four.y)/4;
-    goalAngleY = mountAngleY+degPerPxlY*(goalPixelY-size_y/2);
-    goalPixelX = (goal.side_two.x+goal.side_one.x+goal.side_three.x+goal.side_four.x)/4;
-    goalAngleX = mountAngleX+degPerPxlX*(goalPixelX-size_x/2);
-    cameraDistance = (goalHeight-cameraHeight)/tan(goalAngleY);
-    shift = sqrt(shiftX^2+shiftY^2);
-    cameraAngle = goalAngleX-atan(shiftY/shiftX);
-    distance = sqrt(cameraDistance^2+shift^2-2*cameraDistance*shift*cos(cameraAngle));
-    offAngle = asin(sin(cameraAngle)*cameraDistance/distance);
-    return [distance, offAngle];
+// float[] dist_off_angle(rect_points goal, int size_x, int size_y, float mountAngleX, float mountAngleY, int nativeResX, int nativeResY, float nativeAngleX, float nativeAngleY, float shiftX, float shiftY, float goalHeight, float cameraHeight) {
+int dist_off_angle() [] {
+    float degPerPxlX = nativeAngleX*size_x/nativeResX;
+    float degPerPxlY = nativeAngleY*size_y/nativeResY;
+    float goalPixelY = (goal.side_two.y+goal.side_one.y+goal.side_three.y+goal.side_four.y)/4;
+    float goalAngleY = mountAngleY+degPerPxlY*(goalPixelY-size_y/2);
+    float goalPixelX = (goal.side_two.x+goal.side_one.x+goal.side_three.x+goal.side_four.x)/4;
+    float goalAngleX = mountAngleX+degPerPxlX*(goalPixelX-size_x/2);
+    float cameraDistance = (goalHeight-cameraHeight)/tan(goalAngleY);
+    float shift = sqrt(shiftX*shiftX+shiftY*shiftY);
+    float cameraAngle = goalAngleX-atan(shiftY/shiftX);
+    float distance = sqrt(cameraDistance*cameraDistance+shift*shift-2*cameraDistance*shift*cos(cameraAngle));
+    float offAngle = asin(sin(cameraAngle)*cameraDistance/distance);
+    int toReturn [2];
+    toReturn[0] = distance;
+    toReturn[1] = offAngle;
+    return toReturn;
 }
