@@ -90,6 +90,7 @@ int main(int argc, char** argv) {
 
         } else if (strcmp(argv[1], "latest")==0) {
             latest = true;
+            gui = false;
             image = "latest.jpg";
         } else {
             image = argv[1];
@@ -118,7 +119,7 @@ int main(int argc, char** argv) {
         }
       }
 
-      image = "img0198.jpg";
+      image = "img0248.jpg";
     if (!done) {
         src = imread(image, CV_LOAD_IMAGE_UNCHANGED);
         if (src.empty()) {
@@ -227,10 +228,10 @@ void blob_callback(int, void*) {
         line(result, goal.side_two,goal.side_three, Scalar(255,0,0),5);
         line(result, goal.side_three,goal.side_four, Scalar(255,0,0),5);
         line(result, goal.side_four,goal.side_one, Scalar(255,0,0),5);
-        cout<<"vertex 1: ("<<goal.side_one.x<<","<<goal.side_one.y<<")"<<endl;
-        cout<<"vertex 2: ("<<goal.side_two.x<<","<<goal.side_two.y<<")"<<endl;
-        cout<<"vertex 3: ("<<goal.side_three.x<<","<<goal.side_three.y<<")"<<endl;
-        cout<<"vertex 4: ("<<goal.side_four.x<<","<<goal.side_four.y<<")"<<endl;
+        // cout<<"vertex 1: ("<<goal.side_one.x<<","<<goal.side_one.y<<")"<<endl;
+        // cout<<"vertex 2: ("<<goal.side_two.x<<","<<goal.side_two.y<<")"<<endl;
+        // cout<<"vertex 3: ("<<goal.side_three.x<<","<<goal.side_three.y<<")"<<endl;
+        // cout<<"vertex 4: ("<<goal.side_four.x<<","<<goal.side_four.y<<")"<<endl;
     }
 
     if (gui) imshow("window",result);
@@ -250,6 +251,5 @@ pair<float,float> off_angle() {
     float offAngle = asin(sin(cameraAngle)*cameraDistance/distance);
     offAngle = M_PI-(offAngle+atan(shiftX/shiftY));
     distance = distance/milimetersPerInch;
-    cout<<goal.side_four.x<<endl;
     return make_pair(offAngle,distance);
 }
