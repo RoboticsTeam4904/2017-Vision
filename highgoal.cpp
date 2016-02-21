@@ -40,11 +40,11 @@ pair<float,float> off_angle();
 
 // define mounting variables
 float mountAngleX = 0.0;
-float mountAngleY = 70.0;
+float mountAngleY = 70.0*M_PI/180;
 int nativeResX = 2592;
 int nativeResY = 1944;
-float nativeAngleX = 53.5;
-float nativeAngleY = 41.41;
+float nativeAngleX = 53.5*M_PI/180;
+float nativeAngleY = 41.41*M_PI/180;
 float shiftX = 336.55; //13.25 inches   everything in milimeters
 float shiftY = 63.5; //2.5 inches
 float goalHeight = 2286.0; // 7.5 feet
@@ -156,7 +156,6 @@ void analyzeImage(Mat src) {
     float offAngle = tempvar.first;
     float distance = tempvar.second;
     cout<<offAngle<<"::"<<distance<<endl;
-    cout<<nativeAngleX<<endl;
     if (gui) waitKey(0);
 }
 
@@ -249,13 +248,14 @@ pair<float,float> off_angle() {
     float goalPixelX = (goal.side_two.x+goal.side_one.x+goal.side_three.x+goal.side_four.x)/4;
     float goalAngleX = mountAngleX+degPerPxlX*(goalPixelX-size_x/2);
     cout<<"goalAngleY "<<goalAngleY<<endl;
-    cout<<"cameraDistanceRatio "<<tan(goalAngleY*(M_PI/180))<<endl;
-    float cameraDistance = (goalHeight-cameraHeight)/tan(goalAngleY*(M_PI/180));
+    cout<<"goalAngleX "<<goalAngleX<<endl;
+    float cameraDistance = (goalHeight-cameraHeight)/tan(goalAngleY);
     cout<<"cameraDistance "<<cameraDistance<<endl;
     float shift = sqrt(shiftX*shiftX+shiftY*shiftY);
-    float cameraAngle = goalAngleX+90-atan(shiftY/shiftX)*180/M_PI;
-    float distance = sqrt(cameraDistance*cameraDistance+shift*shift-2*cameraDistance*shift*cos(cameraAngle*M_PI/180));
-    float offAngle = asin(sin(cameraAngle*M_PI/180)*cameraDistance/distance);
+    float cameraAngle = goalAngleX+M_PI/2-atan(shiftY/shiftX);
+    float distance = sqrt(cameraDistance*cameraDistance+shift*shift-2*cameraDistance*shift*cos(cameraAngle));
+    float offAngle = asin(sin(cameraAngle)*cameraDistance/distance);
+    offAngle = M_PI-(offAngle+atan(shiftX/shiftY));
     distance = distance/milimetersPerInch;
     return make_pair(offAngle,distance);
 }
