@@ -36,6 +36,8 @@ void convex_callback(int, void* );
 void blob_callback(int, void*);
 void analyzeImage(Mat src);
 
+float off_angle();
+
 // define mounting variables
 float mountAngleX = 0.0;
 float mountAngleY = 70.0;
@@ -116,7 +118,6 @@ int main(int argc, char** argv) {
         }
       }
 
-    }
 
     if (!done) {
         src = imread(image, CV_LOAD_IMAGE_UNCHANGED);
@@ -130,7 +131,7 @@ int main(int argc, char** argv) {
         // float distance = temparr[0];
         // float offAngle = temparr[1];
         float offAngle = off_angle();
-
+      }
     return 0;
 }
 
@@ -231,7 +232,7 @@ void blob_callback(int, void*) {
         cout<<"vertex 3: ("<<goal.side_three.x<<","<<goal.side_three.y<<")"<<endl;
         cout<<"vertex 4: ("<<goal.side_four.x<<","<<goal.side_four.y<<")"<<endl;
         cout<<"angle"<<endl;
-        cout<<angle_measure(goal)<<endl;
+        // cout<<angle_measure(goal)<<endl;
 
     }
 
