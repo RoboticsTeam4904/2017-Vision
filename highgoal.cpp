@@ -16,7 +16,7 @@ int max_thresh = 255;
 int size_x = -1;
 int size_y = -1;
 
-int blob_size = 2;
+int blob_size = 5;
 int max_blob = 20;
 
 struct rect_points {
@@ -74,7 +74,7 @@ int getdir (string dir, vector<string> &files) {
 
 
 int main(int argc, char** argv) {
-    string image = "latest.jpg";
+    string image = "img0198.jpg";
 
     if (argc == 1) {
         detailedGUI = true;
@@ -118,7 +118,6 @@ int main(int argc, char** argv) {
         }
       }
 
-      image = "img0198.jpg";
     if (!done) {
         src = imread(image, CV_LOAD_IMAGE_UNCHANGED);
         if (src.empty()) {
@@ -132,6 +131,9 @@ int main(int argc, char** argv) {
 
 
 void analyzeImage(Mat src) {
+    int existingGoal = 0;
+    float offAngle = 0.0;
+    float distance = 0.0;
     size_x = src.cols;
     size_y = src.rows;
 
@@ -151,11 +153,13 @@ void analyzeImage(Mat src) {
 
     convex_callback(0,0);
     blob_callback(0,0);
-
-    pair<float,float> tempvar = off_angle();
-    float offAngle = tempvar.first;
-    float distance = tempvar.second;
-    cout<<offAngle<<"::"<<distance<<endl;
+    if (existingGoal) {
+      pair<float,float> tempvar = off_angle();
+      offAngle = tempvar.first;
+      distance = tempvar.second;
+    }
+    // cout<<offAngle<<"::"<<distance<<endl;
+    cout<<existingGoal<<"::"<<distance<<"::"<<offAngle<<endl;
     if (gui) waitKey(0);
 }
 
@@ -239,7 +243,7 @@ void blob_callback(int, void*) {
 pair<float,float> off_angle() {
     float degPerPxlX = nativeAngleX/size_x;
     float degPerPxlY = nativeAngleY/size_y;
-    float goalPixelY = size_y-(goal.side_two.y+goal.side_one.y+goal.side_three.y+goal.side_four.y)/4;
+    float goalPixelY = size_y-(goal.side_two.y+goal.side_one.y+goal.side_three.y+goal.side_four.y)/4; // inverted because y coordinates go from top to bottom
     float goalAngleY = mountAngleY+degPerPxlY*(goalPixelY-size_y/2);
     float goalPixelX = (goal.side_two.x+goal.side_one.x+goal.side_three.x+goal.side_four.x)/4;
     float goalAngleX = mountAngleX+degPerPxlX*(goalPixelX-size_x/2);
