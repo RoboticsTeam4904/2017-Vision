@@ -117,7 +117,6 @@ int main(int argc, char** argv) {
             }
         }
 
-    }
 
     if (!done) {
         src = imread(image, CV_LOAD_IMAGE_UNCHANGED);
@@ -231,7 +230,6 @@ void blob_callback(int, void*) {
         cout<<"vertex 2: ("<<goal.side_two.x<<","<<goal.side_two.y<<")"<<endl;
         cout<<"vertex 3: ("<<goal.side_three.x<<","<<goal.side_three.y<<")"<<endl;
         cout<<"vertex 4: ("<<goal.side_four.x<<","<<goal.side_four.y<<")"<<endl;
-
     }
 
     if (gui) imshow("window",result);
