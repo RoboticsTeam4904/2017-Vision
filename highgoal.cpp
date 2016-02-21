@@ -126,9 +126,10 @@ int main(int argc, char** argv) {
         }
         analyzeImage(src);
         // float temparr[] = dist_off_angle(goal, size_x, size_y, mountAngleX, mountAngleY, nativeResX, nativeResY, nativeAngleX, nativeAngleY, shiftX, shiftY, goalHeight, cameraHeight);
-        int temparr [] = dist_off_angle();
-        float distance = temparr[0];
-        float offAngle = temparr[1];
+        // int temparr [] = dist_off_angle();
+        // float distance = temparr[0];
+        // float offAngle = temparr[1];
+        float offAngle = off_angle();
 
     return 0;
 }
@@ -238,7 +239,8 @@ void blob_callback(int, void*) {
 }
 
 // float[] dist_off_angle(rect_points goal, int size_x, int size_y, float mountAngleX, float mountAngleY, int nativeResX, int nativeResY, float nativeAngleX, float nativeAngleY, float shiftX, float shiftY, float goalHeight, float cameraHeight) {
-int dist_off_angle() [] {
+// int dist_off_angle() [] {
+float off_angle() {
     float degPerPxlX = nativeAngleX*size_x/nativeResX;
     float degPerPxlY = nativeAngleY*size_y/nativeResY;
     float goalPixelY = (goal.side_two.y+goal.side_one.y+goal.side_three.y+goal.side_four.y)/4;
@@ -250,8 +252,9 @@ int dist_off_angle() [] {
     float cameraAngle = goalAngleX-atan(shiftY/shiftX);
     float distance = sqrt(cameraDistance*cameraDistance+shift*shift-2*cameraDistance*shift*cos(cameraAngle));
     float offAngle = asin(sin(cameraAngle)*cameraDistance/distance);
-    int toReturn [2];
-    toReturn[0] = distance;
-    toReturn[1] = offAngle;
-    return toReturn;
+    // int toReturn [2];
+    // toReturn[0] = distance;
+    // toReturn[1] = offAngle;
+    // return toReturn;
+    return offAngle;
 }
