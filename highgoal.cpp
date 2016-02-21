@@ -16,7 +16,7 @@ int max_thresh = 255;
 int size_x = -1;
 int size_y = -1;
 
-int blob_size = 2;
+int blob_size = 5;
 int max_blob = 20;
 
 struct rect_points {
@@ -53,14 +53,15 @@ float cameraHeight = 296.0; // 296 milimeters
 float milimetersPerInch = 25.4;
 
 rect_points goal;
-
+vector<vector<Point> > contours;
+vector<Point> largest_contour;
 
 int getdir (string dir, vector<string> &files) {
     DIR *dp;
     struct dirent *dirp;
     if ((dp = opendir(dir.c_str())) == NULL) {
         cout << "Error opening " << dir << endl;
-        return errno;
+        return -1;
     }
 
     while ((dirp = readdir(dp)) != NULL) {
@@ -74,7 +75,7 @@ int getdir (string dir, vector<string> &files) {
 
 
 int main(int argc, char** argv) {
-    string image = "img0192.jpg";
+    string image = "img0506.jpg";
 
     if (argc == 1) {
         detailedGUI = true;
@@ -119,7 +120,6 @@ int main(int argc, char** argv) {
         }
       }
 
-      image = "img0248.jpg";
     if (!done) {
         src = imread(image, CV_LOAD_IMAGE_UNCHANGED);
         if (src.empty()) {
@@ -133,6 +133,9 @@ int main(int argc, char** argv) {
 
 
 void analyzeImage(Mat src) {
+    int existingGoal = 0;
+    float offAngle = 0.0;
+    float distance = 0.0;
     size_x = src.cols;
     size_y = src.rows;
 
@@ -144,26 +147,39 @@ void analyzeImage(Mat src) {
     if (gui) createTrackbar( " Threshold:", "window", &thresh, max_thresh, convex_callback );
     if (gui) createTrackbar( " BlobSize:", "window", &blob_size, max_blob, blob_callback );
 
-
-
-
     cvtColor( src, src_gray, CV_BGR2GRAY );
     blur( src_gray, src_gray, Size(3,3) );
 
     convex_callback(0,0);
     blob_callback(0,0);
 
-    pair<float,float> tempvar = off_angle();
-    float offAngle = tempvar.first;
-    float distance = tempvar.second;
-    cout<<offAngle<<"::"<<distance<<endl;
+    if (contours.size()!=0) {
+      existingGoal=1;
+    }
+    if (contours.size()>1) {
+      double largest_area = 0.0;
+      for( int i = 0; i< contours.size(); i++ ) {
+        //  Find the area of contour
+        double a=contourArea(contours[i],false);
+        if(a>largest_area) {
+            largest_contour=contours[i];
+            largest_area=a;
+        }
+      }
+    }
+    if (existingGoal) {
+      pair<float,float> tempvar = off_angle();
+      offAngle = tempvar.first;
+      distance = tempvar.second;
+    }
+    cout<<existingGoal<<"::"<<offAngle<<"::"<<distance<<endl;
     if (gui) waitKey(0);
 }
 
 
 void convex_callback(int, void* ) {
     Mat threshold_output, convex;
-    vector<vector<Point> > contours;
+    // vector<vector<Point> > contours;
     vector<Vec4i> hierarchy;
 
     threshold( src_gray, threshold_output, thresh, 255, THRESH_BINARY );
@@ -205,7 +221,6 @@ void convex_callback(int, void* ) {
 }
 
 void blob_callback(int, void*) {
-    vector<vector<Point> > contours;
     vector<Point> poly;
     vector<Vec4i> hierarchy;
     Mat blobed;
@@ -240,7 +255,7 @@ void blob_callback(int, void*) {
 pair<float,float> off_angle() {
     float degPerPxlX = nativeAngleX/size_x;
     float degPerPxlY = nativeAngleY/size_y;
-    float goalPixelY = size_y-(goal.side_two.y+goal.side_one.y+goal.side_three.y+goal.side_four.y)/4;
+    float goalPixelY = size_y-(goal.side_two.y+goal.side_one.y+goal.side_three.y+goal.side_four.y)/4; // inverted because y coordinates go from top to bottom
     float goalAngleY = mountAngleY+degPerPxlY*(goalPixelY-size_y/2);
     float goalPixelX = (goal.side_two.x+goal.side_one.x+goal.side_three.x+goal.side_four.x)/4;
     float goalAngleX = mountAngleX+degPerPxlX*(goalPixelX-size_x/2);
@@ -251,5 +266,13 @@ pair<float,float> off_angle() {
     float offAngle = asin(sin(cameraAngle)*cameraDistance/distance);
     offAngle = M_PI-(offAngle+atan(shiftX/shiftY));
     distance = distance/milimetersPerInch;
+    // cout<<"goalPixelY "<<goalPixelY<<endl;
+    // cout<<"size_y "<<size_y<<endl;
+    // cout<<"angleFromPhotoY "<<degPerPxlY*(goalPixelY-size_y/2)<<endl;
+    // cout<<"mountAngleY "<<mountAngleY<<endl;
+    // cout<<"goalAngleY "<<goalAngleY<<endl;
+    // cout<<"goalAngleX "<<goalAngleX<<endl;
+    // cout<<"cameraDistance "<<cameraDistance<<endl;
+    // cout<<goal.side_four.x<<endl;
     return make_pair(offAngle,distance);
 }
