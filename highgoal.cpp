@@ -74,7 +74,7 @@ int getdir (string dir, vector<string> &files) {
 
 
 int main(int argc, char** argv) {
-    string image = "img0192.jpg";
+    string image = "latest.jpg";
 
     if (argc == 1) {
         detailedGUI = true;
@@ -250,5 +250,12 @@ pair<float,float> off_angle() {
     float offAngle = asin(sin(cameraAngle)*cameraDistance/distance);
     offAngle = M_PI-(offAngle+atan(shiftX/shiftY));
     distance = distance/milimetersPerInch;
+    cout<<"goalPixelY "<<goalPixelY<<endl;
+    cout<<"size_y "<<size_y<<endl;
+    cout<<"angleFromPhotoY "<<degPerPxlY*(goalPixelY-size_y/2)<<endl;
+    cout<<"mountAngleY "<<mountAngleY<<endl;
+    cout<<"goalAngleY "<<goalAngleY<<endl;
+    cout<<"goalAngleX "<<goalAngleX<<endl;
+    cout<<"cameraDistance "<<cameraDistance<<endl;
     return make_pair(offAngle,distance);
 }
