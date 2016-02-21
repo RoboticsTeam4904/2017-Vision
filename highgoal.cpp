@@ -11,7 +11,7 @@ using namespace std;
 
 Mat src, src_gray, subtracted;
 
-int thresh = 200;
+int thresh = 210;
 int max_thresh = 255;
 int size_x = -1;
 int size_y = -1;
@@ -118,7 +118,7 @@ int main(int argc, char** argv) {
         }
       }
 
-
+      image = "img0198.jpg";
     if (!done) {
         src = imread(image, CV_LOAD_IMAGE_UNCHANGED);
         if (src.empty()) {
@@ -257,5 +257,6 @@ pair<float,float> off_angle() {
     // cout<<"goalAngleY "<<goalAngleY<<endl;
     // cout<<"goalAngleX "<<goalAngleX<<endl;
     // cout<<"cameraDistance "<<cameraDistance<<endl;
+    // cout<<goal.side_four.x<<endl;
     return make_pair(offAngle,distance);
 }
