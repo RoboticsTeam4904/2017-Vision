@@ -47,7 +47,7 @@ float nativeAngleX = 53.5*M_PI/180;
 float nativeAngleY = 41.41*M_PI/180;
 float shiftX = 336.55; //13.25 inches   everything in milimeters
 float shiftY = 63.5; //2.5 inches
-float goalHeight = 2286.0; // 7.5 feet
+float goalHeight = 2292.35; // 7.5 feet
 float cameraHeight = 296.0; // 296 milimeters
 
 float milimetersPerInch = 25.4;
@@ -74,7 +74,7 @@ int getdir (string dir, vector<string> &files) {
 
 
 int main(int argc, char** argv) {
-    string image = "img/img0248.jpg";
+    string image = "img0192.jpg";
 
     if (argc == 1) {
         detailedGUI = true;
@@ -241,8 +241,8 @@ pair<float,float> off_angle() {
     float degPerPxlX = nativeAngleX/size_x;
     float degPerPxlY = nativeAngleY/size_y;
     float goalPixelY = size_y-(goal.side_two.y+goal.side_one.y+goal.side_three.y+goal.side_four.y)/4;
-    cout<<goalPixelY<<endl;
-    cout<<size_y<<endl;
+    cout<<"goalPixelY "<<goalPixelY<<endl;
+    cout<<"size_y "<<size_y<<endl;
     float goalAngleY = mountAngleY+degPerPxlY*(goalPixelY-size_y/2);
     cout<<"angleFromPhotoY "<<degPerPxlY*(goalPixelY-size_y/2)<<endl;
     float goalPixelX = (goal.side_two.x+goal.side_one.x+goal.side_three.x+goal.side_four.x)/4;
