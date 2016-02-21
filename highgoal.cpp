@@ -40,7 +40,7 @@ pair<float,float> off_angle();
 
 // define mounting variables
 float mountAngleX = 0.0;
-float mountAngleY = 70.0*M_PI/180;
+float mountAngleY = 45.0*M_PI/180;
 int nativeResX = 2592;
 int nativeResY = 1944;
 float nativeAngleX = 53.5*M_PI/180;
