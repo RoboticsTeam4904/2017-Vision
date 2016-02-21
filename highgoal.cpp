@@ -116,6 +116,7 @@ int main(int argc, char** argv) {
                 done = true;
             }
         }
+      }
 
 
     if (!done) {
@@ -239,17 +240,10 @@ pair<float,float> off_angle() {
     float degPerPxlX = nativeAngleX/size_x;
     float degPerPxlY = nativeAngleY/size_y;
     float goalPixelY = size_y-(goal.side_two.y+goal.side_one.y+goal.side_three.y+goal.side_four.y)/4;
-    cout<<"goalPixelY "<<goalPixelY<<endl;
-    cout<<"size_y "<<size_y<<endl;
     float goalAngleY = mountAngleY+degPerPxlY*(goalPixelY-size_y/2);
-    cout<<"angleFromPhotoY "<<degPerPxlY*(goalPixelY-size_y/2)<<endl;
     float goalPixelX = (goal.side_two.x+goal.side_one.x+goal.side_three.x+goal.side_four.x)/4;
     float goalAngleX = mountAngleX+degPerPxlX*(goalPixelX-size_x/2);
-    cout<<"mountAngleY "<<mountAngleY<<endl;
-    cout<<"goalAngleY "<<goalAngleY<<endl;
-    cout<<"goalAngleX "<<goalAngleX<<endl;
     float cameraDistance = (goalHeight-cameraHeight)/tan(goalAngleY);
-    cout<<"cameraDistance "<<cameraDistance<<endl;
     float shift = sqrt(shiftX*shiftX+shiftY*shiftY);
     float cameraAngle = goalAngleX+M_PI/2-atan(shiftY/shiftX);
     float distance = sqrt(cameraDistance*cameraDistance+shift*shift-2*cameraDistance*shift*cos(cameraAngle));
