@@ -39,10 +39,12 @@ void analyzeImage(Mat src);
 // define mounting variables
 float mountAngleX = 10;
 float mountAngleY = 10;
-float degPerPxl = 0.0213;
+float degPerPxlX = 0.0999;
+float degPerPxlY = 0.0213;
 float shiftX = 10;
 float shiftY = 10;
 float goalHeight = 7;
+float cameraHeight = 1;
 
 
 
@@ -117,7 +119,8 @@ int main(int argc, char** argv) {
             return -1;
         }
         analyzeImage(src);
-        Smartdashboard.putNumber(float dist_off_angle(rect_points goal, double size_y, double mountAngleX, double mountAngleY, double degPerPxl, double shiftX, double shiftY, double goalHeight)[0]);
+        float distance = dist_off_angle(rect_points goal, int size_x, int size_y, float mountAngleX, float mountAngleY, float degPerPxlX, float degPerPxlY, float shiftX, float shiftY, float goalHeight, float cameraHeight)[0];
+
     }
 
     return 0;
@@ -132,16 +135,16 @@ void analyzeImage(Mat src) {
     blur( src_gray, src_gray, Size(3,3) );
 
     if (gui) namedWindow( "window", CV_WINDOW_AUTOSIZE );
-    if (gui && detailedGUI) imshow("src_gray",src_gray);    
+    if (gui && detailedGUI) imshow("src_gray",src_gray);
     if (gui) createTrackbar( " Threshold:", "window", &thresh, max_thresh, convex_callback );
     if (gui) createTrackbar( " BlobSize:", "window", &blob_size, max_blob, blob_callback );
 
 
-    
+
 
     cvtColor( src, src_gray, CV_BGR2GRAY );
-    blur( src_gray, src_gray, Size(3,3) ); 
-    
+    blur( src_gray, src_gray, Size(3,3) );
+
     convex_callback(0,0);
     blob_callback(0,0);
     if (gui) waitKey(0);
@@ -228,7 +231,7 @@ void blob_callback(int, void*) {
     if (gui) imshow("window",result);
 }
 
-float dist_off_angle(rect_points goal, int size_y, float mountAngleX, float mountAngleY, float degPerPxl, float shiftX, float shiftY, float goalHeight) {
+float dist_off_angle(rect_points goal, int size_x, int size_y, float mountAngleX, float mountAngleY, float degPerPxlX, float degPerPxlY, float shiftX, float shiftY, float goalHeight, float cameraHeight) {
     float goalPixelY;
     float goalAngleY;
     float cameraDistance;
@@ -237,11 +240,13 @@ float dist_off_angle(rect_points goal, int size_y, float mountAngleX, float moun
     float distance;
     float offAngle;
     goalPixelY = (goal.side_two.y+goal.side_one.y+goal.side_three.y+goal.side_four.y)/4;
-    goalAngleY = mountAngleY+degPerPxl*(goalPixelY-imageHeight/2);
-    cameraDistance = goalHeight/tan(goalAngleY);
+    goalAngleY = mountAngleY+degPerPxlY*(goalPixelY-size_y/2);
+    goalPixelX = (goal.side_two.x+goal.side_one.x+goal.side_three.x+goal.side_four.x)/4;
+    goalAngleX = mountAngleX+degPerPxlX*(goalPixelX-size_x/2);
+    cameraDistance = (goalHeight-cameraHeight)/tan(goalAngleY);
     shift = sqrt(shiftX^2+shiftY^2);
-    cameraAngle = mountAngleX+atan(shiftY/shiftX);
+    cameraAngle = goalAngleX-atan(shiftY/shiftX);
     distance = sqrt(cameraDistance^2+shift^2-2*cameraDistance*shift*cos(cameraAngle));
     offAngle = asin(sin(cameraAngle)*cameraDistance/distance);
-    return [distance, offAngle]
+    return [distance, offAngle];
 }
