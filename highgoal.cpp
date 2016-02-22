@@ -46,7 +46,7 @@ int nativeResY = 1944;
 float nativeAngleX = 53.5*M_PI/180;
 float nativeAngleY = 41.41*M_PI/180;
 float shiftX = 336.55; //13.25 inches   everything in milimeters
-float shiftY = 63.5; //2.5 inches
+float shiftY = 57.15; //2.5 inches
 float goalHeight = 2292.35; // 7.5 feet
 float cameraHeight = 296.0; // 296 milimeters
 
@@ -151,7 +151,7 @@ void analyzeImage(Mat src) {
     blur( src_gray, src_gray, Size(3,3) );
 
     convex_callback(0,0);
-    blob_callback(0,0);
+    // blob_callback(0,0);
 
     if (contours.size()!=0) {
       existingGoal=1;
@@ -243,6 +243,7 @@ void blob_callback(int, void*) {
         line(result, goal.side_two,goal.side_three, Scalar(255,0,0),5);
         line(result, goal.side_three,goal.side_four, Scalar(255,0,0),5);
         line(result, goal.side_four,goal.side_one, Scalar(255,0,0),5);
+        
         // cout<<"vertex 1: ("<<goal.side_one.x<<","<<goal.side_one.y<<")"<<endl;
         // cout<<"vertex 2: ("<<goal.side_two.x<<","<<goal.side_two.y<<")"<<endl;
         // cout<<"vertex 3: ("<<goal.side_three.x<<","<<goal.side_three.y<<")"<<endl;
@@ -261,10 +262,10 @@ pair<float,float> off_angle() {
     float goalAngleX = mountAngleX+degPerPxlX*(goalPixelX-size_x/2);
     float cameraDistance = (goalHeight-cameraHeight)/tan(goalAngleY);
     float shift = sqrt(shiftX*shiftX+shiftY*shiftY);
-    float cameraAngle = goalAngleX+M_PI/2-atan(shiftY/shiftX);
+    float cameraAngle = M_PI-goalAngleX-atan(shiftY/shiftX);
     float distance = sqrt(cameraDistance*cameraDistance+shift*shift-2*cameraDistance*shift*cos(cameraAngle));
     float offAngle = asin(sin(cameraAngle)*cameraDistance/distance);
-    offAngle = M_PI-(offAngle+atan(shiftX/shiftY));
+    offAngle = offAngle+atan(shiftX/shiftY)-M_PI/2;
     distance = distance/milimetersPerInch;
     // cout<<"goalPixelY "<<goalPixelY<<endl;
     // cout<<"size_y "<<size_y<<endl;
