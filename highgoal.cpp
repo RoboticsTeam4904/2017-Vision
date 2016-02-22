@@ -150,7 +150,7 @@ void analyzeImage(Mat src) {
     blur( src_gray, src_gray, Size(3,3) );
 
     convex_callback(0,0);
-    blob_callback(0,0);
+    // blob_callback(0,0);
 
     if (contours.size()!=0) {
       existingGoal=1;
