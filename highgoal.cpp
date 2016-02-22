@@ -46,7 +46,7 @@ int nativeResY = 1944;
 float nativeAngleX = 53.5*M_PI/180;
 float nativeAngleY = 41.41*M_PI/180;
 float shiftX = 336.55; //13.25 inches   everything in milimeters
-float shiftY = 63.5; //2.5 inches
+float shiftY = 57.15; //2.5 inches
 float goalHeight = 2292.35; // 7.5 feet
 float cameraHeight = 296.0; // 296 milimeters
 
