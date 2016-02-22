@@ -76,7 +76,6 @@ int getdir (string dir, vector<string> &files) {
 
 int main(int argc, char** argv) {
     string image = "latest.jpg";
-    time_t start = time(0);
 
     if (argc == 1) {
         detailedGUI = true;
@@ -244,7 +243,7 @@ void blob_callback(int, void*) {
         line(result, goal.side_two,goal.side_three, Scalar(255,0,0),5);
         line(result, goal.side_three,goal.side_four, Scalar(255,0,0),5);
         line(result, goal.side_four,goal.side_one, Scalar(255,0,0),5);
-
+        
         // cout<<"vertex 1: ("<<goal.side_one.x<<","<<goal.side_one.y<<")"<<endl;
         // cout<<"vertex 2: ("<<goal.side_two.x<<","<<goal.side_two.y<<")"<<endl;
         // cout<<"vertex 3: ("<<goal.side_three.x<<","<<goal.side_three.y<<")"<<endl;
