@@ -262,10 +262,10 @@ pair<float,float> off_angle() {
     float goalAngleX = mountAngleX+degPerPxlX*(goalPixelX-size_x/2);
     float cameraDistance = (goalHeight-cameraHeight)/tan(goalAngleY);
     float shift = sqrt(shiftX*shiftX+shiftY*shiftY);
-    float cameraAngle = M_PI-goalAngleX-atan(shiftY/shiftX);
+    float cameraAngle = M_PI-goalAngleX-atan(shiftX/shiftY);
     float distance = sqrt(cameraDistance*cameraDistance+shift*shift-2*cameraDistance*shift*cos(cameraAngle));
     float offAngle = asin(sin(cameraAngle)*cameraDistance/distance);
-    offAngle = offAngle+atan(shiftX/shiftY)-M_PI/2;
+    offAngle = offAngle+atan(shiftY/shiftX)-M_PI/2;
     distance = distance/milimetersPerInch;
     // cout<<"goalPixelY "<<goalPixelY<<endl;
     // cout<<"size_y "<<size_y<<endl;
