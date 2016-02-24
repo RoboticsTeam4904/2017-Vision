@@ -147,8 +147,8 @@ void analyzeImage(Mat src) {
     if (gui) createTrackbar( " Threshold:", "window", &thresh, max_thresh, convex_callback );
     if (gui) createTrackbar( " BlobSize:", "window", &blob_size, max_blob, blob_callback );
 
-    cvtColor( src, src_gray, CV_BGR2GRAY );
-    blur( src_gray, src_gray, Size(3,3) );
+    // cvtColor( src, src_gray, CV_BGR2GRAY );
+    // blur( src_gray, src_gray, Size(3,3) );
 
     convex_callback(0,0);
 
