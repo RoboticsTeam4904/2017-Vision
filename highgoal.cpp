@@ -52,6 +52,7 @@ float cameraHeight = 296.0; // 296 milimeters
 
 float milimetersPerInch = 25.4;
 
+int existingGoal = 0;
 rect_points goal;
 vector<vector<Point> > contours;
 vector<Point> largest_contour;
@@ -133,7 +134,6 @@ int main(int argc, char** argv) {
 
 
 void analyzeImage(Mat src) {
-    int existingGoal = 0;
     float offAngle = 0.0;
     float distance = 0.0;
     size_x = src.cols;
@@ -151,22 +151,7 @@ void analyzeImage(Mat src) {
     blur( src_gray, src_gray, Size(3,3) );
 
     convex_callback(0,0);
-    // blob_callback(0,0);
 
-    if (contours.size()!=0) {
-      existingGoal=1;
-    }
-    if (contours.size()>1) {
-      double largest_area = 0.0;
-      for( int i = 0; i< contours.size(); i++ ) {
-        //  Find the area of contour
-        double a=contourArea(contours[i],false);
-        if(a>largest_area) {
-            largest_contour=contours[i];
-            largest_area=a;
-        }
-      }
-    }
     if (existingGoal) {
       pair<float,float> tempvar = off_angle();
       offAngle = tempvar.first;
@@ -232,23 +217,35 @@ void blob_callback(int, void*) {
     findContours(blobed, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, Point(0, 0) );
     Mat result=src.clone();// Mat::zeros(blobed.size(),CV_8UC3);
 
-    for (int i = 0; i<contours.size(); ++i) {
-        approxPolyDP(Mat(contours[i]), poly, 3, true);
-        goal.side_one = poly[0];
-        goal.side_two = poly[1];
-        goal.side_three = poly[2];
-        goal.side_four = poly[3];
-
-        line(result, goal.side_one,goal.side_two, Scalar(255,0,0),5);
-        line(result, goal.side_two,goal.side_three, Scalar(255,0,0),5);
-        line(result, goal.side_three,goal.side_four, Scalar(255,0,0),5);
-        line(result, goal.side_four,goal.side_one, Scalar(255,0,0),5);
-
-        // cout<<"vertex 1: ("<<goal.side_one.x<<","<<goal.side_one.y<<")"<<endl;
-        // cout<<"vertex 2: ("<<goal.side_two.x<<","<<goal.side_two.y<<")"<<endl;
-        // cout<<"vertex 3: ("<<goal.side_three.x<<","<<goal.side_three.y<<")"<<endl;
-        // cout<<"vertex 4: ("<<goal.side_four.x<<","<<goal.side_four.y<<")"<<endl;
+    if (contours.size()!=0) {
+      existingGoal=1;
+      double largest_area = 0.0;
+      for( int i = 0; i< contours.size(); i++ ) {
+        //  Find the area of contour
+        double a=contourArea(contours[i],false);
+        if(a>largest_area) {
+            largest_contour=contours[i];
+            largest_area=a;
+        }
+      }
     }
+    approxPolyDP(Mat(largest_contour), poly, 3, true);
+    goal.side_one = poly[0];
+    goal.side_two = poly[1];
+    goal.side_three = poly[2];
+    goal.side_four = poly[3];
+
+    if (gui) {
+      line(result, goal.side_one,goal.side_two, Scalar(255,0,0),5);
+      line(result, goal.side_two,goal.side_three, Scalar(255,0,0),5);
+      line(result, goal.side_three,goal.side_four, Scalar(255,0,0),5);
+      line(result, goal.side_four,goal.side_one, Scalar(255,0,0),5);
+    }
+
+    // cout<<"vertex 1: ("<<goal.side_one.x<<","<<goal.side_one.y<<")"<<endl;
+    // cout<<"vertex 2: ("<<goal.side_two.x<<","<<goal.side_two.y<<")"<<endl;
+    // cout<<"vertex 3: ("<<goal.side_three.x<<","<<goal.side_three.y<<")"<<endl;
+    // cout<<"vertex 4: ("<<goal.side_four.x<<","<<goal.side_four.y<<")"<<endl;
 
     if (gui) imshow("window",result);
 }
