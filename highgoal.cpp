@@ -77,8 +77,8 @@ int main(int argc, char** argv) {
 
     if (argc == 1) {
         detailedGUI = true;
-    }
-    if (argc == 2) {
+
+    } else if (argc == 2) {
         if (strcmp(argv[1], "test") == 0) {
             gui = false;
             test = true;
