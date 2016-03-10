@@ -59,7 +59,7 @@ int getdir(string dir, vector<string> &files) {
 	DIR *dp;
 	struct dirent *dirp;
 	if ((dp = opendir(dir.c_str())) == NULL) {
-		cout << "Error opening " << dir << endl;
+		cout << "Error opening directory '" << dir << "'" << endl;
 		return -1;
 	}
 
@@ -97,16 +97,25 @@ int main(int argc, char** argv) {
 		if (strcmp(argv[1], "folder") == 0) {
 			vector<string> files = vector<string>();
 			string dir = argv[2];
-			getdir(dir, files);
-			cout << "Reading directory" << dir << endl;
+
+			int status = getdir(dir, files);
+
+			if (status >= 0) {
+				cout << "Reading directory '" << dir << "'" << endl;
+			} else {
+				return status;
+			}
 
 			for (unsigned int i = 0; i < files.size(); i++) {
-				cout << files[i] << endl;
 				if (files[i].length() < 4 || files[i].substr(files[i].length() - 4, 4) != ".jpg") continue;
 				string path = dir + files[i];
 
 				src = imread(path, CV_LOAD_IMAGE_UNCHANGED);
-				if (src.empty()) cout << "error loading '" << path << "'" << endl;
+				if (src.empty()) {
+					cout << "Error: Image '" << path << "' cannot be loaded" << endl;
+					return -1;
+				}
+				cout << "Loaded image '" << files[i] << "'" << endl;
 				analyzeImage(src);
 
 				waitKey(0);
@@ -118,7 +127,7 @@ int main(int argc, char** argv) {
 	if (!done) {
 		src = imread(image, CV_LOAD_IMAGE_UNCHANGED);
 		if (src.empty()) {
-			cout << "Error : Image cannot be loaded..!!" << endl;
+			cout << "Error: Image '" << image << "' cannot be loaded" << endl;
 			return -1;
 		}
 		analyzeImage(src);
