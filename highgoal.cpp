@@ -40,13 +40,14 @@ void analyzeImage(Mat src);
 pair<float,float> off_angle();
 
 float mountAngleX = 0.0;
-float mountAngleY = 45.0 * M_PI/180;
+float mountAngleY = 45.0 * M_PI / 180;
 int nativeResX = 2592;
 int nativeResY = 1944;
-float shiftX = 336.55; //13.25 inches   everything in milimeters
-float nativeAngleX = 53.5 * M_PI/180;
-float nativeAngleY = 41.41 * M_PI/180;
-float shiftY = 57.15; //2.5 inches
+float nativeAngleX = 53.5 * M_PI / 180;
+float nativeAngleY = 41.41 * M_PI / 180;
+// All distances are in milimeters
+float shiftX = 336.55; // 13.25 inches
+float shiftY = 57.15; // 2.5 inches
 float goalHeight = 2292.35; // 7.5 feet
 float cameraHeight = 296.0; // 296 milimeters
 float milimetersPerInch = 25.4;
