@@ -52,7 +52,7 @@ const float shiftX = 336.55; // 13.25 inches
 const float shiftY = 57.15; // 2.5 inches
 const float goalHeight = 2292.35; // 7.5 feet
 const float cameraHeight = 296.0; // 296 milimeters
-const float milimetersPerInch = 25.4;
+const float millimetersPerInch = 25.4;
 
 rect_points goal;
 vector<vector<Point> > contours;
@@ -268,6 +268,6 @@ pair<float,float> off_angle() {
 	float distance = sqrt(cameraDistance * cameraDistance + shift * shift - 2 * cameraDistance * shift * cos(cameraAngle));
 	float offAngle = asin(sin(cameraAngle) * cameraDistance / distance);
 	offAngle = offAngle + atan(shiftY / shiftX)- M_PI / 2;
-	distance = distance / milimetersPerInch;
+	distance = distance / millimetersPerInch;
 	return make_pair(offAngle, distance);
 }
