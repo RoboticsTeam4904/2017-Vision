@@ -267,7 +267,7 @@ pair<float,float> off_angle() {
 	float cameraAngle = M_PI - goalAngleX - atan(shiftX / shiftY);
 	float distance = sqrt(cameraDistance * cameraDistance + shift * shift - 2 * cameraDistance * shift * cos(cameraAngle));
 	float offAngle = asin(sin(cameraAngle) * cameraDistance / distance);
-	offAngle = offAngle + atan(shiftY / shiftX)- M_PI / 2;
-	distance = distance / millimetersPerInch;
+	offAngle += atan(shiftY / shiftX) - M_PI / 2;
+	distance /= millimetersPerInch;
 	return make_pair(offAngle, distance);
 }
