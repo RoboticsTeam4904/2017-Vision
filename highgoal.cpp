@@ -218,15 +218,15 @@ void convex_callback(int, void*) {
 void blob_callback(int, void*) {
 	vector<Point> poly, largest_contour;
 	vector<Vec4i> hierarchy;
-	Mat blobed;
+	Mat blobbed;
 	Mat element = getStructuringElement(MORPH_ELLIPSE, Size(2 * blob_size + 1, 2 * blob_size + 1), Point(blob_size, blob_size));
 
-	erode(subtracted, blobed, element);
-	dilate(blobed, blobed, element);
-	if (gui && detailedGUI) imshow("blobed", blobed);
-	findContours(blobed, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, Point(0, 0));
+	erode(subtracted, blobbed, element);
+	dilate(blobbed, blobbed, element);
+	if (gui && detailedGUI) imshow("blobbed", blobbed);
+	findContours(blobbed, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, Point(0, 0));
 	Mat result = src.clone();
-	// Mat::zeros(blobed.size(), CV_8UC3);
+	// Mat::zeros(blobbed.size(), CV_8UC3);
 
 	if (contours.size()!=0) {
 		existingGoal = true;
