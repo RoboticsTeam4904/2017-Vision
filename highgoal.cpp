@@ -161,7 +161,7 @@ void convex_callback(int, void*) {
 	if (gui && detailedGUI) imshow("threshold", threshold_output);
 	findContours(threshold_output, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, Point(0, 0));
 
-	vector<vector<Point>> hull(contours.size());
+	vector<vector<Point> > hull(contours.size());
 	for(int i = 0; i < contours.size(); ++i) {
 		convexHull(Mat(contours[i]), hull[i], false);
 	}
