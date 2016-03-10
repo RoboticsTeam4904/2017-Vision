@@ -145,10 +145,12 @@ void analyzeImage(Mat src) {
 	cvtColor(src, src_gray, CV_BGR2GRAY);
 	blur(src_gray, src_gray, Size(3, 3));
 
-	if (gui) namedWindow("window", CV_WINDOW_AUTOSIZE);
-	if (gui && detailedGUI) imshow("src_gray", src_gray);
-	if (gui) createTrackbar(" Threshold:", "window", &thresh, max_thresh, convex_callback);
-	if (gui) createTrackbar(" BlobSize:", "window", &blob_size, max_blob, blob_callback);
+	if (gui) {
+		namedWindow("window", CV_WINDOW_AUTOSIZE);
+		if (detailedGUI) imshow("src_gray", src_gray);
+		createTrackbar(" Threshold:", "window", &thresh, max_thresh, convex_callback);
+		createTrackbar(" BlobSize:", "window", &blob_size, max_blob, blob_callback);
+	}
 
 	convex_callback(0, 0);
 
@@ -201,8 +203,10 @@ void convex_callback(int, void*) {
 	}
 	// subtract(convex, threshold_output, subtracted);
 
-	if (gui && detailedGUI) imshow("convex", convex);
-	if (gui && detailedGUI) imshow("subtracted", subtracted);
+	if (gui && detailedGUI) {
+		imshow("convex", convex);
+		mshow("subtracted", subtracted);
+	}
 	blob_callback(0, 0);
 }
 
@@ -242,9 +246,8 @@ void blob_callback(int, void*) {
 		line(result, goal.side_two, goal.side_three, Scalar(255, 0, 0), 5);
 		line(result, goal.side_three, goal.side_four, Scalar(255, 0, 0), 5);
 		line(result, goal.side_four, goal.side_one, Scalar(255, 0, 0), 5);
+		imshow("window", result);
 	}
-
-	if (gui) imshow("window", result);
 }
 
 pair<float,float> off_angle() {
