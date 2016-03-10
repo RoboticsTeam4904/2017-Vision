@@ -97,6 +97,9 @@ int main(int argc, char** argv) {
 		if (strcmp(argv[1], "folder") == 0) {
 			vector<string> files = vector<string>();
 			string dir = argv[2];
+			if (dir.substr(dir.size() - 1, 1) != "/") {
+				dir += "/";
+			}
 
 			int status = getdir(dir, files);
 
