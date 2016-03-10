@@ -205,7 +205,7 @@ void convex_callback(int, void*) {
 
 	if (gui && detailedGUI) {
 		imshow("convex", convex);
-		mshow("subtracted", subtracted);
+		imshow("subtracted", subtracted);
 	}
 	blob_callback(0, 0);
 }
