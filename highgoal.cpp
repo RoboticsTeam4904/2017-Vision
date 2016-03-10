@@ -3,6 +3,7 @@
 #include "opencv2/imgproc/imgproc.hpp"
 #include <iostream>
 #include <dirent.h>
+// For availability of M_PI
 #define _USE_MATH_DEFINES
 #include <math.h>
 
@@ -17,7 +18,7 @@ int size_x = -1;
 int size_y = -1;
 
 int blob_size = 5;
-int max_blob = 20; //used only in gui
+int max_blob = 20; // Used only in gui
 
 struct rect_points {
 	Point side_one;
@@ -26,14 +27,14 @@ struct rect_points {
 	Point side_four;
 };
 
-bool gui = false; //turn on for debugging
+bool gui = false; // Turn on for debugging
 bool detailedGUI = false;
 bool test = false;
 bool latest = false;
 bool done = false;
 bool existingGoal = false;
 
-void convex_callback(int, void* );
+void convex_callback(int, void*);
 void blob_callback(int, void*);
 void analyzeImage(Mat src);
 
@@ -51,6 +52,8 @@ float shiftY = 57.15; // 2.5 inches
 float goalHeight = 2292.35; // 7.5 feet
 float cameraHeight = 296.0; // 296 milimeters
 float milimetersPerInch = 25.4;
+// CONSTANTS
+// Distances are in milimeters, angles are in degrees
 
 rect_points goal;
 vector<vector<Point> > contours;
