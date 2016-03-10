@@ -4,7 +4,7 @@ Setup
 ---
 This will set up your compiler and enable you to run `make` to build your code.
 ```
-cmake
+cmake .
 ```
 
 Building
