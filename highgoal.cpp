@@ -275,6 +275,7 @@ pair<float,float> angle_and_dist() {
 	float cameraDistance = (goalHeight - cameraHeight) / tan(goalAngleY);
 	float shift = sqrt(shiftX * shiftX + shiftY * shiftY);
 	float cameraAngle = M_PI - goalAngleX - atan(shiftX / shiftY);
+	cameraAngle = M_PI/2 + goalAngleX - atan(shiftX / shiftY);
 	float distance = sqrt(cameraDistance * cameraDistance + shift * shift - 2 * cameraDistance * shift * cos(cameraAngle));
 	float offAngle = asin(sin(cameraAngle) * cameraDistance / distance);
 	offAngle += atan(shiftY / shiftX) - M_PI / 2;
