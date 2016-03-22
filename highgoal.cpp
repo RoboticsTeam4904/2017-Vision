@@ -43,17 +43,17 @@ bool foundGoal = false;
 
 // CONSTANTS
 // Distances are in inches, angles are in degrees
-const float milimetersPerInch = 25.4;
+const float millimetersPerInch = 25.4;
 const float mountAngleX = 0.0;
 const float mountAngleY = 45.0 * M_PI / 180;
 const int nativeResX = 2592;
 const int nativeResY = 1944;
 const float nativeAngleX = 53.5 * M_PI / 180;
 const float nativeAngleY = 41.41 * M_PI / 180;
-const float shiftX = 13.25 * milimetersPerInch; // 13.25 inches
-const float shiftY = 2.5 * milimeters; // 2.5 inches
-const float goalHeight = 8 * 12 * milimetersPerInch; // 8 feet
-const float cameraHeight = 296.0; // 296 milimeters
+const float shiftX = 13.25 * millimetersPerInch; // 13.25 inches
+const float shiftY = 2.5 * millimeters; // 2.5 inches
+const float goalHeight = 8 * 12 * millimetersPerInch; // 8 feet
+const float cameraHeight = 296.0; // 296 millimeters
 
 // Access a specified directory, used in one of main's options
 int getdir(string dir, vector<string> &files) {
@@ -217,7 +217,7 @@ void convex_callback(int, void*) {
 		imshow("convex", convex);
 		imshow("subtracted", subtracted);
 	}
-	// Detect highgoal from whats left and create a goal object
+	// Detect highgoal from what's left and create a goal object
 	blob_callback(0, 0);
 }
 
