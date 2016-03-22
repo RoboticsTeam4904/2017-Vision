@@ -51,7 +51,7 @@ const int nativeResY = 1944;
 const float nativeAngleX = 53.5 * M_PI / 180;
 const float nativeAngleY = 41.41 * M_PI / 180;
 const float shiftX = 13.25 * millimetersPerInch; // 13.25 inches
-const float shiftY = 2.5 * millimeters; // 2.5 inches
+const float shiftY = 2.5 * millimetersPerInch; // 2.5 inches
 const float goalHeight = 8 * 12 * millimetersPerInch; // 8 feet
 const float cameraHeight = 296.0; // 296 millimeters
 
@@ -275,7 +275,7 @@ pair<float,float> angle_and_dist() {
 	float cameraDistance = (goalHeight - cameraHeight) / tan(goalAngleY);
 	float shift = sqrt(shiftX * shiftX + shiftY * shiftY);
 	float cameraAngle = M_PI - goalAngleX - atan(shiftX / shiftY);
-	cameraAngle = M_PI/2 + goalAngleX - atan(shiftX / shiftY);
+	// cameraAngle = M_PI/2 + goalAngleX - atan(shiftX / shiftY);
 	float distance = sqrt(cameraDistance * cameraDistance + shift * shift - 2 * cameraDistance * shift * cos(cameraAngle));
 	float offAngle = asin(sin(cameraAngle) * cameraDistance / distance);
 	offAngle += atan(shiftY / shiftX) - M_PI / 2;
