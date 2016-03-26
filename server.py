@@ -3,6 +3,7 @@ import SocketServer, subprocess, time, cv2, math
 import numpy as np
 
 pi = False
+gui = False
 
 if pi:
 	from picamera.array import PiRGBArray
@@ -74,7 +75,9 @@ def processImage(src):
 	grayscale = cv2.cvtColor(src, cv2.COLOR_BGR2GRAY)	#TODO: change to stripping just reds or something compute-easy convert image to black and white
 	#blurred = cv2.blur(grayscale, (3, 3))	# blur image
 	ret, thresholded = cv2.threshold(grayscale, thresholdValue, max_thresh, cv2.THRESH_BINARY)
-	contours, hierarchy = cv2.findContours(thresholded, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+	contours, hierarchy = [], 0
+	cv2.findContours(thresholded, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE, contours, hierarchy)
+	# cv2.findContours(dst,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
 	cv2.drawContours(grayscale, contours, -1, (0,255,0), 3)
 
 	if gui:
