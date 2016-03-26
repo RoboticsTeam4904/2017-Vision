@@ -19,7 +19,7 @@ if pi:
 
 
 def getImage():
-	
+
 	image = None
 
 	if pi:
@@ -47,8 +47,6 @@ def processImage(src):
 	max_thresh = 255
 
 
-
-
 	grayscale = cv2.cvtColor(src, cv2.COLOR_BGR2GRAY)	#TODO: change to stripping just reds or something compute-easy convert image to black and white
 	#blurred = cv2.blur(grayscale, (3, 3))	# blur image
 	ret, thresholded = cv2.threshold(grayscale, thresholdValue, max_thresh, cv2.THRESH_BINARY)
@@ -60,14 +58,17 @@ def processImage(src):
 	contours, hierarchy = cv2.findContours(thresholded, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 
 	cv2.drawContours(grayscale, contours, -1, (0,255,0), 3)
-	cv2.imshow("grayscaleafter", grayscale)
-	cv2.imshow("thresholded", thresholded)
 
+	if gui:
+		cv2.imshow("grayscaleafter", grayscale)
+		cv2.imshow("thresholded", thresholded)
+
+	subtracted = cv2.bitwiseAnd(convex, cv2.bitwiseNot(thresholded))
 
 	cv2.waitKey(0)
 	cv2.destroyAllWindows()
 
-	
+
 	"""
 	if gui:
 		imshow("threshold", threshold_output)
@@ -78,35 +79,35 @@ def processImage(src):
 		convexHull(Mat(contours[i]), hull[i], false)
 
 	convex = Mat::zeros( threshold_output.size(), CV_8UC1 )
-	for (int i = 0 i<contours.size() ++i) 
+	for (int i = 0 i<contours.size() ++i)
 		drawContours(convex, hull, i, Scalar(255,255,255), CV_FILLED, 8, vector<Vec4i>(), 0, Point() )
-	
+
 
 	subtracted = np.zeros((height,width,1), np.uint8)
 
-	if (convex.isContinuous() && threshold_output.isContinuous()) 
+	if (convex.isContinuous() && threshold_output.isContinuous())
 		uchar *p1, *p2, *p3
 		p1 = convex.ptr<uchar>(0)
 		p2 = threshold_output.ptr<uchar>(0)
 		p3 = subtracted.ptr<uchar>(0)
-		for (int i = 0 i < convex.rows * convex.cols ++i) 
+		for (int i = 0 i < convex.rows * convex.cols ++i)
 			if (*p2 != 0)
 				*p3 = 0
 			 else if (*p1 != 0)
 				*p3 = 255
-			
+
 			p1++
 			p2++
 			p3++
-		
 
-	
+
+
 	# subtract(convex, threshold_output, subtracted)
 
-	if (gui && detailedGUI) 
+	if (gui && detailedGUI)
 		imshow("convex", convex)
 		imshow("subtracted", subtracted)
-	
+
 
 	# blob callback
 
@@ -122,18 +123,18 @@ def processImage(src):
 	Mat result = src.clone()
 	# Mat::zeros(blobbed.size(), CV_8UC3)
 
-	if (contours.size()!=0) 
+	if (contours.size()!=0)
 		existingGoal = true
 		double largest_area = 0.0
-		for (int i = 0 i < contours.size() i++) 
+		for (int i = 0 i < contours.size() i++)
 			# Find the area of contour
 			double a = contourArea(contours[i], false)
-			if (a > largest_area) 
+			if (a > largest_area)
 				largest_contour = contours[i]
 				largest_area = a
-			
-		
-	
+
+
+
 	approxPolyDP(Mat(largest_contour), poly, 3, true)
 	goal.side_one = poly[0]
 	goal.side_two = poly[1]
@@ -146,7 +147,7 @@ def processImage(src):
 		line(result, goal.side_three, goal.side_four, Scalar(255, 0, 0), 5)
 		line(result, goal.side_four, goal.side_one, Scalar(255, 0, 0), 5)
 		imshow("window", result)"""
-	
+
 
 class MyTCPHandler(SocketServer.BaseRequestHandler):
     """
