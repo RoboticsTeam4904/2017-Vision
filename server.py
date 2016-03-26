@@ -68,19 +68,15 @@ def processImage(src):
 	max_thresh = 255
 	blob_size = 3
 
-	goalFound = 0
+	goalFound = False
 
+	if gui:
+		cv2.imshow("original", src)
 
 	grayscale = cv2.cvtColor(src, cv2.COLOR_BGR2GRAY)	#TODO: change to stripping just reds or something compute-easy convert image to black and white
 	#blurred = cv2.blur(grayscale, (3, 3))	# blur image
 	ret, thresholded = cv2.threshold(grayscale, thresholdValue, max_thresh, cv2.THRESH_BINARY)
-	#cv2.imshow("grayscalebefore", grayscale)
-
-	#cv2.imshow("original", src)
-	#cv2.imshow("threshold", thresholded)
-
 	contours, hierarchy = cv2.findContours(thresholded, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-
 	cv2.drawContours(grayscale, contours, -1, (0,255,0), 3)
 
 	if gui:
@@ -89,7 +85,7 @@ def processImage(src):
 
 	hull, tempConvex = [], []
 	for i in range(len(contours)):
-		cv2.convexHull(Mat(contours[i]), tempConvex, false)
+		cv2.convexHull(Mat(contours[i]), tempConvex, False)
 		hull += [tempConvex]
 
 	convex = np.zeros(len(thresholded))
@@ -116,17 +112,17 @@ def processImage(src):
 
 	# Find largest contour. Is slightly inefficient in the case of 1 contour
 	if len(contours) > 0:
-		goalFound = true
+		goalFound = True
 		largest_area = 0.0
 		for i in range(len(contours)):
 			# Find the area of contour
-			tempArea = cv2.contourArea(contours[i], false)
+			tempArea = cv2.contourArea(contours[i], False)
 			if (temp_area > largest_area):
 				largest_contour = contours[i]
 				largest_area = temp_area
 
 	if goalFound:
-		goal = cv2.approxPolyDP(Mat(largest_contour), 3, true)
+		goal = cv2.approxPolyDP(Mat(largest_contour), 3, True)
 		data = angle_and_dist(goal)
 		print "1::" + str(math.degrees(data[0])) + "::" + str(data[1])
 	else:
@@ -141,7 +137,7 @@ def processImage(src):
 
 		cv2.waitKey(0)
 		cv2.destroyAllWindows()
-		
+
 	return 0
 
 
@@ -153,7 +149,7 @@ def processImage(src):
 
 	findContours(threshold_output, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, Point(0, 0))
 	for i in range(len(contours)):
-		convexHull(Mat(contours[i]), hull[i], false)
+		convexHull(Mat(contours[i]), hull[i], False)
 
 	convex = Mat::zeros( threshold_output.size(), CV_8UC1 )
 	for (int i = 0 i<contours.size() ++i)
@@ -201,18 +197,18 @@ def processImage(src):
 	# Mat::zeros(blobbed.size(), CV_8UC3)
 
 	if (contours.size()!=0)
-		existingGoal = true
+		existingGoal = True
 		double largest_area = 0.0
 		for (int i = 0 i < contours.size() i++)
 			# Find the area of contour
-			double a = contourArea(contours[i], false)
+			double a = contourArea(contours[i], False)
 			if (a > largest_area)
 				largest_contour = contours[i]
 				largest_area = a
 
 
 
-	approxPolyDP(Mat(largest_contour), poly, 3, true)
+	approxPolyDP(Mat(largest_contour), poly, 3, True)
 	goal.side_one = poly[0]
 	goal.side_two = poly[1]
 	goal.side_three = poly[2]
