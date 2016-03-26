@@ -1,5 +1,0 @@
-cmake_minimum_required(VERSION 2.8)
-project( highgoal.bin )
-find_package( OpenCV REQUIRED )
-add_executable( highgoal.bin highgoal.cpp )
-target_link_libraries( highgoal.bin ${OpenCV_LIBS} )
