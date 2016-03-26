@@ -43,37 +43,25 @@ def processImage(src):
 	offAngle = 0.0
 	distance = 0.0
 
-	thresholdValue = 250
+	thresholdValue = 230
 	max_thresh = 255
 
 
-	
 
-	# Start Broken
+
 	grayscale = cv2.cvtColor(src, cv2.COLOR_BGR2GRAY)	#TODO: change to stripping just reds or something compute-easy convert image to black and white
 	#blurred = cv2.blur(grayscale, (3, 3))	# blur image
 	ret, thresholded = cv2.threshold(grayscale, thresholdValue, max_thresh, cv2.THRESH_BINARY)
+	#cv2.imshow("grayscalebefore", grayscale)
 
 	#cv2.imshow("original", src)
 	#cv2.imshow("threshold", thresholded)
 
 	contours, hierarchy = cv2.findContours(thresholded, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 
-	cv2.drawContours(thresholded, contours, -1, (0,255,0), 3)
-	cv2.imshow("otherstuff", grayscale)
-	cv2.imshow("contours", thresholded)
-	# End Broken
-	
-	# Start Working
-	imgray = cv2.cvtColor(src, cv2.COLOR_BGR2GRAY)
-	ret,thresh = cv2.threshold(imgray,250,255, cv2.THRESH_BINARY)
-
-	contours, hierarchy = cv2.findContours(thresh,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
-
-	cv2.drawContours(imgray, contours, -1, (0,255,0), 3)
-
-	cv2.imshow("contours2", imgray)
-	# End Working
+	cv2.drawContours(grayscale, contours, -1, (0,255,0), 3)
+	cv2.imshow("grayscaleafter", grayscale)
+	cv2.imshow("thresholded", thresholded)
 
 
 	cv2.waitKey(0)
