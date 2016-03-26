@@ -45,6 +45,7 @@ def processImage(src):
 
 	thresholdValue = 230
 	max_thresh = 255
+	blob_size = 3
 
 
 	grayscale = cv2.cvtColor(src, cv2.COLOR_BGR2GRAY)	#TODO: change to stripping just reds or something compute-easy convert image to black and white
@@ -68,11 +69,39 @@ def processImage(src):
 		cv2.convexHull(Mat(contours[i]), tempConvex, false)
 		hull += [tempConvex]
 
-	convex = np.zeros(len(thresholded), 'C')
+	convex = np.zeros(len(thresholded))
 	for i in range(len(contours)):
 		cv2.drawContours(convex, hull, i, Scalar(255,255,255), CV_FILLED, 8, vector<Vec4i>(), 0, Point() )
 
 	subtracted = cv2.bitwiseAnd(convex, cv2.bitwiseNot(thresholded))
+
+	if gui:
+		cv2.imshow("convex", convex)
+		cv2.imshow("subtracted", subtracted)
+
+	# blob callback
+
+	poly, largest_contour, hierarchy, blobbed = [], [], [], []
+	element = getStructuringElement(MORPH_ELLIPSE, Size(2 * blob_size + 1, 2 * blob_size + 1), Point(blob_size, blob_size))
+
+	cv2.erode(subtracted, blobbed, element)
+	cv2.dilate(blobbed, blobbed, element)
+
+	if gui:
+		cv2.imshow("blobbed", blobbed)
+
+	cv2.findContours(blobbed, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, Point(0, 0))
+
+	# Find largest contour. Is slightly inefficient in the case of 1 contour
+	if len(contours) > 0:
+		existingGoal = true
+		largest_area = 0.0
+		for i in range(len(contours):
+			# Find the area of contour
+			tempArea = cv2.contourArea(contours[i], false)
+			if (temp_area > largest_area):
+				largest_contour = contours[i]
+				largest_area = temp_area
 
 	cv2.waitKey(0)
 	cv2.destroyAllWindows()
