@@ -1,5 +1,6 @@
-import SocketServer
-import subprocess
+from __future__ import division
+import SocketServer, subprocess, time, cv2
+import numpy as np
 
 pi = False
 
@@ -7,13 +8,13 @@ if pi:
 	from picamera.array import PiRGBArray
 	from picamera import PiCamera
 
-import time
-import cv2
 
 if pi:
 	# initialize the camera and grab a reference to the raw camera capture
 	camera = PiCamera()
 	camera.resolution = (640, 480)
+	# camera.nativeResolution (1940, ADD ACTUAL NUMBER)
+	# camera.nativeAngle (1940, 41.41)
 	camera.framerate = 15
 	rawCapture = PiRGBArray(camera, size=camera.resolution)
 
@@ -208,7 +209,21 @@ class MyTCPHandler(SocketServer.BaseRequestHandler):
         # just send back the same data, but upper-cased
         self.request.sendall(response)
 
-
+def angle_and_dist(goal):
+	degPerPxlX = nativeAngleX / camera.resolution[0]
+	degPerPxlY = nativeAngleY / camera.resolution[0]
+	goalPixelY = camera.resolution[0] - (goal[1].y + goal[0].y + goal[2].y + goal[3].y) / 4
+	goalAngleY = mountAngleY + degPerPxlY * (goalPixelY - camera.resolution[0] / 2)
+	goalPixelX = (goal[1].x + goal[0].x + goal[2].x + goal[3].x) / 4
+	goalAngleX = mountAngleX + degPerPxlX * (goalPixelX - camera.resolution[0] / 2)
+	cameraDistance = (goalHeight - cameraHeight) / tan(goalAngleY)
+	shift = sqrt(shiftX * shiftX + shiftY * shiftY)
+	cameraAngle = M_PI - goalAngleX - atan(shiftX / shiftY)
+	distance = sqrt(cameraDistance * cameraDistance + shift * shift - 2 * cameraDistance * shift * cos(cameraAngle))
+	offAngle = asin(sin(cameraAngle) * cameraDistance / distance)
+	offAngle += atan(shiftY / shiftX) - M_PI / 2
+	distance /= millimetersPerInch
+	return make_pair(offAngle, distance)
 
 
 
