@@ -45,6 +45,21 @@ def getImage():
 
 	return image
 
+def angle_and_dist(goal):
+	# [0] = X, [1] = Y, goal[i] = ith corner of highgoal
+	# Uses camera.resolution
+	degPerPxl = (nativeAngle[0] / camera.resolution[0], nativeAngle[1] / camera.resolution[1])
+	goalPixel = ((goal[0].x + goal[1].x + goal[2].x + goal[3].x) / 4, camera.resolution[1] - (goal[0].y + goal[1].y + goal[2].y + goal[3].y) / 4)
+	goalAngle = (mountAngle[0] + degPerPxl[0] * (goalPixel[0] - camera.resolution[0] / 2), mountAngle[1] + degPerPxl[1] * (goalPixel[1] - camera.resolution[1] / 2))
+	cameraDistance = (goalHeight - cameraHeight) / math.tan(goalAngle[1])
+	shift = math.sqrt(shift[0] * shift[0] + shift[1] * shift[1])
+	cameraAngle = math.pi - goalAngle[0] - math.atan(shift[0] / shift[1])
+	distance = math.sqrt(cameraDistance * cameraDistance + shift * shift - 2 * cameraDistance * shift * math.cos(cameraAngle))
+	offAngle = math.asin(math.sin(cameraAngle) * cameraDistance / distance)
+	offAngle += math.atan(shift[1] / shift[0]) - math.pi / 2
+	distance /= inToMm
+	return (offAngle, distance)
+
 def processImage(src):
 	offAngle = 0.0
 	distance = 0.0
@@ -52,6 +67,8 @@ def processImage(src):
 	thresholdValue = 230
 	max_thresh = 255
 	blob_size = 3
+
+	goalFound = 0
 
 
 	grayscale = cv2.cvtColor(src, cv2.COLOR_BGR2GRAY)	#TODO: change to stripping just reds or something compute-easy convert image to black and white
@@ -99,7 +116,7 @@ def processImage(src):
 
 	# Find largest contour. Is slightly inefficient in the case of 1 contour
 	if len(contours) > 0:
-		existingGoal = true
+		goalFound = true
 		largest_area = 0.0
 		for i in range(len(contours)):
 			# Find the area of contour
@@ -108,7 +125,12 @@ def processImage(src):
 				largest_contour = contours[i]
 				largest_area = temp_area
 
-	goal = cv2.approxPolyDP(Mat(largest_contour), 3, true)
+	if goalFound:
+		goal = cv2.approxPolyDP(Mat(largest_contour), 3, true)
+		data = angle_and_dist(goal)
+		print "1::" + str(math.degrees(data[0])) + "::" + str(data[1])
+	else:
+		print "0::0::0"
 
 	if gui:
 		line(result, goal.side[0], goal.side[1], Scalar(255, 0, 0), 5)
@@ -117,8 +139,11 @@ def processImage(src):
 		line(result, goal.side[3], goal.side[0], Scalar(255, 0, 0), 5)
 		c2.imshow("window", result)
 
-	cv2.waitKey(0)
-	cv2.destroyAllWindows()
+		cv2.waitKey(0)
+		cv2.destroyAllWindows()
+		
+	return 0
+
 
 
 	"""
@@ -202,9 +227,7 @@ def processImage(src):
 
 
 class MyTCPHandler(SocketServer.BaseRequestHandler):
-    """
-    Responds to requests for the view of the goal.
-    """
+    # Responds to requests for the view of the goal.
 
     def handle(self):
         # self.request is the TCP socket connected to the client
@@ -213,23 +236,6 @@ class MyTCPHandler(SocketServer.BaseRequestHandler):
         response = process.stdout.read()
         # just send back the same data, but upper-cased
         self.request.sendall(response)
-
-def angle_and_dist(goal):
-	# [0] = X, [1] = Y, goal[i] = ith corner of highgoal
-	# Uses camera.resolution
-	degPerPxl = (nativeAngle[0] / camera.resolution[0], nativeAngle[1] / camera.resolution[1])
-	goalPixel = ((goal[0].x + goal[1].x + goal[2].x + goal[3].x) / 4, camera.resolution[1] - (goal[0].y + goal[1].y + goal[2].y + goal[3].y) / 4)
-	goalAngle = (mountAngle[0] + degPerPxl[0] * (goalPixel[0] - camera.resolution[0] / 2), mountAngle[1] + degPerPxl[1] * (goalPixel[1] - camera.resolution[1] / 2))
-	cameraDistance = (goalHeight - cameraHeight) / math.tan(goalAngle[1])
-	shift = math.sqrt(shift[0] * shift[0] + shift[1] * shift[1])
-	cameraAngle = math.pi - goalAngle[0] - math.atan(shift[0] / shift[1])
-	distance = math.sqrt(cameraDistance * cameraDistance + shift * shift - 2 * cameraDistance * shift * math.cos(cameraAngle))
-	offAngle = math.asin(math.sin(cameraAngle) * cameraDistance / distance)
-	offAngle += math.atan(shift[1] / shift[0]) - math.pi / 2
-	distance /= inToMm
-	return (offAngle, distance)
-
-
 
 if __name__ == "__main__":
     HOST, PORT = "0.0.0.0", 9999
