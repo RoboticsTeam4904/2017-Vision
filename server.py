@@ -80,7 +80,6 @@ def processImage(src):
 		cv2.imshow("subtracted", subtracted)
 
 	# blob callback
-
 	poly, largest_contour, hierarchy, blobbed = [], [], [], []
 	element = getStructuringElement(MORPH_ELLIPSE, Size(2 * blob_size + 1, 2 * blob_size + 1), Point(blob_size, blob_size))
 
@@ -96,12 +95,21 @@ def processImage(src):
 	if len(contours) > 0:
 		existingGoal = true
 		largest_area = 0.0
-		for i in range(len(contours):
+		for i in range(len(contours)):
 			# Find the area of contour
 			tempArea = cv2.contourArea(contours[i], false)
 			if (temp_area > largest_area):
 				largest_contour = contours[i]
 				largest_area = temp_area
+
+	goal = cv2.approxPolyDP(Mat(largest_contour), 3, true)
+
+	if gui:
+		line(result, goal.side[0], goal.side[1], Scalar(255, 0, 0), 5)
+		line(result, goal.side[1], goal.side[2], Scalar(255, 0, 0), 5)
+		line(result, goal.side[2], goal.side[3], Scalar(255, 0, 0), 5)
+		line(result, goal.side[3], goal.side[0], Scalar(255, 0, 0), 5)
+		c2.imshow("window", result)
 
 	cv2.waitKey(0)
 	cv2.destroyAllWindows()
