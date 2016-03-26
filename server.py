@@ -1,5 +1,5 @@
-from __future__ import division
-import SocketServer, subprocess, time, cv2
+from __future__ import division #Might take time to import
+import SocketServer, subprocess, time, cv2, math
 import numpy as np
 
 pi = False
@@ -13,14 +13,19 @@ if pi:
 	# initialize the camera and grab a reference to the raw camera capture
 	camera = PiCamera()
 	camera.resolution = (640, 480)
-	# camera.nativeResolution (1940, ADD ACTUAL NUMBER)
-	# camera.nativeAngle (1940, 41.41)
 	camera.framerate = 15
 	rawCapture = PiRGBArray(camera, size=camera.resolution)
 
+# constants
+inToMm = 25.4
+nativeResolution = (2592, 1944)
+nativeAngle = (math.radians(53.5), math.radians(41.41))
+mountAngle = (0, math.radians(45))
+shift = (13.25 * inToMm, 2.5 * inToMm)
+goalHeight = 8 * 12 * inToMm
+cameraHeight = 296
 
 def getImage():
-
 	image = None
 
 	if pi:
@@ -210,20 +215,19 @@ class MyTCPHandler(SocketServer.BaseRequestHandler):
         self.request.sendall(response)
 
 def angle_and_dist(goal):
-	degPerPxlX = nativeAngleX / camera.resolution[0]
-	degPerPxlY = nativeAngleY / camera.resolution[0]
-	goalPixelY = camera.resolution[0] - (goal[1].y + goal[0].y + goal[2].y + goal[3].y) / 4
-	goalAngleY = mountAngleY + degPerPxlY * (goalPixelY - camera.resolution[0] / 2)
-	goalPixelX = (goal[1].x + goal[0].x + goal[2].x + goal[3].x) / 4
-	goalAngleX = mountAngleX + degPerPxlX * (goalPixelX - camera.resolution[0] / 2)
-	cameraDistance = (goalHeight - cameraHeight) / tan(goalAngleY)
-	shift = sqrt(shiftX * shiftX + shiftY * shiftY)
-	cameraAngle = M_PI - goalAngleX - atan(shiftX / shiftY)
-	distance = sqrt(cameraDistance * cameraDistance + shift * shift - 2 * cameraDistance * shift * cos(cameraAngle))
-	offAngle = asin(sin(cameraAngle) * cameraDistance / distance)
-	offAngle += atan(shiftY / shiftX) - M_PI / 2
-	distance /= millimetersPerInch
-	return make_pair(offAngle, distance)
+	# [0] = X, [1] = Y, goal[i] = ith corner of highgoal
+	# Uses camera.resolution
+	degPerPxl = (nativeAngle[0] / camera.resolution[0], nativeAngle[1] / camera.resolution[1])
+	goalPixel = ((goal[0].x + goal[1].x + goal[2].x + goal[3].x) / 4, camera.resolution[1] - (goal[0].y + goal[1].y + goal[2].y + goal[3].y) / 4)
+	goalAngle = (mountAngle[0] + degPerPxl[0] * (goalPixel[0] - camera.resolution[0] / 2), mountAngle[1] + degPerPxl[1] * (goalPixel[1] - camera.resolution[1] / 2))
+	cameraDistance = (goalHeight - cameraHeight) / math.tan(goalAngle[1])
+	shift = math.sqrt(shift[0] * shift[0] + shift[1] * shift[1])
+	cameraAngle = math.pi - goalAngle[0] - math.atan(shift[0] / shift[1])
+	distance = math.sqrt(cameraDistance * cameraDistance + shift * shift - 2 * cameraDistance * shift * math.cos(cameraAngle))
+	offAngle = math.asin(math.sin(cameraAngle) * cameraDistance / distance)
+	offAngle += math.atan(shift[1] / shift[0]) - math.pi / 2
+	distance /= inToMm
+	return (offAngle, distance)
 
 
 
