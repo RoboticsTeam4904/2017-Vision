@@ -17,13 +17,12 @@ if pi:
 	rawCapture = PiRGBArray(camera, size=camera.resolution)
 
 # constants
-inToMm = 25.4
 nativeResolution = (2592, 1944)
 nativeAngle = (math.radians(53.5), math.radians(41.41))
 mountAngle = (0, math.radians(45))
-shift = (13.25 * inToMm, 2.5 * inToMm)
-goalHeight = 8 * 12 * inToMm
-cameraHeight = 296
+shift = (13.25, 2.5)
+goalHeight = 8 * 12
+cameraHeight = 296 / 25.4 #to inches
 
 def getImage():
 	image = None
@@ -57,7 +56,6 @@ def angle_and_dist(goal):
 	distance = math.sqrt(cameraDistance * cameraDistance + shift * shift - 2 * cameraDistance * shift * math.cos(cameraAngle))
 	offAngle = math.asin(math.sin(cameraAngle) * cameraDistance / distance)
 	offAngle += math.atan(shift[1] / shift[0]) - math.pi / 2
-	distance /= inToMm
 	return (offAngle, distance)
 
 def processImage(src):
