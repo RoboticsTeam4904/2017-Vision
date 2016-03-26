@@ -63,6 +63,16 @@ def processImage(src):
 		cv2.imshow("grayscaleafter", grayscale)
 		cv2.imshow("thresholded", thresholded)
 
+	hull = []
+	for i in range(len(contours)):
+		tempConvex = []
+		cv2.convexHull(Mat(contours[i]), tempConvex, false)
+		hull += [tempConvex]
+
+	convex = Mat::zeros( len(thresholded), CV_8UC1 )
+	for i in range(len(contours)):
+		drawContours(convex, hull, i, Scalar(255,255,255), CV_FILLED, 8, vector<Vec4i>(), 0, Point() )
+
 	subtracted = cv2.bitwiseAnd(convex, cv2.bitwiseNot(thresholded))
 
 	cv2.waitKey(0)
