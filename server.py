@@ -138,10 +138,10 @@ def processImage(src):
 		print "0::0::0"
 
 	if gui:
-		line(result, goal.side[0], goal.side[1], Scalar(255, 0, 0), 5)
-		line(result, goal.side[1], goal.side[2], Scalar(255, 0, 0), 5)
-		line(result, goal.side[2], goal.side[3], Scalar(255, 0, 0), 5)
-		line(result, goal.side[3], goal.side[0], Scalar(255, 0, 0), 5)
+		line(result, goal.side[0], goal.side[1], (255, 0, 0), 5)
+		line(result, goal.side[1], goal.side[2], (255, 0, 0), 5)
+		line(result, goal.side[2], goal.side[3], (255, 0, 0), 5)
+		line(result, goal.side[3], goal.side[0], (255, 0, 0), 5)
 		c2.imshow("window", result)
 
 		cv2.waitKey(0)
