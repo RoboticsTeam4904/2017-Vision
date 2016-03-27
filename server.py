@@ -92,8 +92,16 @@ def processImage(src):
 	convex = np.zeros(len(thresholded))
 	for i in range(len(contours)):
 		cv2.drawContours(convex, hull, i, Scalar(255,255,255), CV_FILLED, 8, vector<Vec4i>(), 0, Point() )
-
-	subtracted = cv2.bitwiseAnd(convex, cv2.bitwiseNot(thresholded))
+	# print thresholded
+	# print convex
+	# print "\n"
+	# # convex, thresholded = convex.ravel(), thresholded.ravel()
+	# print thresholded
+	# print convex
+	# print type(thresholded)
+	# print type(convex)
+	# subtracted = cv2.bitwise_and(convex.ravel(), cv2.bitwise_not(thresholded.ravel()))
+	subtracted = np.logical_and(convex, np.logical_not(thresholded))
 
 	if gui:
 		cv2.imshow("convex", convex)
@@ -101,7 +109,7 @@ def processImage(src):
 
 	# blob callback
 	poly, largest_contour, hierarchy, blobbed = [], [], [], []
-	element = getStructuringElement(MORPH_ELLIPSE, Size(2 * blob_size + 1, 2 * blob_size + 1), Point(blob_size, blob_size))
+	element = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (2 * blob_size + 1, 2 * blob_size + 1), (blob_size, blob_size))
 
 	cv2.erode(subtracted, blobbed, element)
 	cv2.dilate(blobbed, blobbed, element)
@@ -109,7 +117,7 @@ def processImage(src):
 	if gui:
 		cv2.imshow("blobbed", blobbed)
 
-	cv2.findContours(blobbed, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, Point(0, 0))
+	cv2.findContours(blobbed, contours, hierarchy, cv2.CV_RETR_TREE, cv2.CV_CHAIN_APPROX_SIMPLE, (0, 0))
 
 	# Find largest contour. Is slightly inefficient in the case of 1 contour
 	if len(contours) > 0:
@@ -123,7 +131,7 @@ def processImage(src):
 				largest_area = temp_area
 
 	if goalFound:
-		goal = cv2.approxPolyDP(Mat(largest_contour), 3, True)
+		goal = cv2.approxPolyDP(largest_contour, 3, True)
 		data = angle_and_dist(goal)
 		print "1::" + str(math.degrees(data[0])) + "::" + str(data[1])
 	else:
