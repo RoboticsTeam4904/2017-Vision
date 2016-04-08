@@ -3,7 +3,7 @@ import SocketServer, subprocess, time, cv2, math
 import numpy as np
 
 pi = False
-gui = False
+gui = True
 
 if pi:
 	from picamera.array import PiRGBArray
@@ -82,7 +82,7 @@ def processImage(src):
 	offAngle = 0.0
 	distance = 0.0
 
-	thresholdValue = 230
+	thresholdValue = 200
 	max_thresh = 255
 	blob_size = 3
 
@@ -94,8 +94,7 @@ def processImage(src):
 	grayscale = cv2.cvtColor(src, cv2.COLOR_BGR2GRAY)	#TODO: change to stripping just reds or something compute-easy convert image to black and white
 	#blurred = cv2.blur(grayscale, (3, 3))	# blur image
 	ret, thresholded = cv2.threshold(grayscale, thresholdValue, max_thresh, cv2.THRESH_BINARY)
-	contours, hierarchy = [], 0
-	cv2.findContours(thresholded, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE, contours, hierarchy)
+	contours, hierarchy = cv2.findContours(thresholded, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 	# cv2.findContours(dst,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
 	cv2.drawContours(grayscale, contours, -1, (0,255,0), 3)
 
@@ -105,7 +104,7 @@ def processImage(src):
 
 	hull, tempConvex = [], []
 	for i in range(len(contours)):
-		cv2.convexHull(Mat(contours[i]), tempConvex, False)
+		cv2.convexHull(np.array(contours[i], dtype=np.uint8), tempConvex, False)
 		hull += [tempConvex]
 
 	convex = np.zeros(thresholded.shape, dtype=np.uint8)
@@ -144,7 +143,7 @@ def processImage(src):
 	contours, hierarchy = cv2.findContours(blobbed, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 	# print contours
 	# print hierarchy
-	
+
 	# Find largest contour. Is slightly inefficient in the case of 1 contour
 	if len(contours) > 0:
 		goalFound = True
@@ -164,11 +163,11 @@ def processImage(src):
 		print "0::0::0"
 
 	if gui:
-		line(result, goal.side[0], goal.side[1], (255, 0, 0), 5)
-		line(result, goal.side[1], goal.side[2], (255, 0, 0), 5)
-		line(result, goal.side[2], goal.side[3], (255, 0, 0), 5)
-		line(result, goal.side[3], goal.side[0], (255, 0, 0), 5)
-		c2.imshow("window", result)
+		# cv2.line(src, goal.side[0], goal.side[1], (255, 0, 0), 5)
+		# cv2.line(src, goal.side[1], goal.side[2], (255, 0, 0), 5)
+		# cv2.line(src, goal.side[2], goal.side[3], (255, 0, 0), 5)
+		# cv2.line(src, goal.side[3], goal.side[0], (255, 0, 0), 5)
+		# c2.imshow("window", src)
 
 		cv2.waitKey(0)
 		cv2.destroyAllWindows()
