@@ -6,16 +6,16 @@ pi = False
 gui = True
 
 if pi:
-	from picamera.array import PiRGBArray
-	from picamera import PiCamera
+    from picamera.array import PiRGBArray
+    from picamera import PiCamera
 
 
 if pi:
-	# initialize the camera and grab a reference to the raw camera capture
-	camera = PiCamera()
-	camera.resolution = (640, 480)
-	camera.framerate = 15
-	rawCapture = PiRGBArray(camera, size=camera.resolution)
+    # initialize the camera and grab a reference to the raw camera capture
+    camera = PiCamera()
+    camera.resolution = (640, 480)
+    camera.framerate = 15
+    rawCapture = PiRGBArray(camera, size=camera.resolution)
 
 # constants
 cameraResolution = (640, 480)
@@ -27,112 +27,112 @@ goalHeight = 8 * 12
 cameraHeight = 296 / 25.4 #to inches
 
 def getImage():
-	image = None
+    image = None
 
-	if pi:
-		for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
-			# grab the raw NumPy array representing the image, then initialize the timestamp
-			# and occupied/unoccupied text
-			image = frame.array
+    if pi:
+        for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
+            # grab the raw NumPy array representing the image, then initialize the timestamp
+            # and occupied/unoccupied text
+            image = frame.array
 
-			# show the frame
-			if debug:
-				cv2.imshow("Frame", image)
+            # show the frame
+            if debug:
+                cv2.imshow("Frame", image)
 
-			# clear the stream in preparation for the next frame
-			rawCapture.truncate(0)
-	else:
-		image = cv2.imread("latest.jpg")
+            # clear the stream in preparation for the next frame
+            rawCapture.truncate(0)
+    else:
+        image = cv2.imread("latest.jpg")
 
-	return image
+    return image
 def angle_and_dist(goal):
-	# [0] = X, [1] = Y, goal[i] = ith corner of highgoal
-	degPerPxl = [nativeAngle[i] / cameraResolution[i] for i in range(2)]
-	centerOfGoalPixelCoords = ((goal[0][0][0] + goal[1][0][0] + goal[2][0][0] + goal[3][0][0]) / 4, cameraResolution[1] - (goal[0][0][1] + goal[1][0][1] + goal[2][0][1] + goal[3][0][1]) / 4)
-	goalAngle = [mountAngle[i] + degPerPxl[i] * (centerOfGoalPixelCoords[i] - cameraResolution[i] / 2) for i in range(2)]
-	goalAngleLeftToRight = goalAngle[0]
-	goalAngleUpAndDown = goalAngle[1]
-	cameraToGoalDistance = (goalHeight - cameraHeight) / math.tan(goalAngleUpAndDown)
-	cameraToGoalX = math.sin(goalAngleLeftToRight) * cameraToGoalDistance
-	cameraToGoalY = math.cos(goalAngleLeftToRight) * cameraToGoalDistance
-	shooterToGoalX = cameraToGoalX - cameraToShooterDist[0]
-	shooterToGoalY = cameraToGoalY + cameraToShooterDist[1]
-	shooterToGoalDist = math.sqrt(shooterToGoalX * shooterToGoalX + shooterToGoalY * shooterToGoalY)
-	shooterToGoalAngle = math.atan(shooterToGoalX / shooterToGoalY)
-	return (shooterToGoalAngle, shooterToGoalDist)
+    # [0] = X, [1] = Y, goal[i] = ith corner of highgoal
+    degPerPxl = [nativeAngle[i] / cameraResolution[i] for i in range(2)]
+    centerOfGoalPixelCoords = ((goal[0][0][0] + goal[1][0][0] + goal[2][0][0] + goal[3][0][0]) / 4, cameraResolution[1] - (goal[0][0][1] + goal[1][0][1] + goal[2][0][1] + goal[3][0][1]) / 4)
+    goalAngle = [mountAngle[i] + degPerPxl[i] * (centerOfGoalPixelCoords[i] - cameraResolution[i] / 2) for i in range(2)]
+    goalAngleLeftToRight = goalAngle[0]
+    goalAngleUpAndDown = goalAngle[1]
+    cameraToGoalDistance = (goalHeight - cameraHeight) / math.tan(goalAngleUpAndDown)
+    cameraToGoalX = math.sin(goalAngleLeftToRight) * cameraToGoalDistance
+    cameraToGoalY = math.cos(goalAngleLeftToRight) * cameraToGoalDistance
+    shooterToGoalX = cameraToGoalX - cameraToShooterDist[0]
+    shooterToGoalY = cameraToGoalY + cameraToShooterDist[1]
+    shooterToGoalDist = math.sqrt(shooterToGoalX * shooterToGoalX + shooterToGoalY * shooterToGoalY)
+    shooterToGoalAngle = math.atan(shooterToGoalX / shooterToGoalY)
+    return (shooterToGoalAngle, shooterToGoalDist)
 
 def processImage(src):
-	thresholdValue = 200
-	max_thresh = 255
-	blob_size = 3
+    thresholdValue = 200
+    max_thresh = 255
+    blob_size = 3
 
-	if gui:
-		cv2.imshow("original", src)
+    if gui:
+        cv2.imshow("original", src)
 
-	grayscale = cv2.cvtColor(src, cv2.COLOR_BGR2GRAY)	#TODO: change to stripping just reds or something compute-easy convert image to black and white
-	blurred = cv2.blur(grayscale, (3, 3))	# blur image
-	ret, thresholded = cv2.threshold(blurred, thresholdValue, max_thresh, cv2.THRESH_BINARY)
-	contours, hierarchy = cv2.findContours(thresholded, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+    grayscale = cv2.cvtColor(src, cv2.COLOR_BGR2GRAY)    #TODO: change to stripping just reds or something compute-easy convert image to black and white
+    blurred = cv2.blur(grayscale, (3, 3))    # blur image
+    ret, thresholded = cv2.threshold(blurred, thresholdValue, max_thresh, cv2.THRESH_BINARY)
+    contours, hierarchy = cv2.findContours(thresholded, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 
-	if gui:
-		cv2.drawContours(grayscale, contours, -1, (0,255,0), 3)
-		cv2.imshow("grayscaleafter", grayscale)
-		cv2.imshow("thresholded", thresholded)
+    if gui:
+        cv2.drawContours(grayscale, contours, -1, (0,255,0), 3)
+        cv2.imshow("grayscaleafter", grayscale)
+        cv2.imshow("thresholded", thresholded)
 
-	thresh_filled = np.zeros(thresholded.shape, dtype=np.uint8)
-	thick_thresh = np.zeros(thresholded.shape, dtype=np.uint8)
-	cv2.drawContours(thresh_filled, contours, -1, (255,255,255), cv2.cv.CV_FILLED, 8)
-	cv2.drawContours(thick_thresh, contours, -1, (255,255,255), 3)
+    thresh_filled = np.zeros(thresholded.shape, dtype=np.uint8)
+    thick_thresh = np.zeros(thresholded.shape, dtype=np.uint8)
+    cv2.drawContours(thresh_filled, contours, -1, (255,255,255), cv2.cv.CV_FILLED, 8)
+    cv2.drawContours(thick_thresh, contours, -1, (255,255,255), 3)
 
+    hull = [cv2.convexHull(contour, False) for contour in contours]
+    convex = np.zeros(thresholded.shape, dtype=np.uint8)
+    cv2.drawContours(convex, hull, -1, (255,255,255), cv2.cv.CV_FILLED, 8)
+    subtracted = cv2.bitwise_and(cv2.bitwise_and(convex, cv2.bitwise_not(thresh_filled)), cv2.bitwise_not(thick_thresh))
 
-	hull = [cv2.convexHull(contour, False) for contour in contours]
-	convex = np.zeros(thresholded.shape, dtype=np.uint8)
-	cv2.drawContours(convex, hull, -1, (255,255,255), cv2.cv.CV_FILLED, 8)
-	subtracted = cv2.bitwise_and(cv2.bitwise_and(convex, cv2.bitwise_not(thresh_filled)), cv2.bitwise_not(thick_thresh))
+    if gui:
+        cv2.imshow("convex", convex)
+        cv2.imshow("subtracted", subtracted)
 
-	if gui:
-		cv2.imshow("convex", convex)
-		cv2.imshow("subtracted", subtracted)
+    # blob callback
+    # blobbed = np.zeros(subtracted.shape, dtype=np.uint8)
+    # element = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (2 * blob_size + 1, 2 * blob_size + 1), (blob_size, blob_size))
+    # print element
+    # cv2.erode(subtracted, blobbed, element)
+    # if gui:
+    #     cv2.imshow("blobbedBeforeDilate", blobbed)
+    # cv2.dilate(blobbed, blobbed, element)
+    #
+    # if gui:
+    #     cv2.imshow("blobbed", blobbed)
 
-	# blob callback
-	# blobbed = np.zeros(subtracted.shape, dtype=np.uint8)
-	# element = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (2 * blob_size + 1, 2 * blob_size + 1), (blob_size, blob_size))
-	# print element
-	# cv2.erode(subtracted, blobbed, element)
-	# if gui:
-	# 	cv2.imshow("blobbedBeforeDilate", blobbed)
-	# cv2.dilate(blobbed, blobbed, element)
-	#
-	# if gui:
-	# 	cv2.imshow("blobbed", blobbed)
+    contours, hierarchy = cv2.findContours(subtracted, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 
-	contours, hierarchy = cv2.findContours(subtracted, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+    if len(contours) > 0:
+        # Find largest contour.
+        largest_contour = contours[0]
+        largest_area = cv2.contourArea(contours[0], False)
+        for i in range(1, len(contours)):
+            temp_area = cv2.contourArea(contours[i], False)
+            if (temp_area > largest_area):
+                largest_contour = contours[i]
+                largest_area = temp_area
 
-	# Find largest contour. Is slightly inefficient in the case of 1 contour
-	if len(contours) > 0:
-		largest_contour = contours[0]
-		largest_area = cv2.contourArea(contours[0], False)
-		for i in range(1, len(contours)):
-			temp_area = cv2.contourArea(contours[i], False)
-			if (temp_area > largest_area):
-				largest_contour = contours[i]
-				largest_area = temp_area
-		goal = cv2.approxPolyDP(largest_contour, 3, True)
-		data = angle_and_dist(goal)
-		print "1::" + str(math.degrees(data[0])) + "::" + str(data[1])
-		if gui:
-			for i in range(len(goal)):
-				print goal[i][0]
-				cv2.line(src, (goal[i][0][0], goal[i][0][1]), (goal[(i+1)%len(goal)][0][0], goal[(i+1)%len(goal)][0][1]), (255, 0, 0), 5)
-			cv2.imshow("window", src)
-	else:
-		print "0::0::0"
+        goal = cv2.approxPolyDP(largest_contour, 5, True)
+        data = angle_and_dist(goal)
+        print "1::" + str(math.degrees(data[0])) + "::" + str(data[1])
+        if gui:
+            for i in range(len(goal)):
+                print goal[i][0]
+                cv2.line(src, (goal[i][0][0], goal[i][0][1]), (goal[(i+1)%len(goal)][0][0], goal[(i+1)%len(goal)][0][1]), (255, 0, 0), 5)
+            cv2.imshow("window", src)
+    else:
+        print "0::0::0"
 
-	if gui:
-		cv2.waitKey(0)
-		cv2.destroyAllWindows()
+    if gui:
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
 
-	return 0
+    return 0
 
 
 class MyTCPHandler(SocketServer.BaseRequestHandler):
