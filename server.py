@@ -7,7 +7,7 @@ app = Flask(__name__)
 
 pi = False
 gui = True
-webcam = True
+webcam = False
 
 if pi:
 	from picamera.array import PiRGBArray
@@ -17,10 +17,11 @@ def nothing(x):
 	pass
 
 h,s,v = 100,60,50
-
-cv2.createTrackbar('h', 'original',0,179,nothing)
-cv2.createTrackbar('s', 'original',0,255,nothing)
-cv2.createTrackbar('v', 'original',0,255,nothing)
+cv2.imshow("result", cv2.imread("a00039.jpg"))
+cv2.namedWindow('result', cv2.WINDOW_NORMAL)
+cv2.createTrackbar('h', 'result',0,179,nothing)
+cv2.createTrackbar('s', 'result',0,255,nothing)
+cv2.createTrackbar('v', 'result',0,255,nothing)
 
 if pi:
 	# initialize the camera and grab a reference to the raw camera capture
@@ -28,6 +29,12 @@ if pi:
 	camera.resolution = (640, 480)
 	camera.framerate = 15
 	rawCapture = PiRGBArray(camera, size=camera.resolution)
+	#camera.start_preview()
+	camera.exposure_mode = 'sports'
+	for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True)
+		image = frame.array
+		cv2.imshow("Frame", image)
+		rawCapture.truncate(0)
 
 if not pi and webcam:
 	cap = cv2.VideoCapture(0)
@@ -110,7 +117,7 @@ def processImage(src):
 	upper_green = np.array([255, 255, 255])
 
 	if gui:
-		cv2.imshow("original", src)
+		cv2.imshow("result", src)
 
 	blurred = cv2.blur(src, (3, 3))
 	hsv = cv2.cvtColor(blurred, cv2.COLOR_BGR2HSV)
