@@ -45,11 +45,10 @@ def getImage():
 		image = cv2.imread("latest.jpg")
 
 	return image
-def angle_and_dist((x, y, w, h)):
+def angle_and_dist(goal):
 	# [0] = X, [1] = Y, goal[i] = ith corner of highgoal
-	# Uses camera.resolution
 	degPerPxl = [nativeAngle[i] / cameraResolution[i] for i in range(2)]
-	centerOfGoalPixelCoords = (x + w/2, y + h/2)
+	centerOfGoalPixelCoords = ((goal[0][0][0] + goal[1][0][0] + goal[2][0][0] + goal[3][0][0]) / 4, cameraResolution[1] - (goal[0][0][1] + goal[1][0][1] + goal[2][0][1] + goal[3][0][1]) / 4)
 	goalAngle = [mountAngle[i] + degPerPxl[i] * (centerOfGoalPixelCoords[i] - cameraResolution[i] / 2) for i in range(2)]
 	goalAngleLeftToRight = goalAngle[0]
 	goalAngleUpAndDown = goalAngle[1]
@@ -99,18 +98,18 @@ def processImage(src):
 		cv2.imshow("subtracted", subtracted)
 
 	# blob callback
-	blobbed = np.zeros(subtracted.shape, dtype=np.uint8)
-	element = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (2 * blob_size + 1, 2 * blob_size + 1), (blob_size, blob_size))
-	print element
-	cv2.erode(subtracted, blobbed, element)
-	if gui:
-		cv2.imshow("blobbedBeforeDilate", blobbed)
-	cv2.dilate(blobbed, blobbed, element)
+	# blobbed = np.zeros(subtracted.shape, dtype=np.uint8)
+	# element = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (2 * blob_size + 1, 2 * blob_size + 1), (blob_size, blob_size))
+	# print element
+	# cv2.erode(subtracted, blobbed, element)
+	# if gui:
+	# 	cv2.imshow("blobbedBeforeDilate", blobbed)
+	# cv2.dilate(blobbed, blobbed, element)
+	#
+	# if gui:
+	# 	cv2.imshow("blobbed", blobbed)
 
-	if gui:
-		cv2.imshow("blobbed", blobbed)
-
-	contours, hierarchy = cv2.findContours(blobbed, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+	contours, hierarchy = cv2.findContours(subtracted, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 	# print contours
 
 	# Find largest contour. Is slightly inefficient in the case of 1 contour
@@ -123,14 +122,15 @@ def processImage(src):
 				largest_contour = contours[i]
 				largest_area = temp_area
 		goal = cv2.approxPolyDP(largest_contour, 3, True)
+		print goal
 		data = angle_and_dist(goal)
 		print "1::" + str(math.degrees(data[0])) + "::" + str(data[1])
-		if gui:
-			cv2.line(src, goal.side[0], goal.side[1], (255, 0, 0), 5)
-			cv2.line(src, goal.side[1], goal.side[2], (255, 0, 0), 5)
-			cv2.line(src, goal.side[2], goal.side[3], (255, 0, 0), 5)
-			cv2.line(src, goal.side[3], goal.side[0], (255, 0, 0), 5)
-			c2.imshow("window", src)
+		# if gui:
+		# 	cv2.line(src, goal[0], goal[1], (255, 0, 0), 5)
+		# 	cv2.line(src, goal[1], goal[2], (255, 0, 0), 5)
+		# 	cv2.line(src, goal[2], goal[3], (255, 0, 0), 5)
+		# 	cv2.line(src, goal[3], goal[0], (255, 0, 0), 5)
+		# 	c2.imshow("window", src)
 	else:
 		print "0::0::0"
 
