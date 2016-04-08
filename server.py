@@ -125,14 +125,11 @@ def processImage(src):
             if (temp_area > largest_area):
                 largest_contour = contours[i]
                 largest_area = temp_area
-        eps=2
+        eps = 2
         goal = cv2.approxPolyDP(largest_contour, eps, True)
-        if len(goal)>4:
-            while eps<7:
-                eps=eps+1
-                goal = cv2.approxPolyDP(largest_contour, eps, True)
-                if len(goal)<=4:
-                    break
+        while len(goal) !== 4 and eps < 7:
+            eps += 1
+            goal = cv2.approxPolyDP(largest_contour, eps, True)
 
         data = angle_and_dist(goal)
         print "1::" + str(math.degrees(data[0])) + "::" + str(data[1])
