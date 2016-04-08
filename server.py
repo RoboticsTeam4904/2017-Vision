@@ -42,7 +42,7 @@ def getImage():
             # clear the stream in preparation for the next frame
             rawCapture.truncate(0)
     else:
-        image = cv2.imread("latest.jpg")
+        image = cv2.imread("a00039.jpg")
 
     return image
 def angle_and_dist(goal):
@@ -66,8 +66,8 @@ def processImage(src):
     max_thresh = 255
     blob_size = 3
 
-    lower_green = (110, 61.5, 51)
-    upper_green = (130, 75, 78.4)
+    lower_green = (0, 61.5, 51)
+    upper_green = (255, 255, 255)
 
     if gui:
         cv2.imshow("original", src)
@@ -75,6 +75,7 @@ def processImage(src):
     blurred = cv2.blur(src, (3, 3))
     hsv = cv2.cvtColor(blurred, cv2.COLOR_BGR2HSV)
     thresholded = cv2.inRange(hsv, lower_green, upper_green)
+    thresholded = cv2.bitwise_not(thresholded)
 
     # grayscale = cv2.cvtColor(src, cv2.COLOR_BGR2GRAY)    #TODO: change to stripping just reds or something compute-easy convert image to black and white
     # blurred = cv2.blur(grayscale, (3, 3))    # blur image
