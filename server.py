@@ -66,17 +66,16 @@ def angle_and_dist((x, y, w, h)):
 	degPerPxl = (nativeAngle[0] / cameraResolution[0], nativeAngle[1] / cameraResolution[1])
 	goalPixel = (x + w/2, y + h/2)
 	goalAngle = (mountAngle[0] + degPerPxl[0] * (goalPixel[0] - cameraResolution[0] / 2), mountAngle[1] + degPerPxl[1] * (goalPixel[1] - cameraResolution[1] / 2))
-	cameraDistance = (goalHeight - cameraHeight) / math.tan(goalAngle[1])
+	cameraToGoalDistance = (goalHeight - cameraHeight) / math.tan(goalAngle[1])
 	#END OSHER
 
 	#BEGIN LEIJURV
-	cameraToGoalDistance = (goalHeight - cameraHeight) / math.tan(goalAngle[1])
 	cameraToGoalX=math.sin(goalAngle)*cameraToGoalDistance
 	cameraToGoalY=math.cos(goalAngle)*cameraToGoalDistance
 	centerOfRobotToGoalX=cameraToGoalX-shift[0]
 	centerOfRobotToGoalY=cameraToGoalY+shift[1]
 	centerOfRobotToGoalDist=math.sqrt(centerOfRobotToGoalX*centerOfRobotToGoalX+centerOfRobotToGoalY*centerOfRobotToGoalY)
-	return (math.atan(centerOfRobotToGoalY/centerOfRobotToGoalX),centerOfRobotToGoalDist)
+	return (math.atan(centerOfRobotToGoalX/centerOfRobotToGoalY),centerOfRobotToGoalDist)
 
 def processImage(src):
 	offAngle = 0.0
