@@ -42,7 +42,7 @@ def getImage():
             # clear the stream in preparation for the next frame
             rawCapture.truncate(0)
     else:
-        image = cv2.imread("img0176.jpg")
+        image = cv2.imread("latest.jpg")
 
     return image
 def angle_and_dist(goal):
@@ -66,17 +66,26 @@ def processImage(src):
     max_thresh = 255
     blob_size = 3
 
+    lower_green = (110, 61.5, 51)
+    upper_green = (130, 75, 78.4)
+
     if gui:
         cv2.imshow("original", src)
 
-    grayscale = cv2.cvtColor(src, cv2.COLOR_BGR2GRAY)    #TODO: change to stripping just reds or something compute-easy convert image to black and white
-    blurred = cv2.blur(grayscale, (3, 3))    # blur image
-    ret, thresholded = cv2.threshold(blurred, thresholdValue, max_thresh, cv2.THRESH_BINARY)
+    blurred = cv2.blur(src, (3, 3))
+    hsv = cv2.cvtColor(blurred, cv2.COLOR_BGR2HSV)
+    thresholded = cv2.inRange(hsv, lower_green, upper_green)
+
+    # grayscale = cv2.cvtColor(src, cv2.COLOR_BGR2GRAY)    #TODO: change to stripping just reds or something compute-easy convert image to black and white
+    # blurred = cv2.blur(grayscale, (3, 3))    # blur image
+    # ret, thresholded = cv2.threshold(blurred, thresholdValue, max_thresh, cv2.THRESH_BINARY)
+
+
     contours, hierarchy = cv2.findContours(thresholded, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 
     if gui:
-        cv2.drawContours(grayscale, contours, -1, (0,255,0), 3)
-        cv2.imshow("grayscaleafter", grayscale)
+        # cv2.drawContours(grayscale, contours, -1, (0,255,0), 3)
+        # cv2.imshow("grayscaleafter", grayscale)
         cv2.imshow("thresholded", thresholded)
 
     thresh_filled = np.zeros(thresholded.shape, dtype=np.uint8)
@@ -130,7 +139,7 @@ def processImage(src):
         if gui:
             for i in range(len(goal)):
                 print goal[i][0]
-                cv2.line(src, (goal[i][0][0], goal[i][0][1]), (goal[(i+1)%len(goal)][0][0], goal[(i+1)%len(goal)][0][1]), (255, 0, 0), 5)
+                cv2.line(src, (goal[i][0][0], goal[i][0][1]), (goal[(i+1)%len(goal)][0][0], goal[(i+1)%len(goal)][0][1]), (255, 0, 0), eps*2)
             cv2.imshow("window", src)
     else:
         print "0::0::0"
