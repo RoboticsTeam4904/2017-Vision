@@ -79,19 +79,16 @@ def processImage(src):
 		cv2.imshow("grayscaleafter", grayscale)
 		cv2.imshow("thresholded", thresholded)
 
-	dankmemes=np.zeros(thresholded.shape, dtype=np.uint8)
-	cv2.drawContours(dankmemes, contours, -1, (255,255,255), cv2.cv.CV_FILLED, 8)
-	cv2.imshow("dankmemes", dankmemes)
-
-	dankmemes1=np.zeros(thresholded.shape, dtype=np.uint8)
-	cv2.drawContours(dankmemes1, contours, -1, (255,255,255), 3)
-	cv2.imshow("dankmemes1", dankmemes1)
+	thresh_filled = np.zeros(thresholded.shape, dtype=np.uint8)
+	thick_thresh = np.zeros(thresholded.shape, dtype=np.uint8)
+	cv2.drawContours(thresh_filled, contours, -1, (255,255,255), cv2.cv.CV_FILLED, 8)
+	cv2.drawContours(thick_thresh, contours, -1, (255,255,255), 3)
 
 
 	hull = [cv2.convexHull(contour, False) for contour in contours]
 	convex = np.zeros(thresholded.shape, dtype=np.uint8)
 	cv2.drawContours(convex, hull, -1, (255,255,255), cv2.cv.CV_FILLED, 8)
-	subtracted = cv2.bitwise_and(cv2.bitwise_and(convex, cv2.bitwise_not(dankmemes)),cv2.bitwise_not(dankmemes1))
+	subtracted = cv2.bitwise_and(cv2.bitwise_and(convex, cv2.bitwise_not(thresh_filled)), cv2.bitwise_not(thick_thresh))
 
 	if gui:
 		cv2.imshow("convex", convex)
@@ -110,7 +107,6 @@ def processImage(src):
 	# 	cv2.imshow("blobbed", blobbed)
 
 	contours, hierarchy = cv2.findContours(subtracted, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-	# print contours
 
 	# Find largest contour. Is slightly inefficient in the case of 1 contour
 	if len(contours) > 0:
@@ -122,15 +118,13 @@ def processImage(src):
 				largest_contour = contours[i]
 				largest_area = temp_area
 		goal = cv2.approxPolyDP(largest_contour, 3, True)
-		print goal
 		data = angle_and_dist(goal)
 		print "1::" + str(math.degrees(data[0])) + "::" + str(data[1])
-		# if gui:
-		# 	cv2.line(src, goal[0], goal[1], (255, 0, 0), 5)
-		# 	cv2.line(src, goal[1], goal[2], (255, 0, 0), 5)
-		# 	cv2.line(src, goal[2], goal[3], (255, 0, 0), 5)
-		# 	cv2.line(src, goal[3], goal[0], (255, 0, 0), 5)
-		# 	c2.imshow("window", src)
+		if gui:
+			for i in range(len(goal)):
+				print goal[i][0]
+				cv2.line(src, (goal[i][0][0], goal[i][0][1]), (goal[(i+1)%len(goal)][0][0], goal[(i+1)%len(goal)][0][1]), (255, 0, 0), 5)
+			cv2.imshow("window", src)
 	else:
 		print "0::0::0"
 
