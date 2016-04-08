@@ -103,13 +103,14 @@ def processImage(src):
 		cv2.imshow("thresholded", thresholded)
 
 	hull, tempConvex = [], []
-	for i in range(len(contours)):
-		cv2.convexHull(np.array(contours[i], dtype=np.uint8), tempConvex, False)
-		hull += [tempConvex]
+	for contour in contours:
+		size = contour[0];
+		print size
+		hull += [cv2.convexHull(size, False)]
 
 	convex = np.zeros(thresholded.shape, dtype=np.uint8)
-	for i in range(len(contours)):
-		cv2.drawContours(convex, hull, i, Scalar(255,255,255), CV_FILLED, 8, vector<Vec4i>(), 0, Point() )
+	# for i in range(len(contours)):
+	cv2.drawContours(convex, hull, -1, (255,255,255), cv2.cv.CV_FILLED, 8)
 	# print thresholded
 	# print convex
 	# print "\n"
