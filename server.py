@@ -108,7 +108,7 @@ def processImage(src):
 		cv2.convexHull(Mat(contours[i]), tempConvex, False)
 		hull += [tempConvex]
 
-	convex = np.zeros(len(thresholded))
+	convex = np.zeros(thresholded.shape, dtype=np.uint8)
 	for i in range(len(contours)):
 		cv2.drawContours(convex, hull, i, Scalar(255,255,255), CV_FILLED, 8, vector<Vec4i>(), 0, Point() )
 	# print thresholded
@@ -119,25 +119,32 @@ def processImage(src):
 	# print convex
 	# print type(thresholded)
 	# print type(convex)
-	# subtracted = cv2.bitwise_and(convex.ravel(), cv2.bitwise_not(thresholded.ravel()))
-	subtracted = np.logical_and(convex, np.logical_not(thresholded))
+	subtracted = cv2.bitwise_and(convex, cv2.bitwise_not(thresholded))
+	# subtracted = np.logical_and(convex, np.logical_not(thresholded))
 
 	if gui:
 		cv2.imshow("convex", convex)
 		cv2.imshow("subtracted", subtracted)
 
 	# blob callback
-	poly, largest_contour, hierarchy, blobbed = [], [], [], []
+	poly, largest_contour, hierarchy, blobbed = [], [], np.zeros(123), np.zeros(subtracted.shape, dtype=np.uint8)
 	element = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (2 * blob_size + 1, 2 * blob_size + 1), (blob_size, blob_size))
 
+
+	print type(subtracted)
+	print type(blobbed)
+	print type(subtracted)
 	cv2.erode(subtracted, blobbed, element)
 	cv2.dilate(blobbed, blobbed, element)
 
 	if gui:
 		cv2.imshow("blobbed", blobbed)
 
-	cv2.findContours(blobbed, contours, hierarchy, cv2.CV_RETR_TREE, cv2.CV_CHAIN_APPROX_SIMPLE, (0, 0))
-
+	#cv2.findContours(thresholded, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE, contours, hierarchy)
+	contours, hierarchy = cv2.findContours(blobbed, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+	# print contours
+	# print hierarchy
+	
 	# Find largest contour. Is slightly inefficient in the case of 1 contour
 	if len(contours) > 0:
 		goalFound = True
