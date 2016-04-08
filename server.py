@@ -63,15 +63,16 @@ def angle_and_dist_BAD((x, y, w, h)):
 def angle_and_dist((x, y, w, h)):
 	# [0] = X, [1] = Y, goal[i] = ith corner of highgoal
 	# Uses camera.resolution
-	degPerPxl = (nativeAngle[0] / cameraResolution[0], nativeAngle[1] / cameraResolution[1])
-	goalPixel = (x + w/2, y + h/2)
-	goalAngle = (mountAngle[0] + degPerPxl[0] * (goalPixel[0] - cameraResolution[0] / 2), mountAngle[1] + degPerPxl[1] * (goalPixel[1] - cameraResolution[1] / 2))
-	cameraToGoalDistance = (goalHeight - cameraHeight) / math.tan(goalAngle[1])
-	#END OSHER
+	degPerPxl = [nativeAngle[i] / cameraResolution[i] for i in range(2)]
+	centerOfGoalPixelCoords = (x + w/2, y + h/2)
+	goalAngle = [mountAngle[i] + degPerPxl[i] * (centerOfGoalPixelCoords[i] - cameraResolution[i] / 2) for i in range(2)]
+	goalAngleLeftToRight=goalAngle[0]
+	goalAngleUpAndDown=goalAngle[1]
+	cameraToGoalDistance = (goalHeight - cameraHeight) / math.tan(goalAngleUpAndDown)
 
-	#BEGIN LEIJURV
-	cameraToGoalX=math.sin(goalAngle[0])*cameraToGoalDistance
-	cameraToGoalY=math.cos(goalAngle[0])*cameraToGoalDistance
+
+	cameraToGoalX=math.sin(goalAngleLeftToRight)*cameraToGoalDistance
+	cameraToGoalY=math.cos(goalAngleLeftToRight)*cameraToGoalDistance
 	centerOfRobotToGoalX=cameraToGoalX-shift[0]
 	centerOfRobotToGoalY=cameraToGoalY+shift[1]
 	centerOfRobotToGoalDist=math.sqrt(centerOfRobotToGoalX*centerOfRobotToGoalX+centerOfRobotToGoalY*centerOfRobotToGoalY)
