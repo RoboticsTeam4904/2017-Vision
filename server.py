@@ -18,6 +18,7 @@ if pi:
 	rawCapture = PiRGBArray(camera, size=camera.resolution)
 
 # constants
+cameraResolution = (640, 480)
 nativeResolution = (2592, 1944)
 nativeAngle = (math.radians(53.5), math.radians(41.41))
 mountAngle = (0, math.radians(45))
