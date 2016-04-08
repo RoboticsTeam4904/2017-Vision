@@ -16,8 +16,9 @@ if pi:
 def nothing(x):
 	pass
 
-h,s,v = 100,60,50
-cv2.imshow("result", cv2.imread("a00039.jpg"))
+h,s,v = 64,25,43
+
+cv2.imshow("result", cv2.imread("a00071.jpg"))
 cv2.namedWindow('result', cv2.WINDOW_NORMAL)
 cv2.createTrackbar('h', 'result',0,179,nothing)
 cv2.createTrackbar('s', 'result',0,255,nothing)
@@ -55,29 +56,25 @@ def getImage():
 			# and occupied/unoccupied text
 			image = frame.array
 
-			# show the frame
-			if debug:
-				cv2.imshow("Frame", image)
-
 			# clear the stream in preparation for the next frame
 			rawCapture.truncate(0)
 	elif webcam:
 		ret, image = cap.read()
 		#cv2.imwrite("/Users/erik/"+str(time.time())+".jpg", image)
 	else:
-		image = cv2.imread("a00039.jpg")
+		image = cv2.imread("a00071.jpg")
 
 	return image
 def angle_and_dist(goal):
 	# [0] = X, [1] = Y, goal[i] = ith corner of highgoal
 	degPerPxl = [nativeAngle[i] / cameraResolution[i] for i in range(2)]
-	print goal
+	#print goal
 
 	x = 0
 	y = 0
 	count = 0
 	for i in goal:
-		print i
+		#print i
 		x += i[0][0]
 		y += i[0][1]
 		count += 1
@@ -109,16 +106,16 @@ def processImage(src):
 	h = cv2.getTrackbarPos('h','result')
 	s = cv2.getTrackbarPos('s','result')
 	v = cv2.getTrackbarPos('v','result')
+	print h,s,v
 	lower_green = np.array([h,s,v])
-	upper_green = np.array([255, 255, 255])
+	upper_green = np.array([120, 255, 255])
 
-	if gui:
-		cv2.imshow("result", src)
 
 	blurred = cv2.blur(src, (3, 3))
 	hsv = cv2.cvtColor(blurred, cv2.COLOR_BGR2HSV)
 	thresholded = cv2.inRange(hsv, lower_green, upper_green)
 	thresholded = cv2.bitwise_not(thresholded)
+	
 
 	# grayscale = cv2.cvtColor(src, cv2.COLOR_BGR2GRAY)    #TODO: change to stripping just reds or something compute-easy convert image to black and white
 	# blurred = cv2.blur(grayscale, (3, 3))    # blur image
@@ -175,18 +172,22 @@ def processImage(src):
 			while eps<7:
 				eps=eps+1
 				goal = cv2.approxPolyDP(largest_contour, eps, True)
-				if len(goal)<=4:
+				if len(goal)==4:
 					break
 
 		data = angle_and_dist(goal)
 		print "1::" + str(math.degrees(data[0])) + "::" + str(data[1])
 		if gui:
-			for i in range(len(goal)):
-				#print goal[i][0]
-				cv2.line(src, (goal[i][0][0], goal[i][0][1]), (goal[(i+1)%len(goal)][0][0], goal[(i+1)%len(goal)][0][1]), (255, 0, 0), eps*2)
-			cv2.imshow("window", src)
+			for contour in contours:
+				for i in range(len(contour)):
+					#print goal[i][0]
+					cv2.line(src, (contour[i][0][0], contour[i][0][1]), (contour[(i+1)%len(contour)][0][0], contour[(i+1)%len(contour)][0][1]), (255, 0, 0), eps*2)
+	
 	else:
 		print "0::0::0"
+	
+	if gui:
+		cv2.imshow("result", src)
 
 	#if gui:
 	#	cv2.waitKey(0)
@@ -224,7 +225,7 @@ if __name__ == "__main__":
 		else:
 			while True:
 				processImage(getImage())
-				if cv2.waitKey(1) != -1:
+				if cv2.waitKey(200) != -1:
 					cap.release()
 					cv2.destroyAllWindows()
 					break
