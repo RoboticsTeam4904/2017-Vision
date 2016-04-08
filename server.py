@@ -22,7 +22,7 @@ cameraResolution = (640, 480)
 nativeResolution = (2592, 1944)
 nativeAngle = (math.radians(53.5), math.radians(41.41))
 mountAngle = (0, math.radians(45))
-shift = (13.25, 2.5)
+cameraToShooterDist = (13.25, 2.5)
 goalHeight = 8 * 12
 cameraHeight = 296 / 25.4 #to inches
 
@@ -45,7 +45,6 @@ def getImage():
 		image = cv2.imread("latest.jpg")
 
 	return image
-	
 def angle_and_dist((x, y, w, h)):
 	# [0] = X, [1] = Y, goal[i] = ith corner of highgoal
 	# Uses camera.resolution
@@ -57,8 +56,8 @@ def angle_and_dist((x, y, w, h)):
 	cameraToGoalDistance = (goalHeight - cameraHeight) / math.tan(goalAngleUpAndDown)
 	cameraToGoalX = math.sin(goalAngleLeftToRight) * cameraToGoalDistance
 	cameraToGoalY = math.cos(goalAngleLeftToRight) * cameraToGoalDistance
-	shooterToGoalX = cameraToGoalX - shift[0]
-	shooterToGoalY = cameraToGoalY + shift[1]
+	shooterToGoalX = cameraToGoalX - cameraToShooterDist[0]
+	shooterToGoalY = cameraToGoalY + cameraToShooterDist[1]
 	shooterToGoalDist = math.sqrt(shooterToGoalX * shooterToGoalX + shooterToGoalY * shooterToGoalY)
 	shooterToGoalAngle = math.atan(shooterToGoalX / shooterToGoalY)
 	return (shooterToGoalAngle, shooterToGoalDist)
@@ -81,10 +80,19 @@ def processImage(src):
 		cv2.imshow("grayscaleafter", grayscale)
 		cv2.imshow("thresholded", thresholded)
 
-	hull = [cv2.convexHull(contour[0], False) for contour in contours]
+	dankmemes=np.zeros(thresholded.shape, dtype=np.uint8)
+	cv2.drawContours(dankmemes, contours, -1, (255,255,255), cv2.cv.CV_FILLED, 8)
+	cv2.imshow("dankmemes", dankmemes)
+
+	dankmemes1=np.zeros(thresholded.shape, dtype=np.uint8)
+	cv2.drawContours(dankmemes1, contours, -1, (255,255,255), 3)
+	cv2.imshow("dankmemes1", dankmemes1)
+
+
+	hull = [cv2.convexHull(contour, False) for contour in contours]
 	convex = np.zeros(thresholded.shape, dtype=np.uint8)
 	cv2.drawContours(convex, hull, -1, (255,255,255), cv2.cv.CV_FILLED, 8)
-	subtracted = cv2.bitwise_and(convex, cv2.bitwise_not(thresholded))
+	subtracted = cv2.bitwise_and(cv2.bitwise_and(convex, cv2.bitwise_not(dankmemes)),cv2.bitwise_not(dankmemes1))
 
 	if gui:
 		cv2.imshow("convex", convex)
@@ -93,8 +101,10 @@ def processImage(src):
 	# blob callback
 	blobbed = np.zeros(subtracted.shape, dtype=np.uint8)
 	element = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (2 * blob_size + 1, 2 * blob_size + 1), (blob_size, blob_size))
-
+	print element
 	cv2.erode(subtracted, blobbed, element)
+	if gui:
+		cv2.imshow("blobbedBeforeDilate", blobbed)
 	cv2.dilate(blobbed, blobbed, element)
 
 	if gui:
@@ -108,7 +118,7 @@ def processImage(src):
 		largest_contour = contours[0]
 		largest_area = cv2.contourArea(contours[0], False)
 		for i in range(1, len(contours)):
-			tempArea = cv2.contourArea(contours[i], False)
+			temp_area = cv2.contourArea(contours[i], False)
 			if (temp_area > largest_area):
 				largest_contour = contours[i]
 				largest_area = temp_area
