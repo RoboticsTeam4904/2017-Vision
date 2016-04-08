@@ -42,7 +42,7 @@ def getImage():
             # clear the stream in preparation for the next frame
             rawCapture.truncate(0)
     else:
-        image = cv2.imread("latest.jpg")
+        image = cv2.imread("img0176.jpg")
 
     return image
 def angle_and_dist(goal):
@@ -116,8 +116,15 @@ def processImage(src):
             if (temp_area > largest_area):
                 largest_contour = contours[i]
                 largest_area = temp_area
+        eps=2
+        goal = cv2.approxPolyDP(largest_contour, eps, True)
+        if len(goal)>4:
+            while eps<7:
+                eps=eps+1
+                goal = cv2.approxPolyDP(largest_contour, eps, True)
+                if len(goal)<=4:
+                    break
 
-        goal = cv2.approxPolyDP(largest_contour, 5, True)
         data = angle_and_dist(goal)
         print "1::" + str(math.degrees(data[0])) + "::" + str(data[1])
         if gui:
