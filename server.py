@@ -45,19 +45,37 @@ def getImage():
 
 	return image
 
-def angle_and_dist(goal):
+def angle_and_dist_BAD((x, y, w, h)):
 	# [0] = X, [1] = Y, goal[i] = ith corner of highgoal
 	# Uses camera.resolution
-	degPerPxl = (nativeAngle[0] / camera.resolution[0], nativeAngle[1] / camera.resolution[1])
-	goalPixel = ((goal[0].x + goal[1].x + goal[2].x + goal[3].x) / 4, camera.resolution[1] - (goal[0].y + goal[1].y + goal[2].y + goal[3].y) / 4)
-	goalAngle = (mountAngle[0] + degPerPxl[0] * (goalPixel[0] - camera.resolution[0] / 2), mountAngle[1] + degPerPxl[1] * (goalPixel[1] - camera.resolution[1] / 2))
+	degPerPxl = (nativeAngle[0] / cameraResolution[0], nativeAngle[1] / cameraResolution[1])
+	goalPixel = (x + w/2, y + h/2)
+	goalAngle = (mountAngle[0] + degPerPxl[0] * (goalPixel[0] - cameraResolution[0] / 2), mountAngle[1] + degPerPxl[1] * (goalPixel[1] - cameraResolution[1] / 2))
 	cameraDistance = (goalHeight - cameraHeight) / math.tan(goalAngle[1])
-	shift = math.sqrt(shift[0] * shift[0] + shift[1] * shift[1])
+	shiftTotal = math.sqrt(shift[0] * shift[0] + shift[1] * shift[1])
 	cameraAngle = math.pi - goalAngle[0] - math.atan(shift[0] / shift[1])
-	distance = math.sqrt(cameraDistance * cameraDistance + shift * shift - 2 * cameraDistance * shift * math.cos(cameraAngle))
+	distance = math.sqrt(cameraDistance * cameraDistance + shiftTotal * shiftTotal - 2 * cameraDistance * shiftTotal * math.cos(cameraAngle))
 	offAngle = math.asin(math.sin(cameraAngle) * cameraDistance / distance)
 	offAngle += math.atan(shift[1] / shift[0]) - math.pi / 2
 	return (offAngle, distance)
+
+def angle_and_dist((x, y, w, h)):
+	# [0] = X, [1] = Y, goal[i] = ith corner of highgoal
+	# Uses camera.resolution
+	degPerPxl = (nativeAngle[0] / cameraResolution[0], nativeAngle[1] / cameraResolution[1])
+	goalPixel = (x + w/2, y + h/2)
+	goalAngle = (mountAngle[0] + degPerPxl[0] * (goalPixel[0] - cameraResolution[0] / 2), mountAngle[1] + degPerPxl[1] * (goalPixel[1] - cameraResolution[1] / 2))
+	cameraDistance = (goalHeight - cameraHeight) / math.tan(goalAngle[1])
+	#END OSHER
+
+	#BEGIN LEIJURV
+	cameraToGoalDistance = (goalHeight - cameraHeight) / math.tan(goalAngle[1])
+	cameraToGoalX=math.sin(goalAngle)*cameraToGoalDistance
+	cameraToGoalY=math.cos(goalAngle)*cameraToGoalDistance
+	centerOfRobotToGoalX=cameraToGoalX-shift[0]
+	centerOfRobotToGoalY=cameraToGoalY+shift[1]
+	centerOfRobotToGoalDist=math.sqrt(centerOfRobotToGoalX*centerOfRobotToGoalX+centerOfRobotToGoalY*centerOfRobotToGoalY)
+	return (math.atan(centerOfRobotToGoalY/centerOfRobotToGoalX),centerOfRobotToGoalDist)
 
 def processImage(src):
 	offAngle = 0.0
