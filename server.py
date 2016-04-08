@@ -86,175 +86,68 @@ def processImage(src):
 	max_thresh = 255
 	blob_size = 3
 
-	goalFound = False
-
 	if gui:
 		cv2.imshow("original", src)
 
 	grayscale = cv2.cvtColor(src, cv2.COLOR_BGR2GRAY)	#TODO: change to stripping just reds or something compute-easy convert image to black and white
-	#blurred = cv2.blur(grayscale, (3, 3))	# blur image
-	ret, thresholded = cv2.threshold(grayscale, thresholdValue, max_thresh, cv2.THRESH_BINARY)
+	blurred = cv2.blur(grayscale, (3, 3))	# blur image
+	ret, thresholded = cv2.threshold(blurred, thresholdValue, max_thresh, cv2.THRESH_BINARY)
 	contours, hierarchy = cv2.findContours(thresholded, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-	# cv2.findContours(dst,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
-	cv2.drawContours(grayscale, contours, -1, (0,255,0), 3)
 
 	if gui:
+		cv2.drawContours(grayscale, contours, -1, (0,255,0), 3)
 		cv2.imshow("grayscaleafter", grayscale)
 		cv2.imshow("thresholded", thresholded)
 
-	hull, tempConvex = [], []
-	for contour in contours:
-		size = contour[0];
-		print size
-		hull += [cv2.convexHull(size, False)]
-
+	hull = [cv2.convexHull(contour[0], False) for contour in contours]
 	convex = np.zeros(thresholded.shape, dtype=np.uint8)
-	# for i in range(len(contours)):
 	cv2.drawContours(convex, hull, -1, (255,255,255), cv2.cv.CV_FILLED, 8)
-	# print thresholded
-	# print convex
-	# print "\n"
-	# # convex, thresholded = convex.ravel(), thresholded.ravel()
-	# print thresholded
-	# print convex
-	# print type(thresholded)
-	# print type(convex)
 	subtracted = cv2.bitwise_and(convex, cv2.bitwise_not(thresholded))
-	# subtracted = np.logical_and(convex, np.logical_not(thresholded))
 
 	if gui:
 		cv2.imshow("convex", convex)
 		cv2.imshow("subtracted", subtracted)
 
 	# blob callback
-	poly, largest_contour, hierarchy, blobbed = [], [], np.zeros(123), np.zeros(subtracted.shape, dtype=np.uint8)
+	blobbed = np.zeros(subtracted.shape, dtype=np.uint8)
 	element = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (2 * blob_size + 1, 2 * blob_size + 1), (blob_size, blob_size))
 
 
-	print type(subtracted)
-	print type(blobbed)
-	print type(subtracted)
 	cv2.erode(subtracted, blobbed, element)
 	cv2.dilate(blobbed, blobbed, element)
 
 	if gui:
 		cv2.imshow("blobbed", blobbed)
 
-	#cv2.findContours(thresholded, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE, contours, hierarchy)
 	contours, hierarchy = cv2.findContours(blobbed, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 	# print contours
-	# print hierarchy
 
 	# Find largest contour. Is slightly inefficient in the case of 1 contour
 	if len(contours) > 0:
-		goalFound = True
-		largest_area = 0.0
-		for i in range(len(contours)):
-			# Find the area of contour
+		largest_contour = contours[0]
+		largest_area = cv2.contourArea(contours[0], False)
+		for i in range(1, len(contours)):
 			tempArea = cv2.contourArea(contours[i], False)
 			if (temp_area > largest_area):
 				largest_contour = contours[i]
 				largest_area = temp_area
-
-	if goalFound:
 		goal = cv2.approxPolyDP(largest_contour, 3, True)
 		data = angle_and_dist(goal)
 		print "1::" + str(math.degrees(data[0])) + "::" + str(data[1])
+		if gui:
+			cv2.line(src, goal.side[0], goal.side[1], (255, 0, 0), 5)
+			cv2.line(src, goal.side[1], goal.side[2], (255, 0, 0), 5)
+			cv2.line(src, goal.side[2], goal.side[3], (255, 0, 0), 5)
+			cv2.line(src, goal.side[3], goal.side[0], (255, 0, 0), 5)
+			c2.imshow("window", src)
 	else:
 		print "0::0::0"
 
 	if gui:
-		# cv2.line(src, goal.side[0], goal.side[1], (255, 0, 0), 5)
-		# cv2.line(src, goal.side[1], goal.side[2], (255, 0, 0), 5)
-		# cv2.line(src, goal.side[2], goal.side[3], (255, 0, 0), 5)
-		# cv2.line(src, goal.side[3], goal.side[0], (255, 0, 0), 5)
-		# c2.imshow("window", src)
-
 		cv2.waitKey(0)
 		cv2.destroyAllWindows()
 
 	return 0
-
-
-
-	"""
-	if gui:
-		imshow("threshold", threshold_output)
-
-
-	findContours(threshold_output, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, Point(0, 0))
-	for i in range(len(contours)):
-		convexHull(Mat(contours[i]), hull[i], False)
-
-	convex = Mat::zeros( threshold_output.size(), CV_8UC1 )
-	for (int i = 0 i<contours.size() ++i)
-		drawContours(convex, hull, i, Scalar(255,255,255), CV_FILLED, 8, vector<Vec4i>(), 0, Point() )
-
-
-	subtracted = np.zeros((height,width,1), np.uint8)
-
-	if (convex.isContinuous() && threshold_output.isContinuous())
-		uchar *p1, *p2, *p3
-		p1 = convex.ptr<uchar>(0)
-		p2 = threshold_output.ptr<uchar>(0)
-		p3 = subtracted.ptr<uchar>(0)
-		for (int i = 0 i < convex.rows * convex.cols ++i)
-			if (*p2 != 0)
-				*p3 = 0
-			 else if (*p1 != 0)
-				*p3 = 255
-
-			p1++
-			p2++
-			p3++
-
-
-
-	# subtract(convex, threshold_output, subtracted)
-
-	if (gui && detailedGUI)
-		imshow("convex", convex)
-		imshow("subtracted", subtracted)
-
-
-	# blob callback
-
-	vector<Point> poly, largest_contour
-	vector<Vec4i> hierarchy
-	Mat blobbed
-	Mat element = getStructuringElement(MORPH_ELLIPSE, Size(2 * blob_size + 1, 2 * blob_size + 1), Point(blob_size, blob_size))
-
-	erode(subtracted, blobbed, element)
-	dilate(blobbed, blobbed, element)
-	if (gui && detailedGUI) imshow("blobbed", blobbed)
-	findContours(blobbed, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, Point(0, 0))
-	Mat result = src.clone()
-	# Mat::zeros(blobbed.size(), CV_8UC3)
-
-	if (contours.size()!=0)
-		existingGoal = True
-		double largest_area = 0.0
-		for (int i = 0 i < contours.size() i++)
-			# Find the area of contour
-			double a = contourArea(contours[i], False)
-			if (a > largest_area)
-				largest_contour = contours[i]
-				largest_area = a
-
-
-
-	approxPolyDP(Mat(largest_contour), poly, 3, True)
-	goal.side_one = poly[0]
-	goal.side_two = poly[1]
-	goal.side_three = poly[2]
-	goal.side_four = poly[3]
-
-	if gui:
-		line(result, goal.side_one, goal.side_two, Scalar(255, 0, 0), 5)
-		line(result, goal.side_two, goal.side_three, Scalar(255, 0, 0), 5)
-		line(result, goal.side_three, goal.side_four, Scalar(255, 0, 0), 5)
-		line(result, goal.side_four, goal.side_one, Scalar(255, 0, 0), 5)
-		imshow("window", result)"""
 
 
 class MyTCPHandler(SocketServer.BaseRequestHandler):
