@@ -45,43 +45,25 @@ def getImage():
 		image = cv2.imread("latest.jpg")
 
 	return image
-
-def angle_and_dist_BAD((x, y, w, h)):
-	# [0] = X, [1] = Y, goal[i] = ith corner of highgoal
-	# Uses camera.resolution
-	degPerPxl = (nativeAngle[0] / cameraResolution[0], nativeAngle[1] / cameraResolution[1])
-	goalPixel = (x + w/2, y + h/2)
-	goalAngle = (mountAngle[0] + degPerPxl[0] * (goalPixel[0] - cameraResolution[0] / 2), mountAngle[1] + degPerPxl[1] * (goalPixel[1] - cameraResolution[1] / 2))
-	cameraDistance = (goalHeight - cameraHeight) / math.tan(goalAngle[1])
-	shiftTotal = math.sqrt(shift[0] * shift[0] + shift[1] * shift[1])
-	cameraAngle = math.pi - goalAngle[0] - math.atan(shift[0] / shift[1])
-	distance = math.sqrt(cameraDistance * cameraDistance + shiftTotal * shiftTotal - 2 * cameraDistance * shiftTotal * math.cos(cameraAngle))
-	offAngle = math.asin(math.sin(cameraAngle) * cameraDistance / distance)
-	offAngle += math.atan(shift[1] / shift[0]) - math.pi / 2
-	return (offAngle, distance)
-
+	
 def angle_and_dist((x, y, w, h)):
 	# [0] = X, [1] = Y, goal[i] = ith corner of highgoal
 	# Uses camera.resolution
 	degPerPxl = [nativeAngle[i] / cameraResolution[i] for i in range(2)]
 	centerOfGoalPixelCoords = (x + w/2, y + h/2)
 	goalAngle = [mountAngle[i] + degPerPxl[i] * (centerOfGoalPixelCoords[i] - cameraResolution[i] / 2) for i in range(2)]
-	goalAngleLeftToRight=goalAngle[0]
-	goalAngleUpAndDown=goalAngle[1]
+	goalAngleLeftToRight = goalAngle[0]
+	goalAngleUpAndDown = goalAngle[1]
 	cameraToGoalDistance = (goalHeight - cameraHeight) / math.tan(goalAngleUpAndDown)
-
-
-	cameraToGoalX=math.sin(goalAngleLeftToRight)*cameraToGoalDistance
-	cameraToGoalY=math.cos(goalAngleLeftToRight)*cameraToGoalDistance
-	centerOfRobotToGoalX=cameraToGoalX-shift[0]
-	centerOfRobotToGoalY=cameraToGoalY+shift[1]
-	centerOfRobotToGoalDist=math.sqrt(centerOfRobotToGoalX*centerOfRobotToGoalX+centerOfRobotToGoalY*centerOfRobotToGoalY)
-	return (math.atan(centerOfRobotToGoalX/centerOfRobotToGoalY),centerOfRobotToGoalDist)
+	cameraToGoalX = math.sin(goalAngleLeftToRight) * cameraToGoalDistance
+	cameraToGoalY = math.cos(goalAngleLeftToRight) * cameraToGoalDistance
+	shooterToGoalX = cameraToGoalX - shift[0]
+	shooterToGoalY = cameraToGoalY + shift[1]
+	shooterToGoalDist = math.sqrt(shooterToGoalX * shooterToGoalX + shooterToGoalY * shooterToGoalY)
+	shooterToGoalAngle = math.atan(shooterToGoalX / shooterToGoalY)
+	return (shooterToGoalAngle, shooterToGoalDist)
 
 def processImage(src):
-	offAngle = 0.0
-	distance = 0.0
-
 	thresholdValue = 200
 	max_thresh = 255
 	blob_size = 3
@@ -111,7 +93,6 @@ def processImage(src):
 	# blob callback
 	blobbed = np.zeros(subtracted.shape, dtype=np.uint8)
 	element = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (2 * blob_size + 1, 2 * blob_size + 1), (blob_size, blob_size))
-
 
 	cv2.erode(subtracted, blobbed, element)
 	cv2.dilate(blobbed, blobbed, element)
