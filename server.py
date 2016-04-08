@@ -31,10 +31,6 @@ if pi:
 	rawCapture = PiRGBArray(camera, size=camera.resolution)
 	#camera.start_preview()
 	camera.exposure_mode = 'sports'
-	for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True)
-		image = frame.array
-		cv2.imshow("Frame", image)
-		rawCapture.truncate(0)
 
 if not pi and webcam:
 	cap = cv2.VideoCapture(0)
@@ -54,7 +50,7 @@ def getImage():
 	image = None
 
 	if pi:
-		for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
+		
 			# grab the raw NumPy array representing the image, then initialize the timestamp
 			# and occupied/unoccupied text
 			image = frame.array
@@ -220,12 +216,18 @@ class MyTCPHandler(SocketServer.BaseRequestHandler):
 if __name__ == "__main__":
 	HOST, PORT = "0.0.0.0", 9999
 	if gui:
-		while True:
-			processImage(getImage())
-			if cv2.waitKey(1) != -1:
-				cap.release()
-				cv2.destroyAllWindows()
-				break
+		if pi:
+			for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
+				processImage(getImage())
+				if cv2.waitKey(1) != -1:
+					break
+		else:
+			while True:
+				processImage(getImage())
+				if cv2.waitKey(1) != -1:
+					cap.release()
+					cv2.destroyAllWindows()
+					break
 	else:
 		app.run(host=HOST,port=PORT)
 		# socket server
