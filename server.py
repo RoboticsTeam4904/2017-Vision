@@ -70,8 +70,8 @@ def angle_and_dist((x, y, w, h)):
 	#END OSHER
 
 	#BEGIN LEIJURV
-	cameraToGoalX=math.sin(goalAngle)*cameraToGoalDistance
-	cameraToGoalY=math.cos(goalAngle)*cameraToGoalDistance
+	cameraToGoalX=math.sin(goalAngle[0])*cameraToGoalDistance
+	cameraToGoalY=math.cos(goalAngle[0])*cameraToGoalDistance
 	centerOfRobotToGoalX=cameraToGoalX-shift[0]
 	centerOfRobotToGoalY=cameraToGoalY+shift[1]
 	centerOfRobotToGoalDist=math.sqrt(centerOfRobotToGoalX*centerOfRobotToGoalX+centerOfRobotToGoalY*centerOfRobotToGoalY)
