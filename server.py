@@ -200,16 +200,13 @@ def processImage(src):
 				largest_contour = contours[i]
 				largest_area = temp_area
 		if largest_area < cv2.getTrackbarPos('minSize','result'):
-			print cv2.getTrackbarPos('minSize','result')
 			print "0::0::0"
 		else:
-			print cv2.getTrackbarPos('minSize','result')
 			eps=2
 			goal = cv2.approxPolyDP(largest_contour, eps, True)
 			while len(goal) != 4 and eps < 9:
 				eps = eps + 1
 				goal = cv2.approxPolyDP(largest_contour, eps, True)
-			print len(goal)
 
 			data = angle_and_dist(goal)
 			print "1::" + str(math.degrees(data[0])) + "::" + str(data[1])
