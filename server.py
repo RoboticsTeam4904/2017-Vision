@@ -16,7 +16,7 @@ if pi:
 def nothing(x):
 	pass
 
-h,s,v = 67, 73, 96 #58,21,93
+# h,s,v = 67, 73, 96 #58,21,93
 
 if gui:
 	cv2.imshow("result", cv2.imread("a00071.jpg"))
@@ -62,7 +62,7 @@ def getImage():
 	image = None
 	global cnt
 	if pi:
-		
+
 			# grab the raw NumPy array representing the image, then initialize the timestamp
 			# and occupied/unoccupied text
 			image = frame.array
@@ -103,8 +103,8 @@ def angle_and_dist(goal):
 
 	centerOfGoalPixelCoords = (x, cameraResolution[1] - y)
 	print centerOfGoalPixelCoords
-	
-	
+
+
 	goalAngle = [mountAngle[i] + degPerPxl[i] * (centerOfGoalPixelCoords[i] - cameraResolution[i] / 2) for i in range(2)]
 	goalAngleLeftToRight = goalAngle[0]
 	goalAngleUpAndDown = goalAngle[1]
@@ -123,13 +123,22 @@ def processImage(src):
 	blob_size = 3
 
 	# get info from track bar and apply to result
-	h = cv2.getTrackbarPos('h','result')
-	s = cv2.getTrackbarPos('s','result')
-	v = cv2.getTrackbarPos('v','result')
-	hTop = cv2.getTrackbarPos('hTop','result')
-	sTop = cv2.getTrackbarPos('sTop','result')
-	vTop = cv2.getTrackbarPos('vTop','result')
-	print h,s,v
+	if gui:
+        h = cv2.getTrackbarPos('h','result')
+    	s = cv2.getTrackbarPos('s','result')
+    	v = cv2.getTrackbarPos('v','result')
+    	hTop = cv2.getTrackbarPos('hTop','result')
+    	sTop = cv2.getTrackbarPos('sTop','result')
+    	vTop = cv2.getTrackbarPos('vTop','result')
+    	print h,s,v
+    else:
+        h = 50
+        s = 73
+        v = 96
+        hTop = 78
+        sTop = 255
+        vTop = 255
+        minSize = 120
 	lower_green = np.array([h,s,v])
 	upper_green = np.array([hTop, sTop, vTop])
 	# upper_green = np.array([179, 255, 255])
@@ -139,7 +148,7 @@ def processImage(src):
 	hsv = cv2.cvtColor(blurred, cv2.COLOR_BGR2HSV)
 	thresholded = cv2.inRange(hsv, lower_green, upper_green)
 	#thresholded = cv2.bitwise_not(thresholded)
-	
+
 
 	# grayscale = cv2.cvtColor(src, cv2.COLOR_BGR2GRAY)    #TODO: change to stripping just reds or something compute-easy convert image to black and white
 	# blurred = cv2.blur(grayscale, (3, 3))    # blur image
@@ -211,7 +220,7 @@ def processImage(src):
 				# for contour in contours:
 				# 	for i in range(len(contour)):
 				# 		cv2.line(src, (contour[i][0][0], contour[i][0][1]), (contour[(i+1)%len(contour)][0][0], contour[(i+1)%len(contour)][0][1]), (255, 0, 0), eps*2)
-	
+
 	else:
 		print "0::0::0"
 
