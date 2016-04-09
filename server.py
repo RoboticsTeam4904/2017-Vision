@@ -20,7 +20,7 @@ def nothing(x):
 # h,s,v = 67, 73, 96 #58,21,93
 
 if gui:
-	cv2.imshow("result", cv2.imread("a00071.jpg"))
+	cv2.imshow("result", cv2.imread("latest.jpg"))
 	cv2.namedWindow('result', cv2.WINDOW_NORMAL)
 	cv2.createTrackbar('h', 'result',50,179,nothing)
 	cv2.createTrackbar('s', 'result',73,255,nothing)
@@ -102,8 +102,26 @@ def angle_and_dist(goal):
 	x /= count
 	y /= count
 
-	centerOfGoalPixelCoords = (x, cameraResolution[1] - y)
-	print centerOfGoalPixelCoords
+	maxx = goal[0][0][0]
+	minx = goal[0][0][0]
+	for i in goal:
+		#print i
+		if maxx < i[0][0]:
+			maxx = i[0][0]
+		if minx > i[0][0]:
+			minx = i[0][0]
+	maxy = goal[0][0][1]
+	miny = goal[0][0][1]
+	for i in goal:
+		#print i
+		if maxy < i[0][1]:
+			maxy = i[0][1]
+		if miny > i[0][1]:
+			miny = i[0][1]
+	
+
+	centerOfGoalPixelCoords = ((maxx+minx)/2, cameraResolution[1] - (maxy+miny)/2)
+	#print centerOfGoalPixelCoords
 
 
 	goalAngle = [mountAngle[i] + degPerPxl[i] * (centerOfGoalPixelCoords[i] - cameraResolution[i] / 2) for i in range(2)]
@@ -212,7 +230,7 @@ def processImage(src):
 				goal = cv2.approxPolyDP(largest_contour, eps, True)
 
 			data = angle_and_dist(goal)
-			returnstr = "1::" + str(math.degrees(data[0])) + "::" + str(data[1])
+			returnstr = "1::" + str(data[0]) + "::" + str(data[1])
 			if gui:
 				for i in range(len(largest_contour)):
 					cv2.line(src, (largest_contour[i][0][0], largest_contour[i][0][1]), (largest_contour[(i+1)%len(largest_contour)][0][0], largest_contour[(i+1)%len(largest_contour)][0][1]), (255, 0, 0), eps*2)
