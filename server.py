@@ -16,7 +16,7 @@ if pi:
 def nothing(x):
 	pass
 
-h,s,v = 64,25,43
+h,s,v = 58,21,93
 
 cv2.imshow("result", cv2.imread("a00071.jpg"))
 cv2.namedWindow('result', cv2.WINDOW_NORMAL)
@@ -47,9 +47,10 @@ cameraToShooterDist = (13.25, 2.5)
 goalHeight = 8 * 12
 cameraHeight = 296 / 25.4 #to inches
 
+cnt = 1
 def getImage():
 	image = None
-
+	global cnt
 	if pi:
 		
 			# grab the raw NumPy array representing the image, then initialize the timestamp
@@ -62,7 +63,11 @@ def getImage():
 		ret, image = cap.read()
 		#cv2.imwrite("/Users/erik/"+str(time.time())+".jpg", image)
 	else:
-		image = cv2.imread("a00071.jpg")
+		cnt += 1
+		image = cv2.imread("green4/a{0:05d}.jpg".format(cnt))
+		while(image == None and cnt < 10000):
+			cnt += 1
+			image = cv2.imread("green4/a{0:05d}.jpg".format(cnt))
 
 	return image
 def angle_and_dist(goal):
@@ -103,9 +108,9 @@ def processImage(src):
 	blob_size = 3
 
 	# get info from track bar and apply to result
-	h = cv2.getTrackbarPos('h','result')
-	s = cv2.getTrackbarPos('s','result')
-	v = cv2.getTrackbarPos('v','result')
+	#h = cv2.getTrackbarPos('h','result')
+	#s = cv2.getTrackbarPos('s','result')
+	#v = cv2.getTrackbarPos('v','result')
 	print h,s,v
 	lower_green = np.array([h,s,v])
 	upper_green = np.array([120, 255, 255])
@@ -114,7 +119,7 @@ def processImage(src):
 	blurred = cv2.blur(src, (3, 3))
 	hsv = cv2.cvtColor(blurred, cv2.COLOR_BGR2HSV)
 	thresholded = cv2.inRange(hsv, lower_green, upper_green)
-	thresholded = cv2.bitwise_not(thresholded)
+	#thresholded = cv2.bitwise_not(thresholded)
 	
 
 	# grayscale = cv2.cvtColor(src, cv2.COLOR_BGR2GRAY)    #TODO: change to stripping just reds or something compute-easy convert image to black and white
@@ -140,8 +145,8 @@ def processImage(src):
 	subtracted = cv2.bitwise_and(cv2.bitwise_and(convex, cv2.bitwise_not(thresh_filled)), cv2.bitwise_not(thick_thresh))
 
 	if gui:
-		#cv2.imshow("convex", convex)
-		pass#cv2.imshow("subtracted", subtracted)
+		cv2.imshow("convex", convex)
+		cv2.imshow("subtracted", subtracted)
 
 	# blob callback
 	# blobbed = np.zeros(subtracted.shape, dtype=np.uint8)
@@ -185,7 +190,7 @@ def processImage(src):
 	
 	else:
 		print "0::0::0"
-	
+
 	if gui:
 		cv2.imshow("result", src)
 
