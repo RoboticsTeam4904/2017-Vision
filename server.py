@@ -6,6 +6,7 @@ from flask import Flask
 app = Flask(__name__)
 
 pi = False
+uselatestimg = True
 gui = False
 webcam = False
 
@@ -38,7 +39,7 @@ if pi:
 	# initialize the camera and grab a reference to the raw camera capture
 	camera = PiCamera()
 	camera.resolution = (640, 480)
-	camera.framerate = 15
+	camera.framerate = 5
 	rawCapture = PiRGBArray(camera, size=camera.resolution)
 	#camera.start_preview()
 	camera.exposure_mode = 'sports'
@@ -62,7 +63,7 @@ def getImage():
 	image = None
 	global cnt
 	if pi:
-
+		for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
 			# grab the raw NumPy array representing the image, then initialize the timestamp
 			# and occupied/unoccupied text
 			image = frame.array
@@ -72,8 +73,11 @@ def getImage():
 	elif webcam:
 		ret, image = cap.read()
 		#cv2.imwrite("/Users/erik/"+str(time.time())+".jpg", image)
+	elif uselatestimg:
+		image = cv2.imread("latest.jpg")
 	else:
 		# image = cv2.imread("4/a00006.jpg")
+
 		cnt += 1
 		print cnt
 		image = cv2.imread("4/a{0:05d}.jpg".format(cnt))
@@ -257,19 +261,13 @@ if __name__ == "__main__":
 	if webcam:
 		delay = 1
 	if gui:
-		if pi:
-			for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
-				processImage(getImage())
-				if cv2.waitKey(1) != -1:
-					break
-		else:
-			while True:
-				processImage(getImage())
-				if cv2.waitKey(delay) != -1:
-					if webcam:
-						cap.release()
-						cv2.destroyAllWindows()
-					break
+		while True:
+			processImage(getImage())
+			if cv2.waitKey(delay) != -1:
+				if webcam:
+					cap.release()
+					cv2.destroyAllWindows()
+				break
 	else:
 		app.run(host=HOST,port=PORT)
 		# socket server
