@@ -6,7 +6,8 @@ from flask import Flask
 app = Flask(__name__)
 
 pi = False
-gui = True
+uselatestimg = True
+gui = False
 webcam = False
 
 if pi:
@@ -16,7 +17,7 @@ if pi:
 def nothing(x):
 	pass
 
-h,s,v = 67, 73, 96 #58,21,93
+# h,s,v = 67, 73, 96 #58,21,93
 
 if gui:
 	cv2.imshow("result", cv2.imread("a00071.jpg"))
@@ -38,7 +39,7 @@ if pi:
 	# initialize the camera and grab a reference to the raw camera capture
 	camera = PiCamera()
 	camera.resolution = (640, 480)
-	camera.framerate = 15
+	camera.framerate = 5
 	rawCapture = PiRGBArray(camera, size=camera.resolution)
 	#camera.start_preview()
 	camera.exposure_mode = 'sports'
@@ -62,7 +63,7 @@ def getImage():
 	image = None
 	global cnt
 	if pi:
-
+		for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
 			# grab the raw NumPy array representing the image, then initialize the timestamp
 			# and occupied/unoccupied text
 			image = frame.array
@@ -72,18 +73,18 @@ def getImage():
 	elif webcam:
 		ret, image = cap.read()
 		#cv2.imwrite("/Users/erik/"+str(time.time())+".jpg", image)
+	elif uselatestimg:
+		image = cv2.imread("latest.jpg")
 	else:
-		image = cv2.imread("a00071.jpg")
-		# cnt += 1
-		# print cnt
-		# image = cv2.imread("4/a{0:05d}.jpg".format(cnt))
-		# while(image == None and cnt < 10000):
-		# 	cnt += 1
-		# 	image = cv2.imread("4/a{0:05d}.jpg".format(cnt))
-		# if not cnt < 100:
-		# 	cnt = 0
-		# 	image = getImage()
-
+		cnt += 1
+		print cnt
+		image = cv2.imread("4/a{0:05d}.jpg".format(cnt))
+		while(image == None and cnt < 10000):
+			cnt += 1
+			image = cv2.imread("4/a{0:05d}.jpg".format(cnt))
+		if not cnt < 10000:
+			cnt = 0
+			image = getImage()
 	return image
 def angle_and_dist(goal):
 	# [0] = X, [1] = Y, goal[i] = ith corner of highgoal
@@ -118,18 +119,28 @@ def angle_and_dist(goal):
 	return (shooterToGoalAngle, shooterToGoalDist)
 
 def processImage(src):
+	returnstr = ""
 	thresholdValue = 200
 	max_thresh = 255
 	blob_size = 3
 
 	# get info from track bar and apply to result
-	h = cv2.getTrackbarPos('h','result')
-	s = cv2.getTrackbarPos('s','result')
-	v = cv2.getTrackbarPos('v','result')
-	hTop = cv2.getTrackbarPos('hTop','result')
-	sTop = cv2.getTrackbarPos('sTop','result')
-	vTop = cv2.getTrackbarPos('vTop','result')
-	print h,s,v
+	if gui:
+		h = cv2.getTrackbarPos('h','result')
+		s = cv2.getTrackbarPos('s','result')
+		v = cv2.getTrackbarPos('v','result')
+		hTop = cv2.getTrackbarPos('hTop','result')
+		sTop = cv2.getTrackbarPos('sTop','result')
+		vTop = cv2.getTrackbarPos('vTop','result')
+		print h,s,v
+	else:
+		h = 50
+		s = 73
+		v = 96
+		hTop = 78
+		sTop = 255
+		vTop = 255
+		minSize = 120
 	lower_green = np.array([h,s,v])
 	upper_green = np.array([hTop, sTop, vTop])
 	# upper_green = np.array([179, 255, 255])
@@ -192,18 +203,16 @@ def processImage(src):
 				largest_area = temp_area
 		if largest_area < cv2.getTrackbarPos('minSize','result'):
 			print cv2.getTrackbarPos('minSize','result')
-			print "0::0::0"
+			returnstr = "0::0::0"
 		else:
-			print cv2.getTrackbarPos('minSize','result')
 			eps=2
 			goal = cv2.approxPolyDP(largest_contour, eps, True)
 			while len(goal) != 4 and eps < 9:
 				eps = eps + 1
 				goal = cv2.approxPolyDP(largest_contour, eps, True)
-			print len(goal)
 
 			data = angle_and_dist(goal)
-			print "1::" + str(math.degrees(data[0])) + "::" + str(data[1])
+			returnstr = "1::" + str(math.degrees(data[0])) + "::" + str(data[1])
 			if gui:
 				for i in range(len(largest_contour)):
 					cv2.line(src, (largest_contour[i][0][0], largest_contour[i][0][1]), (largest_contour[(i+1)%len(largest_contour)][0][0], largest_contour[(i+1)%len(largest_contour)][0][1]), (255, 0, 0), eps*2)
@@ -213,7 +222,7 @@ def processImage(src):
 				# 		cv2.line(src, (contour[i][0][0], contour[i][0][1]), (contour[(i+1)%len(contour)][0][0], contour[(i+1)%len(contour)][0][1]), (255, 0, 0), eps*2)
 
 	else:
-		print "0::0::0"
+		returnstr = "0::0::0"
 
 	if gui:
 		cv2.imshow("result", src)
@@ -222,7 +231,7 @@ def processImage(src):
 	#	cv2.waitKey(0)
 	#	cv2.destroyAllWindows()
 
-	return 0
+	return returnstr
 @app.route('/autonomous')
 def autonomous():
 	return processImage(getImage())
@@ -253,24 +262,15 @@ if __name__ == "__main__":
 	if webcam:
 		delay = 1
 	if gui:
-		if pi:
-            frames = camera.capture_continuous(rawCapture, format="bgr", use_video_port=True)
-		    # for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
-            for i in xrange(1000)
-                frame = frames[-1]
-                processImage(getImage())
-				if cv2.waitKey(1) != -1:
-					break
-		else:
-			while True:
-				processImage(getImage())
-				if cv2.waitKey(delay) != -1:
-					if webcam:
-						cap.release()
-						cv2.destroyAllWindows()
-					break
+		while True:
+			processImage(getImage())
+			if cv2.waitKey(delay) != -1:
+				if webcam:
+					cap.release()
+					cv2.destroyAllWindows()
+				break
 	else:
 		app.run(host=HOST,port=PORT)
-		socket server
-		server = SocketServer.TCPServer((HOST, PORT), MyTCPHandler)
-		server.serve_forever()
+		# socket server
+		# server = SocketServer.TCPServer((HOST, PORT), MyTCPHandler)
+		# server.serve_forever()
