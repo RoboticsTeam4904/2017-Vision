@@ -16,13 +16,23 @@ if pi:
 def nothing(x):
 	pass
 
-h,s,v = 58,21,93
+h,s,v = 67, 73, 96 #58,21,93
 
-cv2.imshow("result", cv2.imread("a00071.jpg"))
-cv2.namedWindow('result', cv2.WINDOW_NORMAL)
-cv2.createTrackbar('h', 'result',0,179,nothing)
-cv2.createTrackbar('s', 'result',0,255,nothing)
-cv2.createTrackbar('v', 'result',0,255,nothing)
+if gui:
+	cv2.imshow("result", cv2.imread("a00071.jpg"))
+	cv2.namedWindow('result', cv2.WINDOW_NORMAL)
+	cv2.createTrackbar('h', 'result',50,179,nothing)
+	cv2.createTrackbar('s', 'result',73,255,nothing)
+	cv2.createTrackbar('v', 'result',96,255,nothing)
+	cv2.createTrackbar('hTop', 'result',78,179,nothing)
+	cv2.createTrackbar('sTop', 'result',255,255,nothing)
+	cv2.createTrackbar('vTop', 'result',255,255,nothing)
+	cv2.createTrackbar('minSize', 'result',120,300,nothing)
+
+
+# cv2.createTrackbar('hTop', 'result',75,179,nothing)
+# cv2.createTrackbar('sTop', 'result',255,255,nothing)
+# cv2.createTrackbar('vTop', 'result',255,255,nothing)
 
 if pi:
 	# initialize the camera and grab a reference to the raw camera capture
@@ -63,11 +73,16 @@ def getImage():
 		ret, image = cap.read()
 		#cv2.imwrite("/Users/erik/"+str(time.time())+".jpg", image)
 	else:
+		# image = cv2.imread("4/a00006.jpg")
 		cnt += 1
-		image = cv2.imread("green4/a{0:05d}.jpg".format(cnt))
+		print cnt
+		image = cv2.imread("4/a{0:05d}.jpg".format(cnt))
 		while(image == None and cnt < 10000):
 			cnt += 1
-			image = cv2.imread("green4/a{0:05d}.jpg".format(cnt))
+			image = cv2.imread("4/a{0:05d}.jpg".format(cnt))
+		if not cnt < 10000:
+			cnt = 0
+			image = getImage()
 
 	return image
 def angle_and_dist(goal):
@@ -108,12 +123,16 @@ def processImage(src):
 	blob_size = 3
 
 	# get info from track bar and apply to result
-	#h = cv2.getTrackbarPos('h','result')
-	#s = cv2.getTrackbarPos('s','result')
-	#v = cv2.getTrackbarPos('v','result')
+	h = cv2.getTrackbarPos('h','result')
+	s = cv2.getTrackbarPos('s','result')
+	v = cv2.getTrackbarPos('v','result')
+	hTop = cv2.getTrackbarPos('hTop','result')
+	sTop = cv2.getTrackbarPos('sTop','result')
+	vTop = cv2.getTrackbarPos('vTop','result')
 	print h,s,v
 	lower_green = np.array([h,s,v])
-	upper_green = np.array([120, 255, 255])
+	upper_green = np.array([hTop, sTop, vTop])
+	# upper_green = np.array([179, 255, 255])
 
 
 	blurred = cv2.blur(src, (3, 3))
@@ -171,22 +190,27 @@ def processImage(src):
 			if (temp_area > largest_area):
 				largest_contour = contours[i]
 				largest_area = temp_area
-		eps=2
-		goal = cv2.approxPolyDP(largest_contour, eps, True)
-		if len(goal)>4:
-			while eps<7:
-				eps=eps+1
+		if largest_area < cv2.getTrackbarPos('minSize','result'):
+			print cv2.getTrackbarPos('minSize','result')
+			print "0::0::0"
+		else:
+			print cv2.getTrackbarPos('minSize','result')
+			eps=2
+			goal = cv2.approxPolyDP(largest_contour, eps, True)
+			while len(goal) != 4 and eps < 9:
+				eps = eps + 1
 				goal = cv2.approxPolyDP(largest_contour, eps, True)
-				if len(goal)==4:
-					break
+			print len(goal)
 
-		data = angle_and_dist(goal)
-		print "1::" + str(math.degrees(data[0])) + "::" + str(data[1])
-		if gui:
-			for contour in contours:
-				for i in range(len(contour)):
-					#print goal[i][0]
-					cv2.line(src, (contour[i][0][0], contour[i][0][1]), (contour[(i+1)%len(contour)][0][0], contour[(i+1)%len(contour)][0][1]), (255, 0, 0), eps*2)
+			data = angle_and_dist(goal)
+			print "1::" + str(math.degrees(data[0])) + "::" + str(data[1])
+			if gui:
+				for i in range(len(largest_contour)):
+					cv2.line(src, (largest_contour[i][0][0], largest_contour[i][0][1]), (largest_contour[(i+1)%len(largest_contour)][0][0], largest_contour[(i+1)%len(largest_contour)][0][1]), (255, 0, 0), eps*2)
+
+				# for contour in contours:
+				# 	for i in range(len(contour)):
+				# 		cv2.line(src, (contour[i][0][0], contour[i][0][1]), (contour[(i+1)%len(contour)][0][0], contour[(i+1)%len(contour)][0][1]), (255, 0, 0), eps*2)
 	
 	else:
 		print "0::0::0"
@@ -219,8 +243,11 @@ class MyTCPHandler(SocketServer.BaseRequestHandler):
 		# just send back the same data, but upper-cased
 		self.request.sendall(response)
 
+delay = 300
 if __name__ == "__main__":
 	HOST, PORT = "0.0.0.0", 9999
+	if webcam:
+		delay = 1
 	if gui:
 		if pi:
 			for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
@@ -230,9 +257,10 @@ if __name__ == "__main__":
 		else:
 			while True:
 				processImage(getImage())
-				if cv2.waitKey(200) != -1:
-					cap.release()
-					cv2.destroyAllWindows()
+				if cv2.waitKey(delay) != -1:
+					if webcam:
+						cap.release()
+						cv2.destroyAllWindows()
 					break
 	else:
 		app.run(host=HOST,port=PORT)
