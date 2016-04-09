@@ -243,7 +243,8 @@ def autonomous():
 
 @app.route('/')
 def autonomous2():
-	return processImage(getImage())
+    print "Auton pls 2"
+    return processImage(getImage())
 
 
 # class MyTCPHandler(SocketServer.BaseRequestHandler):
@@ -271,7 +272,7 @@ if __name__ == "__main__":
 					cv2.destroyAllWindows()
 				break
 	else:
-		app.run(host=HOST,port=PORT)
+		app.run(host=HOST,port=PORT,threaded=True)
 		# socket server
 		# server = SocketServer.TCPServer((HOST, PORT), MyTCPHandler)
 		# server.serve_forever()
