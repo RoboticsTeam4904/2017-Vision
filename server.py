@@ -3,7 +3,7 @@ import SocketServer, subprocess, time, cv2, math
 import numpy as np
 
 from flask import Flask
-app = Flask(__name__)
+app = Flask(__name__, static_url_path='')
 
 pi = False
 uselatestimg = True
@@ -234,15 +234,15 @@ def processImage(src):
 	return returnstr
 @app.route('/autonomous')
 def autonomous():
-	return processImage(getImage())
+	return result
 
 @app.route('/latest')
 def latest():
-    return send_file('latest.jpg')
+	return "hi" #app.send_static_file('latest.jpg')
 
 @app.route('/')
 def autonomous2():
-	return processImage(getImage())
+	return result
 
 
 # class MyTCPHandler(SocketServer.BaseRequestHandler):
@@ -255,6 +255,27 @@ def autonomous2():
 # 		response = process.stdout.read()
 # 		# just send back the same data, but upper-cased
 # 		self.request.sendall(response)
+
+result = ""
+import threading
+class ProcessIMGS (threading.Thread):
+	def __init__(self):
+		threading.Thread.__init__(self)
+	def run(self):
+		global result
+		if pi:
+			for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
+				# grab the raw NumPy array representing the image, then initialize the timestamp
+				# and occupied/unoccupied text
+				image = frame.array
+
+				# clear the stream in preparation for the next frame
+				rawCapture.truncate(0)
+				result = processImage(image)
+		else:
+			while True:
+				result = processImage(getImage())
+
 
 delay = 1000
 if __name__ == "__main__":
@@ -270,6 +291,12 @@ if __name__ == "__main__":
 					cv2.destroyAllWindows()
 				break
 	else:
+		thread = ProcessIMGS()
+		thread.start()
+		# while True:
+		# 	print result
+		# 	time.sleep(1)
+
 		app.run(host=HOST,port=PORT)
 		# socket server
 		# server = SocketServer.TCPServer((HOST, PORT), MyTCPHandler)
