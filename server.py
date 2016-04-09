@@ -258,10 +258,6 @@ def autonomous():
 def latest():
 	return "hi" #app.send_static_file('latest.jpg')
 
-@app.route('/autonomous')
-def autonomous():
-	return processImage(getImage())
-
 @app.route('/')
 def autonomous2():
 	return result
