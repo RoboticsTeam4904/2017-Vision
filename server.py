@@ -2,8 +2,8 @@ from __future__ import division #Might take time to import
 import SocketServer, subprocess, time, cv2, math
 import numpy as np
 
-from flask import Flask
-app = Flask(__name__)
+from flask import Flask, send_file
+app = Flask(__name__, static_url_path='')
 
 pi = False
 uselatestimg = True
@@ -232,13 +232,14 @@ def processImage(src):
 	#	cv2.destroyAllWindows()
 
 	return returnstr
-@app.route('/autonomous')
-def autonomous():
-	return processImage(getImage())
 
 @app.route('/latest')
 def latest():
     return send_file('latest.jpg')
+
+@app.route('/autonomous')
+def autonomous():
+	return processImage(getImage())
 
 @app.route('/')
 def autonomous2():
@@ -258,7 +259,7 @@ def autonomous2():
 
 delay = 1000
 if __name__ == "__main__":
-	HOST, PORT = "0.0.0.0", 9999
+	HOST, PORT = "localhost", 9999
 	if webcam:
 		delay = 1
 	if gui:
