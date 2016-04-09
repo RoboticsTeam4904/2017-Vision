@@ -6,7 +6,7 @@ from flask import Flask
 app = Flask(__name__)
 
 pi = False
-gui = True
+gui = False
 webcam = False
 
 if pi:
@@ -124,21 +124,21 @@ def processImage(src):
 
 	# get info from track bar and apply to result
 	if gui:
-        h = cv2.getTrackbarPos('h','result')
-    	s = cv2.getTrackbarPos('s','result')
-    	v = cv2.getTrackbarPos('v','result')
-    	hTop = cv2.getTrackbarPos('hTop','result')
-    	sTop = cv2.getTrackbarPos('sTop','result')
-    	vTop = cv2.getTrackbarPos('vTop','result')
-    	print h,s,v
-    else:
-        h = 50
-        s = 73
-        v = 96
-        hTop = 78
-        sTop = 255
-        vTop = 255
-        minSize = 120
+		h = cv2.getTrackbarPos('h','result')
+		s = cv2.getTrackbarPos('s','result')
+		v = cv2.getTrackbarPos('v','result')
+		hTop = cv2.getTrackbarPos('hTop','result')
+		sTop = cv2.getTrackbarPos('sTop','result')
+		vTop = cv2.getTrackbarPos('vTop','result')
+		print h,s,v
+	else:
+		h = 50
+		s = 73
+		v = 96
+		hTop = 78
+		sTop = 255
+		vTop = 255
+		minSize = 120
 	lower_green = np.array([h,s,v])
 	upper_green = np.array([hTop, sTop, vTop])
 	# upper_green = np.array([179, 255, 255])
