@@ -258,6 +258,10 @@ def autonomous():
 def latest():
 	return "hi" #app.send_static_file('latest.jpg')
 
+@app.route('/autonomous')
+def autonomous():
+	return processImage(getImage())
+
 @app.route('/')
 def autonomous2():
 	return result
@@ -297,7 +301,7 @@ class ProcessIMGS (threading.Thread):
 
 delay = 1000
 if __name__ == "__main__":
-	HOST, PORT = "0.0.0.0", 9999
+	HOST, PORT = "localhost", 9999
 	if webcam:
 		delay = 1
 	if gui:
