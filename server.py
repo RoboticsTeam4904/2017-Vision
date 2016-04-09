@@ -204,13 +204,11 @@ def processImage(src):
 			print cv2.getTrackbarPos('minSize','result')
 			returnstr = "0::0::0"
 		else:
-			print cv2.getTrackbarPos('minSize','result')
 			eps=2
 			goal = cv2.approxPolyDP(largest_contour, eps, True)
 			while len(goal) != 4 and eps < 9:
 				eps = eps + 1
 				goal = cv2.approxPolyDP(largest_contour, eps, True)
-			print len(goal)
 
 			data = angle_and_dist(goal)
 			returnstr = "1::" + str(math.degrees(data[0])) + "::" + str(data[1])
