@@ -118,6 +118,7 @@ def angle_and_dist(goal):
 	return (shooterToGoalAngle, shooterToGoalDist)
 
 def processImage(src):
+	returnstr = ""
 	thresholdValue = 200
 	max_thresh = 255
 	blob_size = 3
@@ -201,7 +202,7 @@ def processImage(src):
 				largest_area = temp_area
 		if largest_area < cv2.getTrackbarPos('minSize','result'):
 			print cv2.getTrackbarPos('minSize','result')
-			print "0::0::0"
+			returnstr = "0::0::0"
 		else:
 			print cv2.getTrackbarPos('minSize','result')
 			eps=2
@@ -212,7 +213,7 @@ def processImage(src):
 			print len(goal)
 
 			data = angle_and_dist(goal)
-			print "1::" + str(math.degrees(data[0])) + "::" + str(data[1])
+			returnstr = "1::" + str(math.degrees(data[0])) + "::" + str(data[1])
 			if gui:
 				for i in range(len(largest_contour)):
 					cv2.line(src, (largest_contour[i][0][0], largest_contour[i][0][1]), (largest_contour[(i+1)%len(largest_contour)][0][0], largest_contour[(i+1)%len(largest_contour)][0][1]), (255, 0, 0), eps*2)
@@ -222,7 +223,7 @@ def processImage(src):
 				# 		cv2.line(src, (contour[i][0][0], contour[i][0][1]), (contour[(i+1)%len(contour)][0][0], contour[(i+1)%len(contour)][0][1]), (255, 0, 0), eps*2)
 
 	else:
-		print "0::0::0"
+		returnstr = "0::0::0"
 
 	if gui:
 		cv2.imshow("result", src)
@@ -231,7 +232,7 @@ def processImage(src):
 	#	cv2.waitKey(0)
 	#	cv2.destroyAllWindows()
 
-	return 0
+	return returnstr
 @app.route('/autonomous')
 def autonomous():
 	return processImage(getImage())
