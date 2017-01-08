@@ -19,7 +19,7 @@ camera.distToShooter = (13.25, 2.5)
 camera.goalHeight = 8 * 12
 camera.height = 296 / 25.4 #to inches
 
-def getImage(camera):
+def getImage():
 	image = None
 	for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
 		# grab the raw NumPy array representing the image, then initialize the timestamp

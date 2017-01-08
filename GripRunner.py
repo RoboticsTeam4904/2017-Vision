@@ -9,7 +9,7 @@ Users need to:
 import cv2
 from networktables import NetworkTable
 from grip import GripPipeline  # TODO change the default module and class, if needed
-
+import camera
 
 def extra_processing(pipeline: GripPipeline):
     """
@@ -17,20 +17,23 @@ def extra_processing(pipeline: GripPipeline):
     :param pipeline: the pipeline that just processed an image
     :return: None
     """
+    targets = pipeline.filter_contours_output
+    print targets
+
     # TODO: Users need to implement this.
     # Useful for converting OpenCV objects (e.g. contours) to something NetworkTables can understand.
     pass
 
 
 def main():
-    NetworkTable.setTeam('4904') 
+    NetworkTable.setTeam('4904')
     NetworkTable.initialize()
     cap = cv2.VideoCapture(0)
     pipeline = GripPipeline()
     while True:
-        ret, frame = cap.read()
+        image = camera.getImage()
         if ret:
-            pipeline.process(frame)  # TODO add extra parameters if the pipeline takes more than just a single image
+            pipeline.process(image)  # TODO add extra parameters if the pipeline takes more than just a single image
             extra_processing(pipeline)
 
 
