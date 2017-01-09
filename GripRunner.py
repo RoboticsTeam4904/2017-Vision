@@ -9,9 +9,14 @@ Users need to:
 import cv2
 from networktables import NetworkTable
 from grip import GripPipeline  # TODO change the default module and class, if needed
+
+
+sample = True
+pi = False
+if pi:
 import camera
 
-def extra_processing(pipeline: GripPipeline):
+def extra_processing(pipeline):
     """
     Performs extra processing on the pipeline's outputs and publishes data to NetworkTables.
     :param pipeline: the pipeline that just processed an image
@@ -28,13 +33,16 @@ def extra_processing(pipeline: GripPipeline):
 def main():
     NetworkTable.setTeam('4904')
     NetworkTable.initialize()
-    cap = cv2.VideoCapture(0)
     pipeline = GripPipeline()
+    # cap = cv2.VideoCapture(0)
+    if sample:
+        image = cv2.imread("TapeTest.jpg")
+
     while True:
-        image = camera.getImage()
-        if ret:
-            pipeline.process(image)  # TODO add extra parameters if the pipeline takes more than just a single image
-            extra_processing(pipeline)
+        if pi:
+            image = camera.getImage()
+        pipeline.process(image)  # TODO add extra parameters if the pipeline takes more than just a single image
+        extra_processing(pipeline)
 
 
 if __name__ == '__main__':
