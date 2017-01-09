@@ -41,12 +41,14 @@ def main():
     # cap = cv2.VideoCapture(0)
     if sample:
         image = cv2.imread("TapeTest.jpg")
-
-    while True:
-        if pi:
-            image = camera.getImage()
         pipeline.process(image)  # TODO add extra parameters if the pipeline takes more than just a single image
         extra_processing(pipeline)
+        
+    if pi:
+        while True:
+            image = camera.getImage()
+            pipeline.process(image)  # TODO add extra parameters if the pipeline takes more than just a single image
+            extra_processing(pipeline)
 
 
 if __name__ == '__main__':
