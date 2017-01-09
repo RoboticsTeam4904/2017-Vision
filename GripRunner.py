@@ -22,7 +22,11 @@ def extra_processing(pipeline):
     :param pipeline: the pipeline that just processed an image
     :return: None
     """
-    targets = pipeline.filter_contours_output
+    targets = pipeline.out
+    # self.out = []
+    # for contour in self.filter_contours_output:
+    #     x,y,w,h = cv2.boundingRect(contour)
+    #     out.append((x,y))
     print targets
 
     # TODO: Users need to implement this.
