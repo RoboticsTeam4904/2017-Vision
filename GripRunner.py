@@ -7,7 +7,7 @@ Users need to:
 """
 
 import cv2
-from networktables import NetworkTable
+# from networktables import NetworkTable
 from grip import GripPipeline  # TODO change the default module and class, if needed
 
 
@@ -31,8 +31,8 @@ def extra_processing(pipeline):
 
 
 def main():
-    NetworkTable.setTeam('4904')
-    NetworkTable.initialize()
+    # NetworkTable.setTeam('4904')
+    # NetworkTable.initialize()
     pipeline = GripPipeline()
     # cap = cv2.VideoCapture(0)
     if sample:
