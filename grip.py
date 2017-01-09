@@ -71,7 +71,7 @@ class GripPipeline:
         self.out = []
         for contour in self.filter_contours_output:
             x,y,w,h = cv2.boundingRect(contour)
-            out.append((x,y,w,h))
+            self.out.append((x,y,w,h))
 
     @staticmethod
     def __cv_dilate(src, kernel, anchor, iterations, border_type, border_value):
