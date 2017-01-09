@@ -7,7 +7,7 @@ app = Flask(__name__, static_url_path='')
 
 pi = False
 uselatestimg = True
-gui = False
+gui = True
 webcam = False
 
 if pi:
@@ -118,7 +118,7 @@ def angle_and_dist(goal):
 			maxy = i[0][1]
 		if miny > i[0][1]:
 			miny = i[0][1]
-	
+
 
 	centerOfGoalPixelCoords = ((maxx+minx)/2, cameraResolution[1] - (maxy+miny)/2)
 	#print centerOfGoalPixelCoords
@@ -182,19 +182,19 @@ def processImage(src):
 		# cv2.imshow("grayscaleafter", grayscale)
 		cv2.imshow("thresholded", thresholded)
 
-	thresh_filled = np.zeros(thresholded.shape, dtype=np.uint8)
-	thick_thresh = np.zeros(thresholded.shape, dtype=np.uint8)
-	cv2.drawContours(thresh_filled, contours, -1, (255,255,255), cv2.cv.CV_FILLED, 8)
-	cv2.drawContours(thick_thresh, contours, -1, (255,255,255), 3)
+	# thresh_filled = np.zeros(thresholded.shape, dtype=np.uint8)
+	# thick_thresh = np.zeros(thresholded.shape, dtype=np.uint8)
+	# cv2.drawContours(thresh_filled, contours, -1, (255,255,255), cv2.cv.CV_FILLED, 8)
+	# cv2.drawContours(thick_thresh, contours, -1, (255,255,255), 3)
 
-	hull = [cv2.convexHull(contour, False) for contour in contours]
-	convex = np.zeros(thresholded.shape, dtype=np.uint8)
-	cv2.drawContours(convex, hull, -1, (255,255,255), cv2.cv.CV_FILLED, 8)
-	subtracted = cv2.bitwise_and(cv2.bitwise_and(convex, cv2.bitwise_not(thresh_filled)), cv2.bitwise_not(thick_thresh))
-
-	if gui:
-		cv2.imshow("convex", convex)
-		cv2.imshow("subtracted", subtracted)
+	# hull = [cv2.convexHull(contour, False) for contour in contours]
+	# convex = np.zeros(thresholded.shape, dtype=np.uint8)
+	# cv2.drawContours(convex, hull, -1, (255,255,255), cv2.cv.CV_FILLED, 8)
+	# subtracted = cv2.bitwise_and(cv2.bitwise_and(convex, cv2.bitwise_not(thresh_filled)), cv2.bitwise_not(thick_thresh))
+	#
+	# if gui:
+	# 	cv2.imshow("convex", convex)
+	# 	cv2.imshow("subtracted", subtracted)
 
 	# blob callback
 	# blobbed = np.zeros(subtracted.shape, dtype=np.uint8)
@@ -208,18 +208,26 @@ def processImage(src):
 	# if gui:
 	#     cv2.imshow("blobbed", blobbed)
 
-	contours, hierarchy = cv2.findContours(subtracted, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+	# contours, hierarchy = cv2.findContours(subtracted, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 
-	if len(contours) > 0:
+	if len(contours) > 1:
 		# Find largest contour.
 		largest_contour = contours[0]
+		second_largest_contour = contours[1]
 		largest_area = cv2.contourArea(contours[0], False)
-		for i in range(1, len(contours)):
+		second_largest_area = cv2.contourArea(contours[1], False)
+		if second_largest_area > largest_area:
+			largest_contour, second_largest_countour = largest_contour, second_largest_countour
+			largest_area, second_largest_area = second_largest_area, largest_area
+		for i in range(2, len(contours)):
 			temp_area = cv2.contourArea(contours[i], False)
-			if (temp_area > largest_area):
-				largest_contour = contours[i]
-				largest_area = temp_area
-		if largest_area < cv2.getTrackbarPos('minSize','result'):
+			if (temp_area > second_largest_area):
+				second_largest_contour = contours[i]
+				second_largest_area = temp_area
+				if second_largest_area > largest_area:
+					largest_contour, second_largest_countour = largest_contour, second_largest_countour
+					largest_area, second_largest_area = second_largest_area, largest_area
+		if second_largest_area < cv2.getTrackbarPos('minSize','result'):
 			print cv2.getTrackbarPos('minSize','result')
 			returnstr = "0::0::0"
 		else:
