@@ -14,7 +14,7 @@ from grip import GripPipeline  # TODO change the default module and class, if ne
 sample = True
 pi = False
 if pi:
-import camera
+    import camera
 
 def extra_processing(pipeline):
     """
