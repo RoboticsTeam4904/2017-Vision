@@ -21,9 +21,9 @@ class GripPipeline:
         self.cv_dilate_output = None
 
         self.__hsv_threshold_input = self.cv_dilate_output
-        self.__hsv_threshold_hue = [55.03597122302161, 86.7911714770798]
-        self.__hsv_threshold_saturation = [105.48561151079136, 220.36502546689306]
-        self.__hsv_threshold_value = [208.67805755395685, 255.0]
+        self.__hsv_threshold_hue = [58.27338129496405, 91.37521222410864]
+        self.__hsv_threshold_saturation = [64.20863309352518, 255.0]
+        self.__hsv_threshold_value = [229.42451123846686, 255.0]
 
         self.hsv_threshold_output = None
 
@@ -33,11 +33,11 @@ class GripPipeline:
         self.find_contours_output = None
 
         self.__filter_contours_contours = self.find_contours_output
-        self.__filter_contours_min_area = 200.0
+        self.__filter_contours_min_area = 300.0
         self.__filter_contours_min_perimeter = 0.0
-        self.__filter_contours_min_width = 0.0
+        self.__filter_contours_min_width = 20.0
         self.__filter_contours_max_width = 1000.0
-        self.__filter_contours_min_height = 0.0
+        self.__filter_contours_min_height = 60.0
         self.__filter_contours_max_height = 1000.0
         self.__filter_contours_solidity = [0, 100]
         self.__filter_contours_max_vertices = 1000000.0
@@ -47,7 +47,7 @@ class GripPipeline:
 
         self.filter_contours_output = None
 
-    def calibrate(hsv_threshold_hue=[55.03597122302161, 86.7911714770798], hsv_threshold_saturation=[105.48561151079136, 220.36502546689306], hsv_threshold_value=[208.67805755395685, 255.0]):
+    def calibrate(hsv_threshold_hue=[], hsv_threshold_saturation=[], hsv_threshold_value=[]):
         self.__hsv_threshold_hue = hsv_threshold_hue
         self.__hsv_threshold_saturation = hsv_threshold_saturation
         self.__hsv_threshold_value = hsv_threshold_value
@@ -116,7 +116,7 @@ class GripPipeline:
         else:
             mode = cv2.RETR_LIST
         method = cv2.CHAIN_APPROX_SIMPLE
-        im1, contours, hierarchy = cv2.findContours(input, mode=mode, method=method)
+        contours, hierarchy = cv2.findContours(input, mode=mode, method=method)
         return contours
 
     @staticmethod

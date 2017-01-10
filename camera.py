@@ -28,7 +28,7 @@ def getImage():
 
 		# clear the stream in preparation for the next frame
 		rawCapture.truncate(0)
-	return image
+		return image
 
 # cnt = 1
 # def getImage(webcam=False, useLatestImage=False, useStoredImage=False): # pi camera is default

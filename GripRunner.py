@@ -38,7 +38,7 @@ def findCenter(contours):
 				second_largest_contour = contours[i]
 				second_largest_area = temp_area
 				if second_largest_area > largest_area:
-					largest_contour, second_largest_countor = largest_contour, second_largest_contour
+					largest_contour, second_largest_contour = largest_contour, second_largest_contour
 					largest_area, second_largest_area = second_largest_area, largest_area
 		total_contour = np.concatenate((largest_contour, second_largest_contour))
 		x, y, w, h = cv2.boundingRect(total_contour)
@@ -63,6 +63,7 @@ def findCenter(contours):
 			cv2.destroyAllWindows()
 		return (x-w/2,y+h/2)
 	else:
+		print "rip"
 		return (0,0)
 
 
@@ -71,18 +72,21 @@ def extra_processing(pipeline):
 	Performs extra processing on the pipeline's outputs and publishes data to NetworkTables.
 	:param pipeline: the pipeline that just processed an image
 	:return: None
+
 	"""
+    if debug: print "before targets"
 	targets = pipeline.filter_contours_output
+	if debug: print "before center"
 	center = findCenter(targets)
-	print center
 	#######################
 	# NetworkTables stuff #
 	#######################
 
 	sd = NetworkTables.getTable("SmartDashboard")
 	try:
+		pass
 		# print('valueFromSmartDashboard:', sd.getNumber('valueFromSmartDashboard'))
-		pipeline.calibrate(hsv_threshold_hue=sd.getNumber('hsv_threshold_hue'), hsv_threshold_saturation=sd.getNumber('hsv_threshold_value'), hsv_threshold_value=sd.getNumber('hsv_threshold_value'))
+		# pipeline.calibrate(hsv_threshold_hue=sd.getNumber('hsv_threshold_hue'), hsv_threshold_saturation=sd.getNumber('hsv_threshold_value'), hsv_threshold_value=sd.getNumber('hsv_threshold_value'))
 	except KeyError:
 		# print('valueFromSmartDashboard: N/A')
 		pass
@@ -104,13 +108,18 @@ def main():
 	pipeline = GripPipeline()
 	if pi:
 		while True:
+			if debug: print "Getting image..."
 			image = camera.getImage()
+			if debug: print "Got image. Analyzing image (pipeline process)..."
 			pipeline.process(image)  # TODO add extra parameters if the pipeline takes more than just a single image
+			if debug: print "Image processed. Analyzing contours and publishing"
 			extra_processing(pipeline)
 	else:
 		image = cv2.imread("GearTest.png")
-		pipeline.process(image)  # TODO add extra parameters if the pipeline takes more than just a single image
-		extra_processing(pipeline)
+		if debug: print "Got image. Analyzing image (pipeline process)..."
+        pipeline.process(image)  # TODO add extra parameters if the pipeline takes more than just a single image
+		if debug: print "Image processed. Analyzing contours and publishing"
+        extra_processing(pipeline)
 
 
 
