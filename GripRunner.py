@@ -63,7 +63,6 @@ def findCenter(contours):
 			cv2.destroyAllWindows()
 		return (x-w/2,y+h/2)
 	else:
-		print "rip"
 		return (0,0)
 
 
@@ -74,14 +73,19 @@ def extra_processing(pipeline):
 	:return: None
 
 	"""
+<<<<<<< HEAD
     if debug: print "before targets"
 	targets = pipeline.filter_contours_output
 	if debug: print "before center"
 	center = findCenter(targets)
+=======
+	targets = pipeline.filter_contours_output
+	center = findCenter(targets)
+	print center
+>>>>>>> c79a5b4813c346b7910d64f28e7c72d0edf39046
 	#######################
 	# NetworkTables stuff #
 	#######################
-
 	sd = NetworkTables.getTable("SmartDashboard")
 	try:
 		pass
@@ -103,8 +107,10 @@ def extra_processing(pipeline):
 def main():
 	if debug:
 		global image
-	# NetworkTable.setTeam('4904')
+	NetworkTable.setTeam('4904')
 	# NetworkTable.initialize()
+    ip = "10.1.128.47"
+	NetworkTables.initialize(server=ip)
 	pipeline = GripPipeline()
 	if pi:
 		while True:
