@@ -116,7 +116,11 @@ class GripPipeline:
         else:
             mode = cv2.RETR_LIST
         method = cv2.CHAIN_APPROX_SIMPLE
-        contours, hierarchy = cv2.findContours(input, mode=mode, method=method)
+
+        if pi:
+            contours, hierarchy = cv2.findContours(input, mode=mode, method=method)
+        else:
+            im1, contours, hierarchy = cv2.findContours(input, mode=mode, method=method)
         return contours
 
     @staticmethod
