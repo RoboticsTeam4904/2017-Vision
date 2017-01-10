@@ -82,7 +82,7 @@ def main():
     pipeline = GripPipeline()
     # cap = cv2.VideoCapture(0)
     if sample:
-        image = cv2.imread("TapeTest.jpg")
+        image = cv2.imread("GearTest.png")
         pipeline.process(image)  # TODO add extra parameters if the pipeline takes more than just a single image
         extra_processing(pipeline)
 
