@@ -81,8 +81,6 @@ def extra_processing(pipeline):
 	#######################
 	# NetworkTables stuff #
 	#######################
-	ip = "10.1.128.47"
-	NetworkTables.initialize(server=ip)
 	sd = NetworkTables.getTable("SmartDashboard")
 	try:
 		pass
@@ -105,6 +103,8 @@ def main():
 	# NetworkTable.setTeam('4904')
 	# NetworkTable.initialize()
 	pipeline = GripPipeline()
+	ip = "10.1.128.47"
+	NetworkTables.initialize(server=ip)
 	# cap = cv2.VideoCapture(0)
 	if sample:
 		image = cv2.imread("GearTest.png")
