@@ -68,7 +68,7 @@ def extra_processing(pipeline):
 
     sd.putNumber('centerX', centerX)
     sd.putNumber('centerY', centerY)
-    
+
     # ---------------------
 
     # TODO: Users need to implement this.
