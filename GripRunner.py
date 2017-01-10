@@ -13,7 +13,7 @@ from grip import GripPipeline  # TODO change the default module and class, if ne
 from networktables import NetworkTables
 
 sample = False
-pi = True
+pi = False
 if pi:
 	import camera
 
@@ -98,7 +98,7 @@ def extra_processing(pipeline):
 def main():
 	# NetworkTable.setTeam('4904')
 	# NetworkTable.initialize()
-	pipeline = GripPipeline()
+	pipeline = GripPipeline(pi)
 	ip = "10.1.128.47"
 	NetworkTables.initialize(server=ip)
 	# cap = cv2.VideoCapture(0)
