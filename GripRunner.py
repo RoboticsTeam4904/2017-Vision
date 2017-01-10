@@ -66,8 +66,8 @@ def extra_processing(pipeline):
     except KeyError:
         # print('valueFromSmartDashboard: N/A')
 
-    sd.putNumber('centerX', centerX)
-    sd.putNumber('centerY', centerY)
+    sd.putNumber('centerX', center[0])
+    sd.putNumber('centerY', center[0])
     
     # ---------------------
 
