@@ -12,13 +12,17 @@ import numpy as np
 from grip import GripPipeline  # TODO change the default module and class, if needed
 from networktables import NetworkTables
 
-sample = True
 pi = False
+debug = True
 if pi:
 	import camera
 
+if debug:
+	if pi
+
 def findCenter(contours):
 	numContours = len(contours)
+	if debug: print "Number of contours: {}".format(numContours)
 	if numContours > 1:
 		# Find 2 largest contours.
 		largest_contour = contours[0]
@@ -36,23 +40,27 @@ def findCenter(contours):
 				if second_largest_area > largest_area:
 					largest_contour, second_largest_countor = largest_contour, second_largest_contour
 					largest_area, second_largest_area = second_largest_area, largest_area
-		totalContour = np.concatenate((largest_contour, second_largest_contour))
-		x, y, w, h = cv2.boundingRect(totalContour)
-		print (x, y, w, h)
-		img = cv2.imread("GearTest.png")
-		cv2.rectangle(img, (x, y), (x+w,y+h), (255,0,0))
-		cv2.rectangle(img, (x, y), (x+5,y+5), (255,255,0))
-		cv2.imshow("sdf", img)
-		cv2.waitKey(0)
-		cv2.destroyAllWindows()
+		total_contour = np.concatenate((largest_contour, second_largest_contour))
+		x, y, w, h = cv2.boundingRect(total_contour)
+		if debug:
+			print "Found Center:", (x, y, w, h)
+			cv2.drawContours(image, contours, -1, (70,70,0), 3)
+			cv2.drawContours(image, [largest_contour], -1, (0,255,0), 3)
+			cv2.drawContours(image, [second_largest_contour], -1, (0,0,255), 3)
+			cv2.drawContours(image, [total_contour], -1, (255,0,0), 3)
+			cv2.imshow("Contours Found", image)
+			cv2.waitKey(0)
+			cv2.destroyAllWindows()
 		return (x-w/2,y+h/2)
 	elif numContours == 1:
-		x, y, w, h = cv2.boundingRect(contour)
-		img = cv2.imread("GearTest.png")
-		cv2.rectangle(img, (x, y), (x+w,y+h), (255,0,0))
-		cv2.rectangle(img, (x, y), (x+5,y+5), (255,255,0))
-		cv2.imshow("sdf", img)
-		print (x, y, w, h)
+		x, y, w, h = cv2.boundingRect(contours[0])
+		if debug:
+			print "Found Center:", (x, y, w, h)
+			print "1 contour found (no bueno)"
+			cv2.drawContours(image, contours, -1, (70,70,0), 3)
+			cv2.imshow("Contours Found", image)
+			cv2.waitKey(0)
+			cv2.destroyAllWindows()
 		return (x-w/2,y+h/2)
 	else:
 		return (0,0)
@@ -89,20 +97,22 @@ def extra_processing(pipeline):
 
 
 def main():
+	if debug:
+		global image
 	# NetworkTable.setTeam('4904')
 	# NetworkTable.initialize()
 	pipeline = GripPipeline()
-	# cap = cv2.VideoCapture(0)
-	if sample:
-		image = cv2.imread("GearTest.png")
-		pipeline.process(image)  # TODO add extra parameters if the pipeline takes more than just a single image
-		extra_processing(pipeline)
-
 	if pi:
 		while True:
 			image = camera.getImage()
 			pipeline.process(image)  # TODO add extra parameters if the pipeline takes more than just a single image
 			extra_processing(pipeline)
+	else:
+		image = cv2.imread("GearTest.png")
+		pipeline.process(image)  # TODO add extra parameters if the pipeline takes more than just a single image
+		extra_processing(pipeline)
+
+
 
 
 if __name__ == '__main__':
