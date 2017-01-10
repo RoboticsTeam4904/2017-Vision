@@ -34,26 +34,32 @@ def findCenter(contours):
 				second_largest_contour = contours[i]
 				second_largest_area = temp_area
 				if second_largest_area > largest_area:
-					largest_contour, second_largest_countor = largest_contour, second_largest_contour
+					largest_contour, second_largest_contour = largest_contour, second_largest_contour
 					largest_area, second_largest_area = second_largest_area, largest_area
 		totalContour = np.concatenate((largest_contour, second_largest_contour))
 		x, y, w, h = cv2.boundingRect(totalContour)
-		print (x, y, w, h)
+		x1, y1, w1, h1 = cv2.boundingRect(largest_contour)
+		x2, y2, w2, h2 = cv2.boundingRect(second_largest_contour)
 		img = cv2.imread("GearTest.png")
-		cv2.rectangle(img, (x, y), (x+w,y+h), (255,0,0))
-		cv2.rectangle(img, (x, y), (x+5,y+5), (255,255,0))
-		cv2.imshow("sdf", img)
-		cv2.waitKey(0)
-		cv2.destroyAllWindows()
-		return (x-w/2,y+h/2)
+
+		# Show the rectangles:
+		# cv2.rectangle(img, (x, y), (x+w,y+h), (255,0,0))
+		# cv2.rectangle(img, (x, y), (x+5,y+5), (255,255,0))
+		# cv2.rectangle(img, (x1, y1), (x1+w1,y1+h1), (2,2,255))
+		# cv2.rectangle(img, (x2, y2), (x2+w1,y2+h2), (255,2,255))
+
+		# cv2.imshow("sdf", img)
+		# cv2.waitKey(0)
+		# cv2.destroyAllWindows()
+
+		return (x+w/2,y+h/2)
 	elif numContours == 1:
 		x, y, w, h = cv2.boundingRect(contour)
-		img = cv2.imread("GearTest.png")
-		cv2.rectangle(img, (x, y), (x+w,y+h), (255,0,0))
-		cv2.rectangle(img, (x, y), (x+5,y+5), (255,255,0))
-		cv2.imshow("sdf", img)
-		print (x, y, w, h)
-		return (x-w/2,y+h/2)
+		# img = cv2.imread("GearTest.png")
+		# cv2.rectangle(img, (x, y), (x+w,y+h), (255,0,0))
+		# cv2.rectangle(img, (x, y), (x+5,y+5), (255,255,0))
+		# cv2.imshow("sdf", img)
+		return (x+w/2,y+h/2)
 	else:
 		return (0,0)
 
@@ -73,8 +79,9 @@ def extra_processing(pipeline):
 
 	sd = NetworkTables.getTable("SmartDashboard")
 	try:
+		pass
 		# print('valueFromSmartDashboard:', sd.getNumber('valueFromSmartDashboard'))
-		pipeline.calibrate(hsv_threshold_hue=sd.getNumber('hsv_threshold_hue'), hsv_threshold_saturation=sd.getNumber('hsv_threshold_value'), hsv_threshold_value=sd.getNumber('hsv_threshold_value'))
+		# pipeline.calibrate(hsv_threshold_hue=sd.getNumber('hsv_threshold_hue'), hsv_threshold_saturation=sd.getNumber('hsv_threshold_value'), hsv_threshold_value=sd.getNumber('hsv_threshold_value'))
 	except KeyError:
 		# print('valueFromSmartDashboard: N/A')
 		pass
