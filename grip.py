@@ -47,6 +47,10 @@ class GripPipeline:
 
         self.filter_contours_output = None
 
+    def calibrate(hsv_threshold_hue=[55.03597122302161, 86.7911714770798], hsv_threshold_saturation=[105.48561151079136, 220.36502546689306], hsv_threshold_value=[208.67805755395685, 255.0]):
+        self.__hsv_threshold_hue = hsv_threshold_hue
+        self.__hsv_threshold_saturation = hsv_threshold_saturation
+        self.__hsv_threshold_value = hsv_threshold_value
 
     def process(self, source0):
         """

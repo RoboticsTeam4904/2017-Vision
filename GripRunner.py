@@ -9,7 +9,7 @@ Users need to:
 import cv2
 # from networktables import NetworkTable
 from grip import GripPipeline  # TODO change the default module and class, if needed
-
+from networktables import NetworkTables
 
 sample = True
 pi = False
@@ -28,6 +28,22 @@ def extra_processing(pipeline):
     #     x,y,w,h = cv2.boundingRect(contour)
     #     out.append((x,y))
     print targets
+
+    #######################
+    # NetworkTables stuff #
+    #######################
+
+    sd = NetworkTables.getTable("SmartDashboard")
+    try:
+        # print('valueFromSmartDashboard:', sd.getNumber('valueFromSmartDashboard'))
+        pipeline.calibrate(hsv_threshold_hue=sd.getNumber('hsv_threshold_hue'), hsv_threshold_saturation=sd.getNumber('hsv_threshold_value'), hsv_threshold_saturation=sd.getNumber('hsv_threshold_value'))
+    except KeyError:
+        # print('valueFromSmartDashboard: N/A')
+
+    sd.putNumber('centerX', centerX)
+    sd.putNumber('centerY', centerY)
+    
+    # ---------------------
 
     # TODO: Users need to implement this.
     # Useful for converting OpenCV objects (e.g. contours) to something NetworkTables can understand.
