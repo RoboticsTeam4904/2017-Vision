@@ -12,8 +12,8 @@ import numpy as np
 from grip import GripPipeline  # TODO change the default module and class, if needed
 from networktables import NetworkTables
 
-sample = True
-pi = False
+sample = False
+pi = True
 if pi:
 	import camera
 
@@ -54,13 +54,14 @@ def findCenter(contours):
 
 		return (x+w/2,y+h/2)
 	elif numContours == 1:
-		x, y, w, h = cv2.boundingRect(contour)
+		x, y, w, h = cv2.boundingRect(contours[0])
 		# img = cv2.imread("GearTest.png")
 		# cv2.rectangle(img, (x, y), (x+w,y+h), (255,0,0))
 		# cv2.rectangle(img, (x, y), (x+5,y+5), (255,255,0))
 		# cv2.imshow("sdf", img)
 		return (x+w/2,y+h/2)
 	else:
+		print "rip"
 		return (0,0)
 
 
@@ -69,9 +70,13 @@ def extra_processing(pipeline):
 	Performs extra processing on the pipeline's outputs and publishes data to NetworkTables.
 	:param pipeline: the pipeline that just processed an image
 	:return: None
+	
 	"""
+	print "before targets"
 	targets = pipeline.filter_contours_output
+	print "before center"
 	center = findCenter(targets)
+	print "5"
 	print center
 	#######################
 	# NetworkTables stuff #
@@ -107,8 +112,11 @@ def main():
 
 	if pi:
 		while True:
+			print "before image"
 			image = camera.getImage()
+			print "before pipeline process"
 			pipeline.process(image)  # TODO add extra parameters if the pipeline takes more than just a single image
+			print "before extra processing"
 			extra_processing(pipeline)
 
 
