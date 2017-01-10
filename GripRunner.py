@@ -7,49 +7,103 @@ Users need to:
 """
 
 import cv2
+import numpy as np
 # from networktables import NetworkTable
 from grip import GripPipeline  # TODO change the default module and class, if needed
-
+from networktables import NetworkTables
 
 sample = True
 pi = False
 if pi:
-    import camera
+	import camera
+
+def findCenter(contours):
+	numContours = len(contours)
+	if numContours > 1:
+		# Find 2 largest contours.
+		largest_contour = contours[0]
+		second_largest_contour = contours[1]
+		largest_area = cv2.contourArea(contours[0], False)
+		second_largest_area = cv2.contourArea(contours[1], False)
+		if second_largest_area > largest_area:
+			largest_contour, second_largest_contour = largest_contour, second_largest_contour
+			largest_area, second_largest_area = second_largest_area, largest_area
+		for i in range(2, numContours):
+			temp_area = cv2.contourArea(contours[i], False)
+			if (temp_area > second_largest_area):
+				second_largest_contour = contours[i]
+				second_largest_area = temp_area
+				if second_largest_area > largest_area:
+					largest_contour, second_largest_countor = largest_contour, second_largest_contour
+					largest_area, second_largest_area = second_largest_area, largest_area
+		totalContour = np.concatenate((largest_contour, second_largest_contour))
+		x, y, w, h = cv2.boundingRect(totalContour)
+		print (x, y, w, h)
+		img = cv2.imread("GearTest.png")
+		cv2.rectangle(img, (x, y), (x+w,y+h), (255,0,0))
+		cv2.rectangle(img, (x, y), (x+5,y+5), (255,255,0))
+		cv2.imshow("sdf", img)
+		cv2.waitKey(0)
+		cv2.destroyAllWindows()
+		return (x-w/2,y+h/2)
+	elif numContours == 1:
+		x, y, w, h = cv2.boundingRect(contour)
+		img = cv2.imread("GearTest.png")
+		cv2.rectangle(img, (x, y), (x+w,y+h), (255,0,0))
+		cv2.rectangle(img, (x, y), (x+5,y+5), (255,255,0))
+		cv2.imshow("sdf", img)
+		print (x, y, w, h)
+		return (x-w/2,y+h/2)
+	else:
+		return (0,0)
+
 
 def extra_processing(pipeline):
-    """
-    Performs extra processing on the pipeline's outputs and publishes data to NetworkTables.
-    :param pipeline: the pipeline that just processed an image
-    :return: None
-    """
-    targets = pipeline.out
-    # self.out = []
-    # for contour in self.filter_contours_output:
-    #     x,y,w,h = cv2.boundingRect(contour)
-    #     out.append((x,y))
-    print targets
+	"""
+	Performs extra processing on the pipeline's outputs and publishes data to NetworkTables.
+	:param pipeline: the pipeline that just processed an image
+	:return: None
+	"""
+	targets = pipeline.filter_contours_output
+	center = findCenter(targets)
+	print center
+	#######################
+	# NetworkTables stuff #
+	#######################
 
-    # TODO: Users need to implement this.
-    # Useful for converting OpenCV objects (e.g. contours) to something NetworkTables can understand.
-    pass
+	sd = NetworkTables.getTable("SmartDashboard")
+	try:
+		# print('valueFromSmartDashboard:', sd.getNumber('valueFromSmartDashboard'))
+		pipeline.calibrate(hsv_threshold_hue=sd.getNumber('hsv_threshold_hue'), hsv_threshold_saturation=sd.getNumber('hsv_threshold_value'), hsv_threshold_value=sd.getNumber('hsv_threshold_value'))
+	except KeyError:
+		# print('valueFromSmartDashboard: N/A')
+		pass
+
+	sd.putNumber('centerX', center[0])
+	sd.putNumber('centerY', center[1])
+
+
+	# TODO: Users need to implement this.
+	# Useful for converting OpenCV objects (e.g. contours) to something NetworkTables can understand.
+	pass
 
 
 def main():
-    # NetworkTable.setTeam('4904')
-    # NetworkTable.initialize()
-    pipeline = GripPipeline()
-    # cap = cv2.VideoCapture(0)
-    if sample:
-        image = cv2.imread("TapeTest.jpg")
-        pipeline.process(image)  # TODO add extra parameters if the pipeline takes more than just a single image
-        extra_processing(pipeline)
-        
-    if pi:
-        while True:
-            image = camera.getImage()
-            pipeline.process(image)  # TODO add extra parameters if the pipeline takes more than just a single image
-            extra_processing(pipeline)
+	# NetworkTable.setTeam('4904')
+	# NetworkTable.initialize()
+	pipeline = GripPipeline()
+	# cap = cv2.VideoCapture(0)
+	if sample:
+		image = cv2.imread("GearTest.png")
+		pipeline.process(image)  # TODO add extra parameters if the pipeline takes more than just a single image
+		extra_processing(pipeline)
+
+	if pi:
+		while True:
+			image = camera.getImage()
+			pipeline.process(image)  # TODO add extra parameters if the pipeline takes more than just a single image
+			extra_processing(pipeline)
 
 
 if __name__ == '__main__':
-    main()
+	main()
