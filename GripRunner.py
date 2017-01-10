@@ -77,7 +77,8 @@ def extra_processing(pipeline):
 	#######################
 	# NetworkTables stuff #
 	#######################
-
+	ip = "10.1.128.47"
+	NetworkTables.initialize(server=ip)
 	sd = NetworkTables.getTable("SmartDashboard")
 	try:
 		pass
