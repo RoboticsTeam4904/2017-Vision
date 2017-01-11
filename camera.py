@@ -11,12 +11,12 @@ rawCapture = PiRGBArray(camera, size=camera.resolution)
 camera.exposure_mode = 'sports'
 
 # constants
-camera.nativeResolution = (2592, 1944)
-camera.nativeAngle = (math.radians(53.5), math.radians(41.41))
-camera.mountAngle = (0, math.radians(45))
-camera.distToShooter = (13.25, 2.5)
-camera.goalHeight = 8 * 12
-camera.height = 296 / 25.4 #to inches
+# camera.nativeResolution = (2592, 1944)
+# camera.nativeAngle = (math.radians(53.5), math.radians(41.41))
+# camera.mountAngle = (0, math.radians(45))
+# camera.distToShooter = (13.25, 2.5)
+# camera.goalHeight = 8 * 12
+# camera.height = 296 / 25.4 #to inches
 
 def getImage():
 	# for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
