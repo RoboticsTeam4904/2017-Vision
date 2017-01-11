@@ -23,9 +23,9 @@ if pi:
 if webcam:
 	camera = cv2.VideoCapture(0)
 
-def distContour(objHeight):
-	contourDist = 210/127 * objHeight #how close contours should be as function of height in pixels
-	return contourDist
+def expectedWidth(objHeight):
+	width = 260/127 * objHeight #how close contours should be as function of height in pixels
+	return width
 
 def findCenter(contours):
 	numContours = len(contours)
@@ -49,8 +49,8 @@ def findCenter(contours):
 					largest_contour, second_largest_contour = largest_contour, second_largest_contour
 					largest_area, second_largest_area = second_largest_area, largest_area
 		total_contour = np.concatenate((largest_contour, second_largest_contour))
-		x, y, w, h = cv2.boundingRect(total_contour)
-		contourDist(h) # Should sort contours by size. If contour dist is within margin of error, return x,y. Else, try other contours
+		x, y, w, h = cv2.boundingRect(total_contour) # Works best when camera is horizontal relative to target
+		expectedWidth(h) # Should sort contours by size. If contourDist is within margin of error, return x,y. Else, try other contours
 		if debug:
 			print "Found Center:", (x, y, w, h)
 			cv2.drawContours(image, contours, -1, (70,70,0), 3)
@@ -153,7 +153,7 @@ def main():
 			if retval:
 				processing(frame)
 
-	else:
+	else: #sample image
 		image = cv2.imread("GearTest.png")
 		processing(frame)
 
