@@ -50,7 +50,7 @@ def findCenter(contours):
 					largest_area, second_largest_area = second_largest_area, largest_area
 		total_contour = np.concatenate((largest_contour, second_largest_contour))
 		x, y, w, h = cv2.boundingRect(total_contour)
-		contourDist(h)
+		contourDist(h) # Should sort contours by size. If contour dist is within margin of error, return x,y. Else, try other contours
 		if debug:
 			print "Found Center:", (x, y, w, h)
 			cv2.drawContours(image, contours, -1, (70,70,0), 3)
@@ -156,6 +156,9 @@ def main():
 	else:
 		image = cv2.imread("GearTest.png")
 		processing(frame)
+
+
+
 
 if __name__ == '__main__':
 	main()
