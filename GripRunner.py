@@ -8,7 +8,6 @@ Users need to:
 
 import cv2
 import numpy as np
-# from networktables import NetworkTable
 from grip import GripPipeline  # TODO change the default module and class, if needed
 from networktables import NetworkTables
 
@@ -24,6 +23,8 @@ if webcam:
 	camera = cv2.VideoCapture(0)
 
 def expectedWidth(objHeight):
+	# Migrate to robust branch. Give score based on closeness to expected ratio
+	# 260/127 is the ratio for the joint boundingRect, but we should also score based on ratio of individual contours (well except for if the spike is in the way idk)
 	width = 260/127 * objHeight #how close contours should be as function of height in pixels
 	return width
 
@@ -50,7 +51,6 @@ def findCenter(contours):
 					largest_area, second_largest_area = second_largest_area, largest_area
 		total_contour = np.concatenate((largest_contour, second_largest_contour))
 		x, y, w, h = cv2.boundingRect(total_contour) # Works best when camera is horizontal relative to target
-		expectedWidth(h) # Should sort contours by size. If contourDist is within margin of error, return x,y. Else, try other contours
 		if debug:
 			print "Found Center:", (x, y, w, h)
 			cv2.drawContours(image, contours, -1, (70,70,0), 3)
@@ -60,7 +60,7 @@ def findCenter(contours):
 			cv2.imshow("Contours Found", image)
 			cv2.waitKey(0)
 			cv2.destroyAllWindows()
-			return (x-w/2,y+h/2)
+			return (x-w/2, y+h/2)
 	elif numContours == 1:
 		x, y, w, h = cv2.boundingRect(contours[0])
 		if debug:
@@ -70,8 +70,10 @@ def findCenter(contours):
 			cv2.imshow("Contours Found", image)
 			cv2.waitKey(0)
 			cv2.destroyAllWindows()
-			return (x-w/2,y+h/2)
+			return (x-w/2, y+h/2)
 	else:
+		if debug:
+			print "RIP. no contours."
 		return (0,0)
 
 
@@ -86,14 +88,14 @@ def processing(pipeline, image):
 		print "Got image. Analyzing image (pipeline process)..."
 	pipeline.process(image)  # TODO add extra parameters if the pipeline takes more than just a single image
 	if debug:
-		print "Image processed. Analyzing contours"
+		print "Image processed. Analyzing contours..."
 	targets = pipeline.filter_contours_output
 	center = findCenter(targets)
 	#######################
 	# NetworkTables stuff #
 	#######################
 	if debug:
-		print "Analyzed. Publishing to network tables."
+		print "Analyzed. Publishing to network tables..."
 	sd = NetworkTables.getTable("SmartDashboard")
 	try:
 		pass
@@ -108,10 +110,8 @@ def processing(pipeline, image):
 	sd.putNumber('centerX', center[0])
 	sd.putNumber('centerY', center[1])
 
-
-	# TODO: Users need to implement this.
-	# Useful for converting OpenCV objects (e.g. contours) to something NetworkTables can understand.
-	pass
+	if debug:
+		print "Published to network tables."
 
 
 def main():
