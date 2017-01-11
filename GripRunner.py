@@ -16,15 +16,17 @@ pi = False
 debug = True
 continuous = True
 if pi:
-	 if continuous:
-		  from camera import Camera
-	 else:
-		  import camera
+	if continuous:
+		from camera import camera
+	else:
+		import camera
+if webcam:
+	camera = cv2.VideoCapture(0)
 
 def findCenter(contours):
 	numContours = len(contours)
 	if debug:
-		  print "Number of contours: {}".format(numContours)
+		print "Number of contours: {}".format(numContours)
 	if numContours > 1:
 		# Find 2 largest contours.
 		largest_contour = contours[0]
@@ -53,7 +55,7 @@ def findCenter(contours):
 			cv2.imshow("Contours Found", image)
 			cv2.waitKey(0)
 			cv2.destroyAllWindows()
-		return (x-w/2,y+h/2)
+			return (x-w/2,y+h/2)
 	elif numContours == 1:
 		x, y, w, h = cv2.boundingRect(contours[0])
 		if debug:
@@ -63,32 +65,39 @@ def findCenter(contours):
 			cv2.imshow("Contours Found", image)
 			cv2.waitKey(0)
 			cv2.destroyAllWindows()
-		return (x-w/2,y+h/2)
+			return (x-w/2,y+h/2)
 	else:
 		return (0,0)
 
 
-def extra_processing(pipeline):
+def processing(pipeline, image):
 	"""
 	Performs extra processing on the pipeline's outputs and publishes data to NetworkTables.
 	:param pipeline: the pipeline that just processed an image
 	:return: None
 
 	"""
+	if debug:
+		print "Got image. Analyzing image (pipeline process)..."
+	pipeline.process(image)  # TODO add extra parameters if the pipeline takes more than just a single image
+	if debug:
+		print "Image processed. Analyzing contours"
 	targets = pipeline.filter_contours_output
 	center = findCenter(targets)
 	#######################
 	# NetworkTables stuff #
 	#######################
+	if debug:
+		print "Analyzed. Publishing to network tables."
 	sd = NetworkTables.getTable("SmartDashboard")
 	try:
 		pass
 		#
-		  print('valueFromSmartDashboard:', sd.getNumber('valueFromSmartDashboard'))
+		print('valueFromSmartDashboard:', sd.getNumber('valueFromSmartDashboard'))
 		# pipeline.calibrate(hsv_threshold_hue=sd.getNumber('hsv_threshold_hue'), hsv_threshold_saturation=sd.getNumber('hsv_threshold_value'), hsv_threshold_value=sd.getNumber('hsv_threshold_value'))
 	except KeyError:
 		#
-		  print('valueFromSmartDashboard: N/A')
+		print('valueFromSmartDashboard: N/A')
 		pass
 
 	sd.putNumber('centerX', center[0])
@@ -105,43 +114,43 @@ def main():
 		global image
 	NetworkTable.setTeam('4904')
 	# NetworkTable.initialize()
-	 ip = "10.1.128.47"
+	ip = "10.1.128.47"
 	NetworkTables.initialize(server=ip)
 	pipeline = GripPipeline()
 	if pi:
-		  if continuous:
-				rawCapture = PiRGBArray(camera, size=camera.resolution)
-				if debug:
-					 print "Getting image..."
-				for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
-					 rawCapture.truncate(0)
-					 image = frame.array
-	 			if debug:
-						  print "Got image. Analyzing image (pipeline process)..."
-	 			pipeline.process(image)  # TODO add extra parameters if the pipeline takes more than just a single image
-	 			if debug:
-						  print "Image processed. Analyzing contours and publishing"
-	 			extra_processing(pipeline)
-					 if debug:
-						  print "Getting image..."
-		  else:
-	 		if debug:
-					 print "Getting image..."
-	 		image = camera.getImage()
-	 		if debug:
-					 print "Got image. Analyzing image (pipeline process)..."
-			pipeline.process(image)  # TODO add extra parameters if the pipeline takes more than just a single image
+		if continuous:
+			rawCapture = PiRGBArray(camera, size=camera.resolution)
 			if debug:
-					 print "Image processed. Analyzing contours and publishing"
-			extra_processing(pipeline)
+				print "Getting image..."
+			for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
+				rawCapture.truncate(0)
+				image = frame.array
+				processing(image)
+				if debug:
+					print "Getting image..."
+		else:
+			if debug:
+				print "Getting image..."
+				image = camera.getImage()
+				processing(image)  # TODO add extra parameters if the pipeline takes more than just a single image
+	elif webcam:
+		if continuous:
+			while True:
+				if debug:
+					print "Getting image..."
+				retval, frame = camera.read()
+				if retval:
+					processing(frame)
+		else:
+			if debug:
+				print "Getting image..."
+			retval, frame = camera.read()
+			if retval:
+				processing(frame)
+
 	else:
 		image = cv2.imread("GearTest.png")
-		if debug:
-				print "Got image. Analyzing image (pipeline process)..."
-		  pipeline.process(image)  # TODO add extra parameters if the pipeline takes more than just a single image
-		if debug:
-				print "Image processed. Analyzing contours and publishing"
-		  extra_processing(pipeline)
+		processing(frame)
 
 
 
