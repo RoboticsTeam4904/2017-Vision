@@ -113,6 +113,7 @@ def processing(pipeline, image):
 
 	sd.putNumber('centerX', center[0])
 	sd.putNumber('centerY', center[1])
+	
 
 	if debug:
 		print "Published to network tables."
