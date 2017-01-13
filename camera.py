@@ -8,7 +8,7 @@ camera.resolution = (640, 480)
 camera.framerate = 5
 rawCapture = PiRGBArray(camera, size=camera.resolution)
 #camera.start_preview()
-camera.exposure_mode = 'sports'
+camera.exposure_mode = 'snow'
 
 # constants
 # camera.nativeResolution = (2592, 1944)

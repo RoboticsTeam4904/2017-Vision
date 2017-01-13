@@ -13,8 +13,8 @@ from networktables import NetworkTables
 
 
 
-pi = False
-debug = True
+pi = True
+debug = False
 continuous = True
 webcam = False
 if pi:
@@ -111,9 +111,10 @@ def processing(pipeline, image):
 		print('valueFromSmartDashboard: N/A')
 		pass
 
+	print center
 	sd.putNumber('centerX', center[0])
 	sd.putNumber('centerY', center[1])
-	
+
 
 	if debug:
 		print "Published to network tables."
@@ -124,9 +125,10 @@ def main():
 		global image
 	NetworkTables.setTeam(4904)
 	# NetworkTables.initialize()
-	ip = "10.1.128.47"
+	#ip = "10.1.128.47"
+    ip = "10.49.4.2"
 	NetworkTables.initialize(server=ip)
-	pipeline = GripPipeline(pi=pi)
+	pipeline = GripPipeline(Pi=pi)
 	if pi:
 		if continuous:
 			rawCapture = PiRGBArray(camera, size=camera.resolution)
