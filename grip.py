@@ -21,9 +21,9 @@ class GripPipeline:
         self.cv_dilate_output = None
 
         self.__hsv_threshold_input = self.cv_dilate_output
-        self.__hsv_threshold_hue = [58.27338129496405, 91.37521222410864]
-        self.__hsv_threshold_saturation = [64.20863309352518, 255.0]
-        self.__hsv_threshold_value = [229.42451123846686, 255.0]
+        self.__hsv_threshold_hue = [74.57627118644068, 101.80851063829789]
+        self.__hsv_threshold_saturation = [0.0, 110.77127659574468]
+        self.__hsv_threshold_value = [220.90395480225988, 255.0]
 
         self.hsv_threshold_output = None
 
