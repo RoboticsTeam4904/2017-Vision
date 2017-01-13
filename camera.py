@@ -20,7 +20,7 @@ camera.exposure_mode = 'sports'
 
 def getImage():
 	# for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
-	frame = camera.capture(rawCapture, format="bgr", use_video_port=True):
+	frame = camera.capture(rawCapture, format="bgr", use_video_port=True)
 
 	# clear the stream in preparation for the next frame
 	rawCapture.truncate(0)

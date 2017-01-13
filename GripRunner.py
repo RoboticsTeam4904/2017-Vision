@@ -11,12 +11,16 @@ import numpy as np
 from grip import GripPipeline  # TODO change the default module and class, if needed
 from networktables import NetworkTables
 
+
+
 pi = False
 debug = True
 continuous = True
+webcam = False
 if pi:
 	if continuous:
 		from camera import camera
+		from picamera.array import PiRGBArray
 	else:
 		import camera
 if webcam:
@@ -60,7 +64,7 @@ def findCenter(contours):
 			cv2.imshow("Contours Found", image)
 			cv2.waitKey(0)
 			cv2.destroyAllWindows()
-			return (x-w/2, y+h/2)
+		return (x-w/2, y+h/2)
 	elif numContours == 1:
 		x, y, w, h = cv2.boundingRect(contours[0])
 		if debug:
@@ -70,7 +74,7 @@ def findCenter(contours):
 			cv2.imshow("Contours Found", image)
 			cv2.waitKey(0)
 			cv2.destroyAllWindows()
-			return (x-w/2, y+h/2)
+		return (x-w/2, y+h/2)
 	else:
 		if debug:
 			print "RIP. no contours."
@@ -117,11 +121,11 @@ def processing(pipeline, image):
 def main():
 	if debug:
 		global image
-	NetworkTable.setTeam('4904')
-	# NetworkTable.initialize()
+	NetworkTables.setTeam(4904)
+	# NetworkTables.initialize()
 	ip = "10.1.128.47"
 	NetworkTables.initialize(server=ip)
-	pipeline = GripPipeline()
+	pipeline = GripPipeline(pi=pi)
 	if pi:
 		if continuous:
 			rawCapture = PiRGBArray(camera, size=camera.resolution)
@@ -130,33 +134,32 @@ def main():
 			for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
 				rawCapture.truncate(0)
 				image = frame.array
-				processing(image)
+				processing(pipeline, image)
 				if debug:
 					print "Getting image..."
 		else:
 			if debug:
 				print "Getting image..."
 				image = camera.getImage()
-				processing(image)  # TODO add extra parameters if the pipeline takes more than just a single image
+				processing(pipeline, image)  # TODO add extra parameters if the pipeline takes more than just a single image
 	elif webcam:
 		if continuous:
 			while True:
 				if debug:
 					print "Getting image..."
-				retval, frame = camera.read()
+				retval, image = camera.read()
 				if retval:
-					processing(frame)
+					processing(pipeline, image)
 		else:
 			if debug:
 				print "Getting image..."
 			retval, frame = camera.read()
 			if retval:
-				processing(frame)
+				processing(pipeline, image)
 
 	else: #sample image
 		image = cv2.imread("GearTest.png")
-		processing(frame)
-
+		processing(pipeline, image)
 
 
 
