@@ -12,10 +12,16 @@ from grip import GripPipeline  # TODO change the default module and class, if ne
 from networktables import NetworkTables
 
 pi = True
+webcam = False
+
 debug = False
 continuous = True
-webcam = False
 edited = False
+adjustCoords = False
+
+resolution = (640, 360)
+if adjustCoords:
+	halfWidth = resolution[0]/2
 
 if not edited:
 	import EditGeneratedGrip
@@ -26,11 +32,23 @@ if pi:
 	if continuous:
 		from camera import camera
 		from picamera.array import PiRGBArray
+		camera.resolution = resolution
 	else:
 		import camera
+		camera.camera.resolution = resolution
 
 if webcam:
 	camera = cv2.VideoCapture(0)
+	camera.set(3, resolution[0])
+	camera.set(4, resolution[1])
+	# camera.set(15, 0.1) # exposure
+
+	# camera.set(5, 30) # FPS
+	# camera.set(10, 0.1) # brightness
+	# camera.set(11, 0.1) # contrast
+	# camera.set(12, 0.1) # saturation
+	# camera.set(14, 0.1) # gain
+	# These may not work for all cameras
 
 def findCenter(contours):
 	numContours = len(contours)
@@ -111,6 +129,8 @@ def processing(pipeline, image):
 		pass
 
 	print center
+	if adjustCoords:
+		sd.putNumber('centerX', center[0] - halfWidth)
 	sd.putNumber('centerX', center[0])
 	sd.putNumber('centerY', center[1])
 	if debug:
