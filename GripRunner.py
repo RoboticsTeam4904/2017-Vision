@@ -11,14 +11,12 @@ import numpy as np
 from grip import GripPipeline  # TODO change the default module and class, if needed
 from networktables import NetworkTables
 
-
-
-
 pi = True
 debug = False
 continuous = True
 webcam = False
 edited = False
+
 if not edited:
 	import EditGeneratedGrip
 	EditGeneratedGrip.editCode('grip.py')
@@ -82,7 +80,6 @@ def findCenter(contours):
 			print "RIP. no contours."
 		return (0,0)
 
-
 def processing(pipeline, image):
 	"""
 	Performs extra processing on the pipeline's outputs and publishes data to NetworkTables.
@@ -95,7 +92,7 @@ def processing(pipeline, image):
 	pipeline.process(image)  # TODO add extra parameters if the pipeline takes more than just a single image
 	if debug:
 		print "Image processed. Analyzing contours..."
-	targets = pipeline.filter_contours_output
+	targets = pipeline.filter_contours_output # To be edited if the last filter is changed in case of algorithmic changes.
 	center = findCenter(targets)
 	#######################
 	# NetworkTables stuff #
@@ -116,20 +113,18 @@ def processing(pipeline, image):
 	print center
 	sd.putNumber('centerX', center[0])
 	sd.putNumber('centerY', center[1])
-
-
 	if debug:
 		print "Published to network tables."
-
 
 def main():
 	if debug:
 		global image
 	NetworkTables.setTeam(4904)
 	#ip = "10.1.128.47"
-    ip = "10.49.4.2"
+	ip = "10.49.4.2"
 	NetworkTables.initialize(server=ip)
-	pipeline = GripPipeline(Pi=pi)
+	pipeline = GripPipeline()
+
 	if pi:
 		if continuous:
 			rawCapture = PiRGBArray(camera, size=camera.resolution)
@@ -146,6 +141,7 @@ def main():
 				print "Getting image..."
 				image = camera.getImage()
 				processing(pipeline, image)  # TODO add extra parameters if the pipeline takes more than just a single image
+
 	elif webcam:
 		if continuous:
 			while True:
@@ -164,8 +160,6 @@ def main():
 	else: #sample image
 		image = cv2.imread("GearTest.png")
 		processing(pipeline, image)
-
-
 
 if __name__ == '__main__':
 	main()
