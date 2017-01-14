@@ -13,24 +13,26 @@ from networktables import NetworkTables
 
 
 
+
 pi = True
 debug = False
 continuous = True
 webcam = False
+edited = False
+if not edited:
+	import EditGeneratedGrip
+	EditGeneratedGrip.editCode('grip.py')
+	edited = True
+
 if pi:
 	if continuous:
 		from camera import camera
 		from picamera.array import PiRGBArray
 	else:
 		import camera
+
 if webcam:
 	camera = cv2.VideoCapture(0)
-
-def expectedWidth(objHeight):
-	# Migrate to robust branch. Give score based on closeness to expected ratio
-	# 260/127 is the ratio for the joint boundingRect, but we should also score based on ratio of individual contours (well except for if the spike is in the way idk)
-	width = 260/127 * objHeight #how close contours should be as function of height in pixels
-	return width
 
 def findCenter(contours):
 	numContours = len(contours)
@@ -104,15 +106,8 @@ def processing(pipeline, image):
 	try:
 		pass
 		#
-		hsvSaturation = sd.getNumber('hsvSaturation')
-		hsvHue = sd.getNumber('hsvHue')
-		hsvValue = sd.getNumber('hsvValue')
-		
-		print hsvSaturation
-		print hsvHue
-		print hsvValue
-
-		pipeline.calibrate(hsv_threshold_hue=hsvHue, hsv_threshold_saturation=hsvSaturation, hsv_threshold_value=hsvValue)
+		print('valueFromSmartDashboard:', sd.getNumber('valueFromSmartDashboard'))
+		# pipeline.calibrate(hsv_threshold_hue=sd.getNumber('hsv_threshold_hue'), hsv_threshold_saturation=sd.getNumber('hsv_threshold_value'), hsv_threshold_value=sd.getNumber('hsv_threshold_value'))
 	except KeyError:
 		#
 		print('valueFromSmartDashboard: N/A')
@@ -131,7 +126,6 @@ def main():
 	if debug:
 		global image
 	NetworkTables.setTeam(4904)
-	# NetworkTables.initialize()
 	#ip = "10.1.128.47"
     ip = "10.49.4.2"
 	NetworkTables.initialize(server=ip)
