@@ -82,7 +82,7 @@ def findCenter(contours):
 			cv2.imshow("Contours Found", image)
 			cv2.waitKey(0)
 			cv2.destroyAllWindows()
-		return (x-w/2, y+h/2)
+		return (x+w/2, y+h/2)
 	elif numContours == 1:
 		x, y, w, h = cv2.boundingRect(contours[0])
 		if debug:
@@ -92,7 +92,7 @@ def findCenter(contours):
 			cv2.imshow("Contours Found", image)
 			cv2.waitKey(0)
 			cv2.destroyAllWindows()
-		return (x-w/2, y+h/2)
+		return (x+w/2, y+h/2)
 	else:
 		if debug:
 			print "RIP. no contours."
