@@ -21,10 +21,10 @@ class GripPipeline:
 
         self.cv_dilate_output = None
 
-        self.__hsv_threshold_input = self.cv_dilate_output
-        self.__hsv_threshold_hue = [60.57627118644068, 150.80851063829789]
-        self.__hsv_threshold_saturation = [0.0, 254.77127659574468]
-        self.__hsv_threshold_value = [212.90395480225988, 255.0]
+        
+        self.__hsv_threshold_hue = [48.40873064260456, 106.99400354007877]
+        self.__hsv_threshold_saturation = [0.0, 255.0]
+        self.__hsv_threshold_value = [112.39101938787954, 255.0]
 
         self.hsv_threshold_output = None
 
@@ -34,17 +34,17 @@ class GripPipeline:
         self.find_contours_output = None
 
         self.__filter_contours_contours = self.find_contours_output
-        self.__filter_contours_min_area = 300.0
-        self.__filter_contours_min_perimeter = 0.0
-        self.__filter_contours_min_width = 20.0
-        self.__filter_contours_max_width = 1000.0
-        self.__filter_contours_min_height = 60.0
-        self.__filter_contours_max_height = 1000.0
-        self.__filter_contours_solidity = [0, 100]
-        self.__filter_contours_max_vertices = 1000000.0
-        self.__filter_contours_min_vertices = 0.0
-        self.__filter_contours_min_ratio = 0.0
-        self.__filter_contours_max_ratio = 1000.0
+        self.__filter_contours_min_area = 500.0
+        self.__filter_contours_min_perimeter = 0
+        self.__filter_contours_min_width = 0
+        self.__filter_contours_max_width = 1000
+        self.__filter_contours_min_height = 0
+        self.__filter_contours_max_height = 1000
+        self.__filter_contours_solidity = [44.25612052730697, 100.0]
+        self.__filter_contours_max_vertices = 1000000
+        self.__filter_contours_min_vertices = 0
+        self.__filter_contours_min_ratio = 0
+        self.__filter_contours_max_ratio = 1000
 
         self.filter_contours_output = None
 
