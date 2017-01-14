@@ -4,11 +4,12 @@ from picamera.array import PiRGBArray
 from picamera import PiCamera
 
 camera = PiCamera()
-camera.resolution = (640, 480)
-camera.framerate = 5
+camera.shutter_speed = 5
+camera.resolution = (640, 360)
+camera.framerate = 30
 rawCapture = PiRGBArray(camera, size=camera.resolution)
 #camera.start_preview()
-camera.exposure_mode = 'snow'
+camera.exposure_mode = 'auto'
 
 # constants
 # camera.nativeResolution = (2592, 1944)

@@ -104,8 +104,15 @@ def processing(pipeline, image):
 	try:
 		pass
 		#
-		print('valueFromSmartDashboard:', sd.getNumber('valueFromSmartDashboard'))
-		# pipeline.calibrate(hsv_threshold_hue=sd.getNumber('hsv_threshold_hue'), hsv_threshold_saturation=sd.getNumber('hsv_threshold_value'), hsv_threshold_value=sd.getNumber('hsv_threshold_value'))
+		hsvSaturation = sd.getNumber('hsvSaturation')
+		hsvHue = sd.getNumber('hsvHue')
+		hsvValue = sd.getNumber('hsvValue')
+		
+		print hsvSaturation
+		print hsvHue
+		print hsvValue
+
+		pipeline.calibrate(hsv_threshold_hue=hsvHue, hsv_threshold_saturation=hsvSaturation, hsv_threshold_value=hsvValue)
 	except KeyError:
 		#
 		print('valueFromSmartDashboard: N/A')
