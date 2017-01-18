@@ -173,7 +173,7 @@ def main():
 		else:
 			if debug:
 				print "Getting image..."
-			retval, frame = camera.read()
+			retval, image = camera.read()
 			if retval:
 				processing(pipeline, image)
 
