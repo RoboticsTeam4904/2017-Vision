@@ -19,4 +19,4 @@ def editCode(doc):
     code = re.sub('import numpy\nimport math\nfrom enum import Enum', '#import numpy\n#import math\n#from enum import Enum', code)
     saveCode(doc, code)
 
-# editCode('grip.py')
+editCode('grip.py')

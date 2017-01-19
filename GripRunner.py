@@ -8,14 +8,15 @@ Users need to:
 
 import cv2
 import numpy as np
-from grip import GripPipeline  # TODO change the default module and class, if needed
+from grip import GripVisionPipeline  # TODO change the default module and class, if needed
 from networktables import NetworkTables
 
-pi = True
-webcam = False
+pi = False
+webcam = True
 
 debug = False
-continuous = True
+saveImage = True
+continuous = False
 edited = False
 adjustCoords = False
 
@@ -26,7 +27,6 @@ if adjustCoords:
 if not edited:
 	import EditGeneratedGrip
 	EditGeneratedGrip.editCode('grip.py')
-	edited = True
 
 if pi:
 	if continuous:
@@ -41,7 +41,7 @@ if webcam:
 	camera = cv2.VideoCapture(0)
 	camera.set(3, resolution[0])
 	camera.set(4, resolution[1])
-	# camera.set(15, 0.1) # exposure
+	camera.set(15, 0.1) # exposure
 
 	# camera.set(5, 30) # FPS
 	# camera.set(10, 0.1) # brightness
@@ -82,6 +82,12 @@ def findCenter(contours):
 			cv2.imshow("Contours Found", image)
 			cv2.waitKey(0)
 			cv2.destroyAllWindows()
+		if saveImage:
+			cv2.drawContours(image, contours, -1, (70,70,0), 3)
+                        cv2.drawContours(image, [largest_contour], -1, (0,255,0), 3)
+                        cv2.drawContours(image, [second_largest_contour], -1, (0,0,255), 3)
+                        cv2.drawContours(image, [total_contour], -1, (255,0,0), 3)
+                        cv2.imwrite("savedimage.jpg", image)
 		return (x+w/2, y+h/2)
 	elif numContours == 1:
 		x, y, w, h = cv2.boundingRect(contours[0])
@@ -92,10 +98,14 @@ def findCenter(contours):
 			cv2.imshow("Contours Found", image)
 			cv2.waitKey(0)
 			cv2.destroyAllWindows()
+		if saveImage:
+			cv2.imwrite("savedimage.jpg", image)
 		return (x+w/2, y+h/2)
 	else:
 		if debug:
 			print "RIP. no contours."
+		if saveImage:
+			cv2.imwrite("savedimage.jpg", image)
 		return (0,0)
 
 def processing(pipeline, image):
@@ -143,7 +153,7 @@ def main():
 	#ip = "10.1.128.47"
 	ip = "10.49.4.2"
 	NetworkTables.initialize(server=ip)
-	pipeline = GripPipeline()
+	pipeline = GripVisionPipeline()
 
 	if pi:
 		if continuous:
@@ -173,7 +183,7 @@ def main():
 		else:
 			if debug:
 				print "Getting image..."
-			retval, frame = camera.read()
+			retval, image = camera.read()
 			if retval:
 				processing(pipeline, image)
 
