@@ -73,26 +73,30 @@ def findCenter(contours):
 					largest_area, second_largest_area = second_largest_area, largest_area
 		total_contour = np.concatenate((largest_contour, second_largest_contour))
 		x, y, w, h = cv2.boundingRect(total_contour) # Works best when camera is horizontal relative to target
-		if debug:
-			print "Found Center:", (x, y, w, h)
+		center = (x+w/2, y+h/2)
+        if debug:
+			print "Found Center:", center
 			cv2.drawContours(image, contours, -1, (70,70,0), 3)
 			cv2.drawContours(image, [largest_contour], -1, (0,255,0), 3)
 			cv2.drawContours(image, [second_largest_contour], -1, (0,0,255), 3)
 			cv2.drawContours(image, [total_contour], -1, (255,0,0), 3)
+            cv2.circle(image, center, 4, (255, 255, 255))
 			cv2.imshow("Contours Found", image)
 			cv2.waitKey(0)
 			cv2.destroyAllWindows()
-		return (x+w/2, y+h/2)
+		return center
 	elif numContours == 1:
 		x, y, w, h = cv2.boundingRect(contours[0])
+        center = (x+w/2, y+h/2)
 		if debug:
-			print "Found Center:", (x, y, w, h)
+			print "Found Center:", center
 			print "1 contour found (no bueno)"
 			cv2.drawContours(image, contours, -1, (70,70,0), 3)
+            cv2.circle(image, center, 4, (255, 255, 255))
 			cv2.imshow("Contours Found", image)
 			cv2.waitKey(0)
 			cv2.destroyAllWindows()
-		return (x+w/2, y+h/2)
+		return center
 	else:
 		if debug:
 			print "RIP. no contours."
