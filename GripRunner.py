@@ -8,16 +8,16 @@ Users need to:
 
 import cv2
 import numpy as np
-from grip import GripPipeline  # TODO change the default module and class, if needed
 from networktables import NetworkTables
 
-pi = True
-webcam = False
+pi = False
+webcam = True
 
 debug = False
 continuous = True
 edited = False
 adjustCoords = False
+withOpenCV3 = True
 
 resolution = (640, 360)
 if adjustCoords:
@@ -25,30 +25,9 @@ if adjustCoords:
 
 if not edited:
 	import EditGeneratedGrip
-	EditGeneratedGrip.editCode('grip.py')
-	edited = True
+	EditGeneratedGrip.editCode('grip.py', withOpenCV3=withOpenCV3)
+from grip import GripVisionPipeline  # TODO change the default module and class, if needed
 
-if pi:
-	if continuous:
-		from camera import camera
-		from picamera.array import PiRGBArray
-		camera.resolution = resolution
-	else:
-		import camera
-		camera.camera.resolution = resolution
-
-if webcam:
-	camera = cv2.VideoCapture(0)
-	camera.set(3, resolution[0])
-	camera.set(4, resolution[1])
-	# camera.set(15, 0.1) # exposure
-
-	# camera.set(5, 30) # FPS
-	# camera.set(10, 0.1) # brightness
-	# camera.set(11, 0.1) # contrast
-	# camera.set(12, 0.1) # saturation
-	# camera.set(14, 0.1) # gain
-	# These may not work for all cameras
 
 def findCenter(contours):
 	numContours = len(contours)
@@ -74,25 +53,25 @@ def findCenter(contours):
 		total_contour = np.concatenate((largest_contour, second_largest_contour))
 		x, y, w, h = cv2.boundingRect(total_contour) # Works best when camera is horizontal relative to target
 		center = (x+w/2, y+h/2)
-        if debug:
+		if debug:
 			print "Found Center:", center
 			cv2.drawContours(image, contours, -1, (70,70,0), 3)
 			cv2.drawContours(image, [largest_contour], -1, (0,255,0), 3)
 			cv2.drawContours(image, [second_largest_contour], -1, (0,0,255), 3)
 			cv2.drawContours(image, [total_contour], -1, (255,0,0), 3)
-            cv2.circle(image, center, 4, (255, 255, 255))
+			cv2.circle(image, center, 4, (255, 255, 255))
 			cv2.imshow("Contours Found", image)
 			cv2.waitKey(0)
 			cv2.destroyAllWindows()
 		return center
 	elif numContours == 1:
 		x, y, w, h = cv2.boundingRect(contours[0])
-        center = (x+w/2, y+h/2)
+		center = (x+w/2, y+h/2)
 		if debug:
 			print "Found Center:", center
 			print "1 contour found (no bueno)"
 			cv2.drawContours(image, contours, -1, (70,70,0), 3)
-            cv2.circle(image, center, 4, (255, 255, 255))
+			cv2.circle(image, center, 4, (255, 255, 255))
 			cv2.imshow("Contours Found", image)
 			cv2.waitKey(0)
 			cv2.destroyAllWindows()
@@ -147,10 +126,13 @@ def main():
 	#ip = "10.1.128.47"
 	ip = "10.49.4.2"
 	NetworkTables.initialize(server=ip)
-	pipeline = GripPipeline()
+	pipeline = GripVisionPipeline()
 
 	if pi:
 		if continuous:
+			from camera import camera
+			from picamera.array import PiRGBArray
+			camera.resolution = resolution
 			rawCapture = PiRGBArray(camera, size=camera.resolution)
 			if debug:
 				print "Getting image..."
@@ -161,12 +143,18 @@ def main():
 				if debug:
 					print "Getting image..."
 		else:
+			import camera
+			camera.camera.resolution = resolution
 			if debug:
 				print "Getting image..."
-				image = camera.getImage()
-				processing(pipeline, image)  # TODO add extra parameters if the pipeline takes more than just a single image
+			image = camera.getImage()
+			processing(pipeline, image)  # TODO add extra parameters if the pipeline takes more than just a single image
 
 	elif webcam:
+		camera = cv2.VideoCapture(0)
+		camera.set(3, resolution[0])
+		camera.set(4, resolution[1])
+		# camera.set(15, 0.1) # exposure
 		if continuous:
 			while True:
 				if debug:
