@@ -34,3 +34,6 @@ def getImage():
 	# grab the raw NumPy array representing the image, then initialize the timestamp
 	# and occupied/unoccupied text
 	return frame.array
+
+def read():
+	return True, getImage()

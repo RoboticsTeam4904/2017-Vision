@@ -5,6 +5,10 @@ Users need to:
 2. Set the network table server IP. This is usually the robots address (roborio-TEAM-frc.local) or localhost
 3. Handle putting the generated code into NetworkTables
 """
+edited = False
+if not edited:
+	import EditGeneratedGrip
+	EditGeneratedGrip.editCode('grip.py')
 
 import cv2
 import numpy as np
@@ -17,38 +21,14 @@ webcam = True
 debug = False
 saveImage = True
 continuous = False
-edited = False
+calibrate = True
+
 adjustCoords = False
 
 resolution = (640, 360)
 if adjustCoords:
 	halfWidth = resolution[0]/2
 
-if not edited:
-	import EditGeneratedGrip
-	EditGeneratedGrip.editCode('grip.py')
-
-if pi:
-	if continuous:
-		from camera import camera
-		from picamera.array import PiRGBArray
-		camera.resolution = resolution
-	else:
-		import camera
-		camera.camera.resolution = resolution
-
-if webcam:
-	camera = cv2.VideoCapture(0)
-	camera.set(3, resolution[0])
-	camera.set(4, resolution[1])
-	camera.set(15, 0.1) # exposure
-
-	# camera.set(5, 30) # FPS
-	# camera.set(10, 0.1) # brightness
-	# camera.set(11, 0.1) # contrast
-	# camera.set(12, 0.1) # saturation
-	# camera.set(14, 0.1) # gain
-	# These may not work for all cameras
 
 def findCenter(contours):
 	numContours = len(contours)
@@ -75,7 +55,7 @@ def findCenter(contours):
 		x, y, w, h = cv2.boundingRect(total_contour) # Works best when camera is horizontal relative to target
 		if debug:
 			print "Found Center:", (x, y, w, h)
-			cv2.drawContours(image, contours, -1, (70,70,0), 3)
+			cv2.drawContours(image, contours, -1, (150,150,0), 3)
 			cv2.drawContours(image, [largest_contour], -1, (0,255,0), 3)
 			cv2.drawContours(image, [second_largest_contour], -1, (0,0,255), 3)
 			cv2.drawContours(image, [total_contour], -1, (255,0,0), 3)
@@ -83,22 +63,23 @@ def findCenter(contours):
 			cv2.waitKey(0)
 			cv2.destroyAllWindows()
 		if saveImage:
-			cv2.drawContours(image, contours, -1, (70,70,0), 3)
-                        cv2.drawContours(image, [largest_contour], -1, (0,255,0), 3)
-                        cv2.drawContours(image, [second_largest_contour], -1, (0,0,255), 3)
-                        cv2.drawContours(image, [total_contour], -1, (255,0,0), 3)
-                        cv2.imwrite("savedimage.jpg", image)
+			cv2.drawContours(image, contours, -1, (150,150,0), 3)
+			cv2.drawContours(image, [largest_contour], -1, (0,255,0), 3)
+			cv2.drawContours(image, [second_largest_contour], -1, (0,0,255), 3)
+			cv2.drawContours(image, [total_contour], -1, (255,0,0), 3)
+			cv2.imwrite("savedimage.jpg", image)
 		return (x+w/2, y+h/2)
 	elif numContours == 1:
 		x, y, w, h = cv2.boundingRect(contours[0])
 		if debug:
 			print "Found Center:", (x, y, w, h)
 			print "1 contour found (no bueno)"
-			cv2.drawContours(image, contours, -1, (70,70,0), 3)
+			cv2.drawContours(image, contours, -1, (150,150,0), 3)
 			cv2.imshow("Contours Found", image)
 			cv2.waitKey(0)
 			cv2.destroyAllWindows()
 		if saveImage:
+			cv2.drawContours(image, contours, -1, (150,150,0), 3)
 			cv2.imwrite("savedimage.jpg", image)
 		return (x+w/2, y+h/2)
 	else:
@@ -146,6 +127,36 @@ def processing(pipeline, image):
 	if debug:
 		print "Published to network tables."
 
+def setCam(camera, exposure=False, resolution=False, saturation=False, brightness=False, fps=False, contrast=False):
+	# if webcam:
+	if exposure:
+		camera.set(15, exposure)
+	if resolution:
+		camera.set(3, resolution[0])
+		camera.set(4, resolution[1])
+	if saturation:
+		camera.set(12, saturation)
+	if brightness:
+		camera.set(10, brightness)
+	if fps:
+		camera.set(5, fps)
+	if contrast:
+		camera.set(11, contrast)
+
+def autocalibrate(camera, pipeline):
+	print "Calibrating camera... (may not work)"
+	exposure, saturation = camera.get(15), 10 #check value range
+	numContours = 0
+	sqrtTwo = np.sqrt(2)
+	while numContours != 2:
+		camera.set(15, exposure)
+		retval, image = camera.read()
+		pipeline.process(image)
+		numContours = len(pipeline.filter_contours_output)
+		print numContours
+		exposure = np.multiply(exposure, np.true_divide(3, numContours+1)) #np.true_divide(sqrtTwo, np.sqrt(numContours)
+		# min and Max this, maybe make negative, depending on range
+
 def main():
 	if debug:
 		global image
@@ -157,6 +168,9 @@ def main():
 
 	if pi:
 		if continuous:
+			from camera import camera
+			from picamera.array import PiRGBArray
+			camera.resolution = resolution
 			rawCapture = PiRGBArray(camera, size=camera.resolution)
 			if debug:
 				print "Getting image..."
@@ -167,12 +181,22 @@ def main():
 				if debug:
 					print "Getting image..."
 		else:
+			import camera
+			camera.camera.resolution = resolution
 			if debug:
 				print "Getting image..."
-				image = camera.getImage()
-				processing(pipeline, image)  # TODO add extra parameters if the pipeline takes more than just a single image
+			image = camera.getImage()
+			processing(pipeline, image)  # TODO add extra parameters if the pipeline takes more than just a single image
 
 	elif webcam:
+		camera = cv2.VideoCapture(0)
+		camera.set(3, resolution[0])
+		camera.set(4, resolution[1])
+		# camera.set(15, 0.1) # exposure
+		if calibrate:
+			autocalibrate(camera, pipeline)
+		else:
+			camera.set(15, 0.1) # exposure
 		if continuous:
 			while True:
 				if debug:
