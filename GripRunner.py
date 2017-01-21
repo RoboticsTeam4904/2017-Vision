@@ -20,6 +20,8 @@ adjustCoords = False
 withOpenCV3 = True
 
 resolution = (640, 360)
+ip = "10.49.4.2"
+team = 4904
 if adjustCoords:
 	halfWidth = resolution[0]/2
 
@@ -154,17 +156,17 @@ def processing(pipeline, image):
 	if adjustCoords:
 		center[0] -= halfWidth
 	
-def publishToTables(center, calibrate=False):
+def initializeTables(center, calibrate=False):
 		
 	
-	NetworkTables.setTeam(4904)
-	ip = "10.49.4.2"
+	NetworkTables.setTeam(team)
 	NetworkTables.initialize(server=ip)
 	network = NetworkTables.getTable("SmartDashboard")
 
 	# if calibrate:
 		#pipeline.calibrate(hsv_threshold_hue=network.getNumber('hsv_threshold_hue'), hsv_threshold_saturation=network.getNumber('hsv_threshold_value'), hsv_threshold_value=network.getNumber('hsv_threshold_value'))
 
+def publishToTables(center, calibrate=False):
 	network.putNumber('centerX', center[0])
 	network.putNumber('centerY', center[1])
 
