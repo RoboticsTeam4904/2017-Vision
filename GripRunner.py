@@ -28,6 +28,56 @@ if not edited:
 	EditGeneratedGrip.editCode('grip.py', withOpenCV3=withOpenCV3)
 from grip import GripVisionPipeline  # TODO change the default module and class, if needed
 
+def main():
+	if debug:
+		global image
+	pipeline = GripVisionPipeline()
+
+	if pi:
+		if continuous:
+			from camera import camera
+			from picamera.array import PiRGBArray
+			camera.resolution = resolution
+			rawCapture = PiRGBArray(camera, size=camera.resolution)
+			if debug:
+				print "Getting image..."
+			for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
+				rawCapture.truncate(0)
+				image = frame.array
+				processing(pipeline, image)
+				if debug:
+					print "Getting image..."
+		else:
+			import camera
+			camera.camera.resolution = resolution
+			if debug:
+				print "Getting image..."
+			image = camera.getImage()
+			processing(pipeline, image)  # TODO add extra parameters if the pipeline takes more than just a single image
+
+	elif webcam:
+		camera = cv2.VideoCapture(0)
+		camera.set(3, resolution[0])
+		camera.set(4, resolution[1])
+		# camera.set(15, 0.1) # exposure
+		if continuous:
+			while True:
+				if debug:
+					print "Getting image..."
+				retval, image = camera.read()
+				if retval:
+					processing(pipeline, image)
+		else:
+			if debug:
+				print "Getting image..."
+			retval, image = camera.read()
+			if retval:
+				processing(pipeline, image)
+
+	else: #sample image
+		image = cv2.imread("GearTest.png")
+		processing(pipeline, image)
+
 
 def findCenter(contours):
 	numContours = len(contours)
@@ -100,78 +150,26 @@ def processing(pipeline, image):
 	#######################
 	if debug:
 		print "Analyzed. Publishing to network tables..."
-	sd = NetworkTables.getTable("SmartDashboard")
-	try:
-		pass
-		#
-		print('valueFromSmartDashboard:', sd.getNumber('valueFromSmartDashboard'))
-		# pipeline.calibrate(hsv_threshold_hue=sd.getNumber('hsv_threshold_hue'), hsv_threshold_saturation=sd.getNumber('hsv_threshold_value'), hsv_threshold_value=sd.getNumber('hsv_threshold_value'))
-	except KeyError:
-		#
-		print('valueFromSmartDashboard: N/A')
-		pass
 
-	print center
 	if adjustCoords:
-		sd.putNumber('centerX', center[0] - halfWidth)
-	sd.putNumber('centerX', center[0])
-	sd.putNumber('centerY', center[1])
-	if debug:
-		print "Published to network tables."
-
-def main():
-	if debug:
-		global image
+		center[0] -= halfWidth
+	
+def publishToTables(center, calibrate=False):
+		
+	
 	NetworkTables.setTeam(4904)
-	#ip = "10.1.128.47"
 	ip = "10.49.4.2"
 	NetworkTables.initialize(server=ip)
-	pipeline = GripVisionPipeline()
+	network = NetworkTables.getTable("SmartDashboard")
 
-	if pi:
-		if continuous:
-			from camera import camera
-			from picamera.array import PiRGBArray
-			camera.resolution = resolution
-			rawCapture = PiRGBArray(camera, size=camera.resolution)
-			if debug:
-				print "Getting image..."
-			for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
-				rawCapture.truncate(0)
-				image = frame.array
-				processing(pipeline, image)
-				if debug:
-					print "Getting image..."
-		else:
-			import camera
-			camera.camera.resolution = resolution
-			if debug:
-				print "Getting image..."
-			image = camera.getImage()
-			processing(pipeline, image)  # TODO add extra parameters if the pipeline takes more than just a single image
+	# if calibrate:
+		#pipeline.calibrate(hsv_threshold_hue=network.getNumber('hsv_threshold_hue'), hsv_threshold_saturation=network.getNumber('hsv_threshold_value'), hsv_threshold_value=network.getNumber('hsv_threshold_value'))
 
-	elif webcam:
-		camera = cv2.VideoCapture(0)
-		camera.set(3, resolution[0])
-		camera.set(4, resolution[1])
-		# camera.set(15, 0.1) # exposure
-		if continuous:
-			while True:
-				if debug:
-					print "Getting image..."
-				retval, image = camera.read()
-				if retval:
-					processing(pipeline, image)
-		else:
-			if debug:
-				print "Getting image..."
-			retval, image = camera.read()
-			if retval:
-				processing(pipeline, image)
+	network.putNumber('centerX', center[0])
+	network.putNumber('centerY', center[1])
 
-	else: #sample image
-		image = cv2.imread("GearTest.png")
-		processing(pipeline, image)
+	if debug:
+		print "Published to network tables."
 
 if __name__ == '__main__':
 	main()
