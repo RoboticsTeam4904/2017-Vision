@@ -11,7 +11,7 @@ import numpy as np
 from networktables import NetworkTables
 
 pi = False
-webcam = True
+webcam = False
 
 debug = False
 continuous = True
@@ -75,7 +75,7 @@ def main():
 				processing(pipeline, image)
 
 	else: #sample image
-		image = cv2.imread("GearTest.png")
+		image = cv2.imread("TestImages/GearTest.png")
 		processing(pipeline, image)
 
 
