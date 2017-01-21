@@ -170,7 +170,7 @@ def main():
 				processing(pipeline, image)
 
 	else: #sample image
-		image = cv2.imread("GearTest.png")
+		image = cv2.imread("TestImages/GearTest.png")
 		processing(pipeline, image)
 
 if __name__ == '__main__':
