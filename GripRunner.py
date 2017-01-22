@@ -8,6 +8,10 @@ Users need to:
 
 import cv2
 import numpy as np
+from ContourFinding import filterContours
+from SpikeFinding import findCenter
+from NetworkTabling import publishToTables, initializeTables
+from Cameraing import getImage, initializeCamera
 
 pi = False
 webcam = False
@@ -33,7 +37,7 @@ if not pi and not webcam:
 
 def main():
 	pipeline = initializeGrip(gripDoc)
-	camera = initializeCamera() # import and set exposure and resolution (or more)
+	camera = initializeCamera(debug, pi, webcam) # import and set exposure and resolution (or more)
 	try:
 		network = initializeTables()
 	except:
@@ -50,9 +54,9 @@ def main():
 	# 	runVision(camera, network, pipeline)
 
 def runVision(camera, network, pipeline):
-	image = getImage(camera)
+	image = getImage(camera, debug, webcam, pi, sampleImage)
 	pipeline.process(image)
-	targets = filterContours(pipeline.filter_contours_output) # To be edited if the last filter is changed in case of algorithmic changes. 
+	targets = filterContours(pipeline.filter_contours_output, debug) # To be edited if the last filter is changed in case of algorithmic changes. 
 	center = findCenter(targets) #if 2, join and find center, if 1, return val, if 0 return input. if adjustCoords:	center[0] -= halfWidth
 	if debug:
 		print center
@@ -63,42 +67,10 @@ def runVision(camera, network, pipeline):
 		cv2.waitKey(0)
 		cv2.destroyAllWindows()
 	try:
-		publishToTables(network, center)
+		publishToTables(debug, network, center)
 	except:
 		if debug:
 			print "could not publish"
-
-def initializeCamera():
-	if pi:
-		import camera
-		camera.camera.resolution = resolution
-		return camera
-
-	elif webcam:
-		camera = cv2.VideoCapture(0)
-		camera.set(3, resolution[0])
-		camera.set(4, resolution[1])
-		# camera.set(15, 0.1) # exposure
-		return camera
-
-	else:
-		return None
-
-def getImage(camera):
-	# retval, image = camera.read()
-	if debug:
-		print "Getting image..."
-
-	if pi:
-		return camera.getImage()
-
-	elif webcam:
-		retval, image = camera.read()
-		return image
-
-	else: #sample image
-		return cv2.imread(sampleImage)
-
 
 def initializeGrip(doc):
 	if not edited:
@@ -107,36 +79,7 @@ def initializeGrip(doc):
 	from grip import GripVisionPipeline  # TODO change the default module and class, if needed
 	return GripVisionPipeline()
 
-
-def findCenter(contours):
-	if len(contours) == 0:
-		return False
-	contour = np.concatenate(contours)
-	x,y,w,h = cv2.boundingRect(contour)
-	return (x + w/2, y + h/2)
-
-def filterContours(contours):
-	numContours = len(contours)
-	if debug:
-		print "Number of contours: {}".format(numContours)
-	if numContours > 1:
-		# Find 2 largest contours.
-		largest_contour, second_largest_contour, largest_area, second_largest_area = None, None, 0, 0
-		for i in range(numContours):
-			temp_area = cv2.contourArea(contours[i], False)
-			if temp_area > second_largest_area:
-				if temp_area > largest_area:
-					largest_contour, second_largest_contour = contours[i], largest_contour
-					largest_area, second_largest_area = temp_area, largest_area
-				else:
-					second_largest_contour = contours[i]
-					second_largest_area = temp_area
-		return largest_contour, second_largest_contour
-	else:
-		return contours
-	
-
-		# total_contour = np.concatenate((largest_contour, second_largest_contour))
+	# total_contour = np.concatenate((largest_contour, second_largest_contour))
 		# x, y, w, h = cv2.boundingRect(total_contour) # Works best when camera is horizontal relative to target
 
 		# center = (x+w/2, y+h/2)
@@ -175,34 +118,6 @@ def filterContours(contours):
 
 	
 	
-def initializeTables(center, calibrate=False):
-	from networktables import NetworkTables
-	NetworkTables.setTeam(team)
-	NetworkTables.initialize(server=ip)
-
-	# if calibrate:
-		#pipeline.calibrate(hsv_threshold_hue=network.getNumber('hsv_threshold_hue'), hsv_threshold_saturation=network.getNumber('hsv_threshold_value'), hsv_threshold_value=network.getNumber('hsv_threshold_value'))
-
-	return NetworkTables.getTable("SmartDashboard")
-
-def publishToTables(network, center, frameNum=0, distance=0):
-	isVisibile = False
-	if center:
-		isVisible = True
-		if adjustCoords:
-			center[0] = center[0] - halfWidth
-	else:
-		isVisible = False
-		center = (0,0)
-	sd.putNumber('centerX', center[0])
-	sd.putNumber('centerY', center[1]) # Can be deleted
-	sd.putBool('isVisible', isVisible)
-	sd.putNumber('frameNum', frameNum)
-	sd.putNumber('distance', distance) # Feet away
-
-
-	if debug:
-		print "Published to network tables."
 
 if __name__ == '__main__':
 	main()
