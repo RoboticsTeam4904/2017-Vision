@@ -22,7 +22,6 @@ def publishToTables(center, frameNum=0, distance=0):
 	table.putNumber('frameNum', frameNum)
 	table.putNumber('distance', distance) # Feet away
 
-
 	# if debug:
 		# print "Published to network tables."
 

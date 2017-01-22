@@ -2,8 +2,6 @@ import cv2
 
 def filterContours(contours):
 	numContours = len(contours)
-	# if debug:
-	# 	print "Number of contours: {}".format(numContours)
 	if numContours > 1:
 		# Find 2 largest contours.
 		largest_contour, second_largest_contour, largest_area, second_largest_area = None, None, 0, 0
