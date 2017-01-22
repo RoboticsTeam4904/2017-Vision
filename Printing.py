@@ -7,15 +7,16 @@ defaultSize = (640,360)
 defaultShrinkX, defaultShrinkY = 0.3, 0.3
 defaultThickness = 5
 
-def printResults(contours, spikePostion, image):
+def printResults(image, contours, targets, center):
 	print "Started with {} contours".format(len(contours))
-	print "spike x position is {}".format(spikePostion[0])
-	print "spike y position is {}".format(spikePostion[1])
-	drawContours(image, pipeline.filter_contours_output)
+	print "spike x position is {}".format(center[0])
+	print "spike y position is {}".format(center[1])
+	drawContours(image, contours)
 	drawContours(image, targets, color=2)
+	print center
 	drawCenter(image, center)
 	image = resize(image)
-	drawImage.display(image)
+	display(image)
 
 def resize(image, size=defaultSize):
 	return cv2.resize(image, size)
