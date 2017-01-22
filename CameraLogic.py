@@ -1,12 +1,10 @@
 def initializeCamera(pi, webcam, resolution=(640,360)):
 	if pi:
-		from PiCamera import initializeCamera, getImage, setCamera
+		from PiCamera import getImage, setCamera
 
 	elif webcam:
 		global getImage
-		from WebCam import initializeCamera, getImage, setCamera
-
-	initializeCamera(resolution=resolution)
+		from WebCam import getImage, setCamera
 		
 
 def getSampleImage(sampleImage):

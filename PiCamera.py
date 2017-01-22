@@ -1,15 +1,14 @@
+from picamera.array import PiRGBArray
+from picamera import PiCamera
+camera = PiCamera()
+rawCapture = PiRGBArray(camera, size=camera.resolution)
+
 def getImage():
-	rawCapture = PiRGBArray(camera, size=camera.resolution)
 	frame = camera.capture(rawCapture, format="bgr", use_video_port=True)
+	rawCapture.truncate(0)
 	return frame.array
 
-def initializeCamera(resolution=(640,360), exposure="snow"):
-	from picamera.array import PiRGBArray
-	from picamera import PiCamera
-	camera = PiCamera()
-	setCamera(resolution=resolution, exposure=exposure)
-
-def setCamera(resolution=False, exposure=False)
+def setCamera(resolution=False, exposure=False) #e.g. 'snow'
 	if resolution:
 		camera.resolution = resolution
 	if exposure:

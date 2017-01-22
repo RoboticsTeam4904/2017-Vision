@@ -1,10 +1,5 @@
-def initializeGrip(doc, edited, withOpenCV3):
-	if not edited:
-		import EditGeneratedGrip
-		EditGeneratedGrip.editCode(doc, withOpenCV3=withOpenCV3)
-	from grip import GripVisionPipeline  # TODO change the default module and class, if needed
-	global pipeline
-	pipeline = GripVisionPipeline()
+from grip import GripPipeline  # TODO change the default module and class, if needed
+pipeline = GripPipeline()
 
 def run(image):
 	pipeline.process(image)
@@ -12,8 +7,8 @@ def run(image):
 
 def calibrate(hsv=False, area=False):
 	if hsv:
-		self.__hsv_threshold_hue = hsv[0]
-		self.__hsv_threshold_saturation = hsv[1]
-		self.__hsv_threshold_value = hsv[2]
+		pipeline.__hsv_threshold_hue = hsv[0]
+		pipeline.__hsv_threshold_saturation = hsv[1]
+		pipeline.__hsv_threshold_value = hsv[2]
 	if area:
-		self.__filter_contours_min_area = area
+		pipeline.__filter_contours_min_area = area
