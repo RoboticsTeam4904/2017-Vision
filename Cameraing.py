@@ -1,17 +1,13 @@
 import cv2
+from PiCamera import initializePiCamera, getPiImage
+from WebCam import initializeWebCamera, getWebCamImage
 
-def initializeCamera(debug, pi, webcam):
+def initializeCamera(debug, pi, webcam, resolution):
 	if pi:
-		import camera
-		camera.camera.resolution = resolution
-		return camera
+		return initializePiCamera(resolution)
 
 	elif webcam:
-		camera = cv2.VideoCapture(0)
-		camera.set(3, resolution[0])
-		camera.set(4, resolution[1])
-		# camera.set(15, 0.1) # exposure
-		return camera
+		return initializeWebCamera(resolution)
 
 	else:
 		return None
@@ -22,10 +18,10 @@ def getImage(camera, debug, webcam, pi, sampleImage):
 		print "Getting image..."
 
 	if pi:
+		return getPiImage(camera)
 
 	elif webcam:
-		retval, image = camera.read()
-		return image
+		return getWebCamImage(camera)
 
 	else: #sample image
 		return cv2.imread(sampleImage)
