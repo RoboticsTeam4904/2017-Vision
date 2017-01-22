@@ -12,6 +12,7 @@ from ContourFinding import filterContours
 from SpikeFinding import findCenter
 from NetworkTabling import publishToTables, initializeTables
 from Cameraing import getImage, initializeCamera
+from Printing import printResults
 
 pi = False
 webcam = False
@@ -59,13 +60,7 @@ def runVision(camera, network, pipeline):
 	targets = filterContours(pipeline.filter_contours_output, debug) # To be edited if the last filter is changed in case of algorithmic changes. 
 	center = findCenter(targets) #if 2, join and find center, if 1, return val, if 0 return input. if adjustCoords:	center[0] -= halfWidth
 	if debug:
-		print center
-		cv2.drawContours(image, pipeline.filter_contours_output, -1, (150,150,0), 10)
-		cv2.drawContours(image, targets, -1, (70,70,255), 10)
-		cv2.circle(image, center, 5, (255,255,255), 5)
-		cv2.imshow("Contours Found", image)
-		cv2.waitKey(0)
-		cv2.destroyAllWindows()
+		printResults(pipeline.filter_contours_output, center, image)
 	try:
 		publishToTables(debug, network, center)
 	except:
