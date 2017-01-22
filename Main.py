@@ -48,15 +48,10 @@ def main():
 	except:
 		network = None
 
-	while continuous:
+	while pi or webcam:
 		runVision(camera, network) #count frame nums if necessary
 	runVision(camera, network)
 
-	# if continuous:
-	# 	while True:
-	# 		runVision(camera, network, pipeline) #count frame nums if necessary
-	# else:
-	# 	runVision(camera, network, pipeline)
 
 def runVision(camera, network):
 
@@ -71,46 +66,6 @@ def runVision(camera, network):
 	except:
 		if debug:
 			print "could not publish"
-
-	# total_contour = np.concatenate((largest_contour, second_largest_contour))
-		# x, y, w, h = cv2.boundingRect(total_contour) # Works best when camera is horizontal relative to target
-
-		# center = (x+w/2, y+h/2)
-		# if debug:
-		# 	print "Found Center:", center
-		# 	cv2.drawContours(image, contours, -1, (70,70,0), 3)
-		# 	cv2.drawContours(image, [largest_contour], -1, (0,255,0), 3)
-		# 	cv2.drawContours(image, [second_largest_contour], -1, (0,0,255), 3)
-		# 	cv2.drawContours(image, [total_contour], -1, (255,0,0), 3)
-		# 	cv2.circle(image, center, 4, (255, 255, 255))
-		# 	cv2.imshow("Contours Found", image)
-		# 	cv2.waitKey(0)
-		# 	cv2.destroyAllWindows()
-		# return center
-	
-	# 	x, y, w, h = cv2.boundingRect(contours[0])
-	# 	center = (x+w/2, y+h/2)
-	# 	if debug:
-	# 		print "Found Center:", center
-	# 		print "1 contour found (no bueno)"
-	# 		cv2.drawContours(image, contours, -1, (70,70,0), 3)
-	# 		cv2.circle(image, center, 4, (255, 255, 255))
-	# 		cv2.imshow("Contours Found", image)
-	# 		cv2.waitKey(0)
-	# 		cv2.destroyAllWindows()
-	# 	return center
-	# else:
-	# 	if debug:
-	# 		print "RIP. no contours."
-	# 	return (0,0)
-
-	# if debug:
-	# 	print "Got image. Analyzing image (pipeline process)..."
-	# 	print "Image processed. Analyzing contours..."
-	# 	print "Analyzed. Publishing to network tables..."
-
-	
-	
 
 if __name__ == '__main__':
 	main()
