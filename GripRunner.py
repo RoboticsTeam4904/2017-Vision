@@ -8,182 +8,201 @@ Users need to:
 
 import cv2
 import numpy as np
-from grip import GripPipeline  # TODO change the default module and class, if needed
-from networktables import NetworkTables
 
-pi = True
+pi = False
 webcam = False
 
-debug = False
+debug = True
 continuous = True
 edited = False
-adjustCoords = False
+adjustCoords = True
+withOpenCV3 = True
 
 resolution = (640, 360)
+exposure = 1
+ip = "10.49.4.2"
+team = 4904
+gripDoc = "grip.py"
+sampleImage = "TestImages/GearTest.png"
+
 if adjustCoords:
 	halfWidth = resolution[0]/2
 
-if not edited:
-	import EditGeneratedGrip
-	EditGeneratedGrip.editCode('grip.py')
-	edited = True
+if not pi and not webcam:
+	continuous = False
 
-if pi:
-	if continuous:
-		from camera import camera
-		from picamera.array import PiRGBArray
-		camera.resolution = resolution
-	else:
+def main():
+	pipeline = initializeGrip(gripDoc)
+	camera = initializeCamera() # import and set exposure and resolution (or more)
+	try:
+		network = initializeTables()
+	except:
+		network = None
+
+	while continuous:
+		runVision(camera, network, pipeline) #count frame nums if necessary
+	runVision(camera, network, pipeline)
+
+	# if continuous:
+	# 	while True:
+	# 		runVision(camera, network, pipeline) #count frame nums if necessary
+	# else:
+	# 	runVision(camera, network, pipeline)
+
+def runVision(camera, network, pipeline):
+	image = getImage(camera)
+	pipeline.process(image)
+	targets = filterContours(pipeline.filter_contours_output) # To be edited if the last filter is changed in case of algorithmic changes. 
+	center = findCenter(targets) #if 2, join and find center, if 1, return val, if 0 return input. if adjustCoords:	center[0] -= halfWidth
+	if debug:
+		print center
+		cv2.drawContours(image, pipeline.filter_contours_output, -1, (150,150,0), 10)
+		cv2.drawContours(image, targets, -1, (70,70,255), 10)
+		cv2.circle(image, center, 5, (255,255,255), 5)
+		cv2.imshow("Contours Found", image)
+		cv2.waitKey(0)
+		cv2.destroyAllWindows()
+	try:
+		publishToTables(network, center)
+	except:
+		if debug:
+			print "could not publish"
+
+def initializeCamera():
+	if pi:
 		import camera
 		camera.camera.resolution = resolution
+		return camera
 
-if webcam:
-	camera = cv2.VideoCapture(0)
-	camera.set(3, resolution[0])
-	camera.set(4, resolution[1])
-	# camera.set(15, 0.1) # exposure
+	elif webcam:
+		camera = cv2.VideoCapture(0)
+		camera.set(3, resolution[0])
+		camera.set(4, resolution[1])
+		# camera.set(15, 0.1) # exposure
+		return camera
 
-	# camera.set(5, 30) # FPS
-	# camera.set(10, 0.1) # brightness
-	# camera.set(11, 0.1) # contrast
-	# camera.set(12, 0.1) # saturation
-	# camera.set(14, 0.1) # gain
-	# These may not work for all cameras
+	else:
+		return None
+
+def getImage(camera):
+	# retval, image = camera.read()
+	if debug:
+		print "Getting image..."
+
+	if pi:
+		return camera.getImage()
+
+	elif webcam:
+		retval, image = camera.read()
+		return image
+
+	else: #sample image
+		return cv2.imread(sampleImage)
+
+
+def initializeGrip(doc):
+	if not edited:
+		import EditGeneratedGrip
+		EditGeneratedGrip.editCode(doc, withOpenCV3=withOpenCV3)
+	from grip import GripVisionPipeline  # TODO change the default module and class, if needed
+	return GripVisionPipeline()
+
 
 def findCenter(contours):
+	if len(contours) == 0:
+		return False
+	contour = np.concatenate(contours)
+	x,y,w,h = cv2.boundingRect(contour)
+	return (x + w/2, y + h/2)
+
+def filterContours(contours):
 	numContours = len(contours)
 	if debug:
 		print "Number of contours: {}".format(numContours)
 	if numContours > 1:
 		# Find 2 largest contours.
-		largest_contour = contours[0]
-		second_largest_contour = contours[1]
-		largest_area = cv2.contourArea(contours[0], False)
-		second_largest_area = cv2.contourArea(contours[1], False)
-		if second_largest_area > largest_area:
-			largest_contour, second_largest_contour = largest_contour, second_largest_contour
-			largest_area, second_largest_area = second_largest_area, largest_area
-		for i in range(2, numContours):
+		largest_contour, second_largest_contour, largest_area, second_largest_area = None, None, 0, 0
+		for i in range(numContours):
 			temp_area = cv2.contourArea(contours[i], False)
-			if (temp_area > second_largest_area):
-				second_largest_contour = contours[i]
-				second_largest_area = temp_area
-				if second_largest_area > largest_area:
-					largest_contour, second_largest_contour = largest_contour, second_largest_contour
-					largest_area, second_largest_area = second_largest_area, largest_area
-		total_contour = np.concatenate((largest_contour, second_largest_contour))
-		x, y, w, h = cv2.boundingRect(total_contour) # Works best when camera is horizontal relative to target
-		center = (x+w/2, y+h/2)
-        if debug:
-			print "Found Center:", center
-			cv2.drawContours(image, contours, -1, (70,70,0), 3)
-			cv2.drawContours(image, [largest_contour], -1, (0,255,0), 3)
-			cv2.drawContours(image, [second_largest_contour], -1, (0,0,255), 3)
-			cv2.drawContours(image, [total_contour], -1, (255,0,0), 3)
-            cv2.circle(image, center, 4, (255, 255, 255))
-			cv2.imshow("Contours Found", image)
-			cv2.waitKey(0)
-			cv2.destroyAllWindows()
-		return center
-	elif numContours == 1:
-		x, y, w, h = cv2.boundingRect(contours[0])
-        center = (x+w/2, y+h/2)
-		if debug:
-			print "Found Center:", center
-			print "1 contour found (no bueno)"
-			cv2.drawContours(image, contours, -1, (70,70,0), 3)
-            cv2.circle(image, center, 4, (255, 255, 255))
-			cv2.imshow("Contours Found", image)
-			cv2.waitKey(0)
-			cv2.destroyAllWindows()
-		return center
+			if temp_area > second_largest_area:
+				if temp_area > largest_area:
+					largest_contour, second_largest_contour = contours[i], largest_contour
+					largest_area, second_largest_area = temp_area, largest_area
+				else:
+					second_largest_contour = contours[i]
+					second_largest_area = temp_area
+		return largest_contour, second_largest_contour
 	else:
-		if debug:
-			print "RIP. no contours."
-		return (0,0)
+		return contours
+	
 
-def processing(pipeline, image):
-	"""
-	Performs extra processing on the pipeline's outputs and publishes data to NetworkTables.
-	:param pipeline: the pipeline that just processed an image
-	:return: None
+		# total_contour = np.concatenate((largest_contour, second_largest_contour))
+		# x, y, w, h = cv2.boundingRect(total_contour) # Works best when camera is horizontal relative to target
 
-	"""
-	if debug:
-		print "Got image. Analyzing image (pipeline process)..."
-	pipeline.process(image)  # TODO add extra parameters if the pipeline takes more than just a single image
-	if debug:
-		print "Image processed. Analyzing contours..."
-	targets = pipeline.filter_contours_output # To be edited if the last filter is changed in case of algorithmic changes.
-	center = findCenter(targets)
-	#######################
-	# NetworkTables stuff #
-	#######################
-	if debug:
-		print "Analyzed. Publishing to network tables..."
-	sd = NetworkTables.getTable("SmartDashboard")
-	try:
-		pass
-		#
-		print('valueFromSmartDashboard:', sd.getNumber('valueFromSmartDashboard'))
-		# pipeline.calibrate(hsv_threshold_hue=sd.getNumber('hsv_threshold_hue'), hsv_threshold_saturation=sd.getNumber('hsv_threshold_value'), hsv_threshold_value=sd.getNumber('hsv_threshold_value'))
-	except KeyError:
-		#
-		print('valueFromSmartDashboard: N/A')
-		pass
+		# center = (x+w/2, y+h/2)
+		# if debug:
+		# 	print "Found Center:", center
+		# 	cv2.drawContours(image, contours, -1, (70,70,0), 3)
+		# 	cv2.drawContours(image, [largest_contour], -1, (0,255,0), 3)
+		# 	cv2.drawContours(image, [second_largest_contour], -1, (0,0,255), 3)
+		# 	cv2.drawContours(image, [total_contour], -1, (255,0,0), 3)
+		# 	cv2.circle(image, center, 4, (255, 255, 255))
+		# 	cv2.imshow("Contours Found", image)
+		# 	cv2.waitKey(0)
+		# 	cv2.destroyAllWindows()
+		# return center
+	
+	# 	x, y, w, h = cv2.boundingRect(contours[0])
+	# 	center = (x+w/2, y+h/2)
+	# 	if debug:
+	# 		print "Found Center:", center
+	# 		print "1 contour found (no bueno)"
+	# 		cv2.drawContours(image, contours, -1, (70,70,0), 3)
+	# 		cv2.circle(image, center, 4, (255, 255, 255))
+	# 		cv2.imshow("Contours Found", image)
+	# 		cv2.waitKey(0)
+	# 		cv2.destroyAllWindows()
+	# 	return center
+	# else:
+	# 	if debug:
+	# 		print "RIP. no contours."
+	# 	return (0,0)
 
-	print center
-	if adjustCoords:
-		sd.putNumber('centerX', center[0] - halfWidth)
+	# if debug:
+	# 	print "Got image. Analyzing image (pipeline process)..."
+	# 	print "Image processed. Analyzing contours..."
+	# 	print "Analyzed. Publishing to network tables..."
+
+	
+	
+def initializeTables(center, calibrate=False):
+	from networktables import NetworkTables
+	NetworkTables.setTeam(team)
+	NetworkTables.initialize(server=ip)
+
+	# if calibrate:
+		#pipeline.calibrate(hsv_threshold_hue=network.getNumber('hsv_threshold_hue'), hsv_threshold_saturation=network.getNumber('hsv_threshold_value'), hsv_threshold_value=network.getNumber('hsv_threshold_value'))
+
+	return NetworkTables.getTable("SmartDashboard")
+
+def publishToTables(network, center, frameNum=0, distance=0):
+	isVisibile = False
+	if center:
+		isVisible = True
+		if adjustCoords:
+			center[0] = center[0] - halfWidth
+	else:
+		isVisible = False
+		center = (0,0)
 	sd.putNumber('centerX', center[0])
-	sd.putNumber('centerY', center[1])
+	sd.putNumber('centerY', center[1]) # Can be deleted
+	sd.putBool('isVisible', isVisible)
+	sd.putNumber('frameNum', frameNum)
+	sd.putNumber('distance', distance) # Feet away
+
+
 	if debug:
 		print "Published to network tables."
-
-def main():
-	if debug:
-		global image
-	NetworkTables.setTeam(4904)
-	#ip = "10.1.128.47"
-	ip = "10.49.4.2"
-	NetworkTables.initialize(server=ip)
-	pipeline = GripPipeline()
-
-	if pi:
-		if continuous:
-			rawCapture = PiRGBArray(camera, size=camera.resolution)
-			if debug:
-				print "Getting image..."
-			for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
-				rawCapture.truncate(0)
-				image = frame.array
-				processing(pipeline, image)
-				if debug:
-					print "Getting image..."
-		else:
-			if debug:
-				print "Getting image..."
-				image = camera.getImage()
-				processing(pipeline, image)  # TODO add extra parameters if the pipeline takes more than just a single image
-
-	elif webcam:
-		if continuous:
-			while True:
-				if debug:
-					print "Getting image..."
-				retval, image = camera.read()
-				if retval:
-					processing(pipeline, image)
-		else:
-			if debug:
-				print "Getting image..."
-			retval, image = camera.read()
-			if retval:
-				processing(pipeline, image)
-
-	else: #sample image
-		image = cv2.imread("GearTest.png")
-		processing(pipeline, image)
 
 if __name__ == '__main__':
 	main()
