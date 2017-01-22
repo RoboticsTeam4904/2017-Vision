@@ -1,12 +1,9 @@
+import cv2
+camera = cv2.VideoCapture(0)
+
 def getImage():
 	retval, image = camera.read()
 	return image
-
-def initializeCamera(resolution=(640,360)):
-	import cv2
-	global camera
-	camera = cv2.VideoCapture(0)
-	setCamera(camera, resolution=resolution)
 
 def setCamera(camera, resolution=False, exposure=False):
 	if resolution:

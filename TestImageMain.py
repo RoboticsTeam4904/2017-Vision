@@ -27,10 +27,10 @@ def main():
 		network = None
 
 
-	runVision(camera, network)
+	runVision()
 
 
-def runVision(camera, network):
+def runVision():
 
 	image = CameraLogic.getTheImage(False, False, sampleImage)
 	contours = GripRunner.run(image)

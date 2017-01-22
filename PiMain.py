@@ -10,30 +10,26 @@ import cv2
 import numpy as np
 from ContourFinding import filterContours
 from SpikeFinding import findCenter
-from NetworkTabling import publishToTables, initializeTables
-import CameraLogic
-from Printing import printResults
+import PiCamera
 import GripRunner
-from config import *
+from config import debug
 
+try:
+	import NetworkTabling
+except:
+	if debug:
+		print "no networktables"
 
+if debug:
+	from Printing import printResults
 
 def main():
-	GripRunner.initializeGrip(gripDoc, edited, withOpenCV3)
-
-	camera = CameraLogic.initializeCamera(True, False, resolution) # import and set exposure and resolution (or more)
-
-	try:
-		network = initializeTables()
-	except:
-		network = None
-
 	while True:
-		runVision(camera, network) #count frame nums if necessary
-	runVision(camera, network)
+		runVision() #count frame nums if necessary
+	runVision()
 
 
-def runVision(camera, network):
+def runVision():
 
 	image = CameraLogic.getTheImage(True, False, sampleImage)
 	contours = GripRunner.run(image)
@@ -42,10 +38,9 @@ def runVision(camera, network):
 	if debug:
 		printResults(image, contours, targets, center)
 	try:
-		publishToTables(debug, center, halfWidth)
+		NetworkTabling.publishToTables(center)
 	except:
-		if debug:
-			print "could not publish"
+		pass
 
 if __name__ == '__main__':
 	main()
