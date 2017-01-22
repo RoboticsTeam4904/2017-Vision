@@ -12,7 +12,7 @@ from ContourFinding import filterContours
 from SpikeFinding import findCenter
 import WebCam
 import GripRunner
-from config import debug
+from config import debug, exposure, resolution
 
 try:
 	import NetworkTabling
@@ -24,6 +24,7 @@ if debug:
 	from Printing import printResults
 
 def main():
+	WebCam.set(exposure=exposure, resolution=resolution)
 	while True:
 		image = WebCam.getImage()
 		contours = GripRunner.run(image)

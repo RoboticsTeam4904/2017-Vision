@@ -5,7 +5,7 @@ def getImage():
 	retval, image = camera.read()
 	return image
 
-def setCamera(camera, resolution=False, exposure=False):
+def set(resolution=False, exposure=False):
 	if resolution:
 		camera.set(3, resolution[0])
 		camera.set(4, resolution[1])

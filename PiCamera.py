@@ -8,7 +8,7 @@ def getImage():
 	rawCapture.truncate(0)
 	return frame.array
 
-def setCamera(resolution=False, exposure=False): #e.g. 'snow'
+def set(resolution=False, exposure=False): #e.g. 'snow'
 	if resolution:
 		camera.resolution = resolution
 	if exposure:

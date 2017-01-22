@@ -1,7 +1,5 @@
 from networktables import NetworkTables
-
-team = 4904
-ip = "10.49.4.2"
+from config import team, ip, halfWidth
 
 NetworkTables.setTeam(team)
 NetworkTables.initialize(server=ip)
