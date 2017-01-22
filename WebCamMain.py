@@ -10,45 +10,31 @@ import cv2
 import numpy as np
 from ContourFinding import filterContours
 from SpikeFinding import findCenter
-from NetworkTabling import publishToTables, initializeTables
-import CameraLogic
-from Printing import printResults
+import WebCam
 import GripRunner
-from config import *
+from config import debug
 
+try:
+	import NetworkTabling
+except:
+	if debug:
+		print "no networktables"
 
-if adjustCoords:
-	halfWidth = resolution[0]/2
-
+if debug:
+	from Printing import printResults
 
 def main():
-	GripRunner.initializeGrip(gripDoc, edited, withOpenCV3)
-
-	camera = CameraLogic.initializeCamera(False, True, resolution) # import and set exposure and resolution (or more)
-
-	try:
-		network = initializeTables()
-	except:
-		network = None
-
 	while True:
-		runVision(camera, network) #count frame nums if necessary
-	runVision(camera, network)
-
-
-def runVision(camera, network):
-
-	image = CameraLogic.getTheImage(False, True, sampleImage)
-	contours = GripRunner.run(image)
-	targets = filterContours(contours, debug) # To be edited if the last filter is changed in case of algorithmic changes. 
-	center = findCenter(targets) #if 2, join and find center, if 1, return val, if 0 return input. if adjustCoords:	center[0] -= halfWidth
-	if debug:
-		printResults(image, contours, targets, center)
-	try:
-		publishToTables(debug, network, center)
-	except:
+		image = WebCam.getImage()
+		contours = GripRunner.run(image)
+		targets = filterContours(contours) # To be edited if the last filter is changed in case of algorithmic changes. 
+		center = findCenter(targets) #if 2, join and find center, if 1, return val, if 0 return input. if adjustCoords:	center[0] -= halfWidth
 		if debug:
-			print "could not publish"
+			printResults(image, contours, targets, center)
+		try:
+			NetworkTabling.publishToTables(center)
+		except:
+			pass
 
 if __name__ == '__main__':
 	main()
