@@ -42,7 +42,7 @@ def runVision(camera, network):
 	if debug:
 		printResults(image, contours, targets, center)
 	try:
-		publishToTables(debug, network, center)
+		publishToTables(debug, center, halfWidth)
 	except:
 		if debug:
 			print "could not publish"
