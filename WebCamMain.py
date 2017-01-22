@@ -17,10 +17,6 @@ import GripRunner
 from config import *
 
 
-if adjustCoords:
-	halfWidth = resolution[0]/2
-
-
 def main():
 	GripRunner.initializeGrip(gripDoc, edited, withOpenCV3)
 

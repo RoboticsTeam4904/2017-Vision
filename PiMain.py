@@ -14,10 +14,8 @@ from NetworkTabling import publishToTables, initializeTables
 import CameraLogic
 from Printing import printResults
 import GripRunner
+from config import *
 
-
-if adjustCoords:
-	halfWidth = resolution[0]/2
 
 
 def main():

@@ -8,7 +8,7 @@ def initializeTables(center, calibrate=False):
 
 	return NetworkTables.getTable("SmartDashboard")
 
-def publishToTables(debug, network, center, frameNum=0, distance=0):
+def publishToTables(debug, network, center, frameNum=0, distance=0, halfWidth):
 	isVisible = False
 	if center:
 		isVisible = True
