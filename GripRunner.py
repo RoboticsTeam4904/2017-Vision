@@ -13,7 +13,7 @@ pi = False
 webcam = False
 
 debug = True
-continuous = False
+continuous = True
 edited = False
 adjustCoords = True
 withOpenCV3 = True
@@ -54,6 +54,8 @@ def runVision(camera, network, pipeline):
 	pipeline.process(image)
 	targets = filterContours(pipeline.filter_contours_output) # To be edited if the last filter is changed in case of algorithmic changes. 
 	center = findCenter(targets) #if 2, join and find center, if 1, return val, if 0 return input. if adjustCoords:	center[0] -= halfWidth
+	if debug:
+		print center
 	try:
 		publishToTables(network, center)
 	except:
