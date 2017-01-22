@@ -11,16 +11,15 @@ import numpy as np
 from ContourFinding import filterContours
 from SpikeFinding import findCenter
 from NetworkTabling import publishToTables, initializeTables
-import Cameraing
+import CameraLogic
 from Printing import printResults
 import GripRunner
 
 
 pi = False
-webcam = False
+webcam = True
 
 debug = True
-continuous = True
 edited = False
 adjustCoords = True
 withOpenCV3 = True
@@ -38,18 +37,20 @@ if adjustCoords:
 def main():
 	GripRunner.initializeGrip(gripDoc, edited, withOpenCV3)
 
+	camera = CameraLogic.initializeCamera(pi, webcam, resolution) # import and set exposure and resolution (or more)
+
 	try:
 		network = initializeTables()
 	except:
 		network = None
 
 	if pi or webcam:
-		camera = Cameraing.initializeCamera(pi, webcam, resolution=resolution) # import and set exposure and resolution (or more)
+		camera = CameraLogic.initializeCamera(pi, webcam, resolution=resolution) # import and set exposure and resolution (or more)
 		while True:
-			image = Camering.getImage()
-			runVision(image, netwwork)
+			image = CameraLogic.getImage()
+			runVision(image, network)
 	else:
-		image = Cameraing.getSampleImage(sampleImage)
+		image = CameraLogic.getSampleImage(sampleImage)
 		runVision(image, network)
 
 def runVision(image, network):
@@ -63,7 +64,6 @@ def runVision(image, network):
 	except:
 		if debug:
 			print "could not publish"
-	
 
 if __name__ == '__main__':
 	main()
