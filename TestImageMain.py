@@ -14,10 +14,9 @@ import GripRunner
 from Printing import printResults
 from config import *
 import NetworkTabling
+import CameraLogic
 
 def main():
-	GripRunner.initializeGrip(gripDoc, edited, withOpenCV3)
-
 	camera = CameraLogic.initializeCamera(False, False, resolution) # import and set exposure and resolution (or more)
 
 	try:
