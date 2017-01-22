@@ -12,7 +12,9 @@ from ContourFinding import filterContours
 from SpikeFinding import findCenter
 from NetworkTabling import publishToTables, initializeTables
 from Cameraing import getImage, initializeCamera
+from PiCamera import initializePiCamera, getPiImage
 from Printing import printResults
+
 
 pi = False
 webcam = False
@@ -38,7 +40,9 @@ if not pi and not webcam:
 
 def main():
 	pipeline = initializeGrip(gripDoc)
-	camera = initializeCamera(debug, pi, webcam) # import and set exposure and resolution (or more)
+
+	camera = initializeCamera(debug, pi, webcam, resolution) # import and set exposure and resolution (or more)
+
 	try:
 		network = initializeTables()
 	except:
@@ -55,6 +59,7 @@ def main():
 	# 	runVision(camera, network, pipeline)
 
 def runVision(camera, network, pipeline):
+
 	image = getImage(camera, debug, webcam, pi, sampleImage)
 	pipeline.process(image)
 	targets = filterContours(pipeline.filter_contours_output, debug) # To be edited if the last filter is changed in case of algorithmic changes. 

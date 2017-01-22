@@ -22,7 +22,6 @@ def getImage(camera, debug, webcam, pi, sampleImage):
 		print "Getting image..."
 
 	if pi:
-		return camera.getImage()
 
 	elif webcam:
 		retval, image = camera.read()
