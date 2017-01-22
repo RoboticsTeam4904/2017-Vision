@@ -20,7 +20,6 @@ pi = False
 webcam = False
 
 debug = True
-continuous = True
 edited = False
 adjustCoords = True
 withOpenCV3 = True
@@ -35,8 +34,6 @@ sampleImage = "TestImages/GearTest.png"
 if adjustCoords:
 	halfWidth = resolution[0]/2
 
-if not pi and not webcam:
-	continuous = False
 
 def main():
 	GripRunner.initializeGrip(gripDoc, edited, withOpenCV3)
