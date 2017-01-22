@@ -9,12 +9,15 @@ defaultThickness = 5
 
 def printResults(image, contours, targets, center):
 	print "Started with {} contours".format(len(contours))
-	print "spike x position is {}".format(center[0])
-	print "spike y position is {}".format(center[1])
+	if center:
+		print "spike x position is {}".format(center[0])
+		print "spike y position is {}".format(center[1])
+	else:
+		print "---Could not find center!---"
 	drawContours(image, contours)
 	drawContours(image, targets, color=2)
-	print center
-	drawCenter(image, center)
+	if center:
+		drawCenter(image, center)
 	image = resize(image)
 	display(image)
 
