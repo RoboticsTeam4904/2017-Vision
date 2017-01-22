@@ -56,6 +56,12 @@ def runVision(camera, network, pipeline):
 	center = findCenter(targets) #if 2, join and find center, if 1, return val, if 0 return input. if adjustCoords:	center[0] -= halfWidth
 	if debug:
 		print center
+		cv2.drawContours(image, pipeline.filter_contours_output, -1, (150,150,0), 10)
+		cv2.drawContours(image, targets, -1, (70,70,255), 10)
+		cv2.circle(image, center, 5, (255,255,255), 5)
+		cv2.imshow("Contours Found", image)
+		cv2.waitKey(0)
+		cv2.destroyAllWindows()
 	try:
 		publishToTables(network, center)
 	except:
@@ -115,21 +121,16 @@ def filterContours(contours):
 		print "Number of contours: {}".format(numContours)
 	if numContours > 1:
 		# Find 2 largest contours.
-		largest_contour = contours[0]
-		second_largest_contour = contours[1]
-		largest_area = cv2.contourArea(contours[0], False)
-		second_largest_area = cv2.contourArea(contours[1], False)
-		if second_largest_area > largest_area:
-			largest_contour, second_largest_contour = largest_contour, second_largest_contour
-			largest_area, second_largest_area = second_largest_area, largest_area
-		for i in range(2, numContours):
+		largest_contour, second_largest_contour, largest_area, second_largest_area = None, None, 0, 0
+		for i in range(numContours):
 			temp_area = cv2.contourArea(contours[i], False)
-			if (temp_area > second_largest_area):
-				second_largest_contour = contours[i]
-				second_largest_area = temp_area
-				if second_largest_area > largest_area:
-					largest_contour, second_largest_contour = largest_contour, second_largest_contour
-					largest_area, second_largest_area = second_largest_area, largest_area
+			if temp_area > second_largest_area:
+				if temp_area > largest_area:
+					largest_contour, second_largest_contour = contours[i], largest_contour
+					largest_area, second_largest_area = temp_area, largest_area
+				else:
+					second_largest_contour = contours[i]
+					second_largest_area = temp_area
 		return largest_contour, second_largest_contour
 	else:
 		return contours
