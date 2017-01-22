@@ -10,11 +10,10 @@ import cv2
 import numpy as np
 from ContourFinding import filterContours
 from SpikeFinding import findCenter
-from NetworkTabling import publishToTables, initializeTables
-import CameraLogic
-from Printing import printResults
 import GripRunner
+from Printing import printResults
 from config import *
+import NetworkTabling
 
 def main():
 	GripRunner.initializeGrip(gripDoc, edited, withOpenCV3)
@@ -26,23 +25,20 @@ def main():
 	except:
 		network = None
 
-
 	runVision()
 
 
 def runVision():
-
-	image = CameraLogic.getTheImage(False, False, sampleImage)
+	image = cv2.imread(sampleImage)
 	contours = GripRunner.run(image)
-	targets = filterContours(contours, debug) # To be edited if the last filter is changed in case of algorithmic changes. 
+	targets = filterContours(contours) # To be edited if the last filter is changed in case of algorithmic changes. 
 	center = findCenter(targets) #if 2, join and find center, if 1, return val, if 0 return input. if adjustCoords:	center[0] -= halfWidth
 	if debug:
 		printResults(image, contours, targets, center)
 	try:
-		publishToTables(debug, center, halfWidth)
+		NetworkTabling.publishToTables(center)
 	except:
-		if debug:
-			print "could not publish"
+		pass
 
 if __name__ == '__main__':
 	main()
