@@ -5,8 +5,7 @@ NetworkTables.setTeam(team)
 NetworkTables.initialize(server=ip)
 table = NetworkTables.getTable("SmartDashboard")
 
-
-def publishToTables(center, halfWidth, frameNum=0, distance=0):
+def publishToTables(center, frameNum=0, distance=0):
 	isVisible = False
 	if center:
 		isVisible = True

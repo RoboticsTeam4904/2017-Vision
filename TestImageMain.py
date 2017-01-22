@@ -11,24 +11,18 @@ import numpy as np
 from ContourFinding import filterContours
 from SpikeFinding import findCenter
 import GripRunner
-from Printing import printResults
-from config import *
-import NetworkTabling
+from config import debug, sampleImage
+
+try:
+	import NetworkTabling
+except:
+	if debug:
+		print "no networktables"
+
+if debug:
+	from Printing import printResults
 
 def main():
-	GripRunner.initializeGrip(gripDoc, edited, withOpenCV3)
-
-	camera = CameraLogic.initializeCamera(False, False, resolution) # import and set exposure and resolution (or more)
-
-	try:
-		network = initializeTables()
-	except:
-		network = None
-
-	runVision()
-
-
-def runVision():
 	image = cv2.imread(sampleImage)
 	contours = GripRunner.run(image)
 	targets = filterContours(contours) # To be edited if the last filter is changed in case of algorithmic changes. 
