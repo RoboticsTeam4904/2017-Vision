@@ -1,5 +1,6 @@
 import re
 
+
 def openCode(doc):
     code = open(doc, 'r')
     code = code.read()
