@@ -1,15 +1,46 @@
+import numpy as np
 import cv2
+
+imageNum = 0
+colors = [(255,255,255), (255,255,0), (50,50,255)]
+defaultSize = (640,360)
+defaultShrinkX, defaultShrinkY = 0.3, 0.3
+defaultThickness = 5
 
 def printResults(contours, spikePostion, image):
 	print "Started with {} contours".format(len(contours))
 	print "spike x position is {}".format(spikePostion[0])
 	print "spike y position is {}".format(spikePostion[1])
+	drawContours(image, pipeline.filter_contours_output)
+	drawContours(image, targets, color=2)
+	drawCenter(image, center)
+	image = resize(image)
+	drawImage.display(image)
 
-	# for i in range(len(contours)):
-		# cv2.drawContours(image, contours[i], -1, (255,0,0), 3, 20)	
-	cv2.drawContours(image, contours, -1, (255,0,0), 3, 20)
-	cv2.circle(image, spikePostion, 10, (255, 255, 255), 20)
-	img = cv2.resize(image ,None,fx=0.3, fy=0.3, interpolation = cv2.INTER_CUBIC)
-	cv2.imshow("Contours Found", img)
+def resize(image, size=defaultSize):
+	return cv2.resize(image, size)
+
+def shrink(image, x=defaultShrinkX, y=defaultShrinkY):
+	return cv2.resize(image, 0, fx=x, fy=y)
+
+def drawContours(image, contours, color=1, thickness=5):
+	if type(color) == int:
+		color = colors[color]
+	if type(contours) == np.ndarray:
+		if len(contours.shape == 3):
+			contours = [contours]
+	cv2.drawContours(image, contours, -1, color, thickness)
+
+def drawCenter(image, center, size=defaultThickness, color=0):
+	if type(color) == int:
+		color = colors[color]
+	cv2.circle(image, center, size, color, size)
+
+def save(image, name="image{}.jpg".format(imageNum)):
+	cv2.imwrite("TestImages/" + name, image)
+
+def display(image, name="Contours Found"):
+	cv2.imshow(name, image)
 	cv2.waitKey(0)
 	cv2.destroyAllWindows()
+
