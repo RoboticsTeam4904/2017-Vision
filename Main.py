@@ -11,13 +11,13 @@ import numpy as np
 from ContourFinding import filterContours
 from SpikeFinding import findCenter
 from NetworkTabling import publishToTables, initializeTables
-import Cameraing
+import CameraLogic
 from Printing import printResults
 import GripRunner
 
 
 pi = False
-webcam = False
+webcam = True
 
 debug = True
 edited = False
@@ -38,7 +38,7 @@ if adjustCoords:
 def main():
 	GripRunner.initializeGrip(gripDoc, edited, withOpenCV3)
 
-	camera = Cameraing.initializeCamera(pi, webcam, resolution) # import and set exposure and resolution (or more)
+	camera = CameraLogic.initializeCamera(pi, webcam, resolution) # import and set exposure and resolution (or more)
 
 	try:
 		network = initializeTables()
@@ -52,7 +52,7 @@ def main():
 
 def runVision(camera, network):
 
-	image = Cameraing.getTheImage(pi, webcam, sampleImage)
+	image = CameraLogic.getTheImage(pi, webcam, sampleImage)
 	contours = GripRunner.run(image)
 	targets = filterContours(contours, debug) # To be edited if the last filter is changed in case of algorithmic changes. 
 	center = findCenter(targets) #if 2, join and find center, if 1, return val, if 0 return input. if adjustCoords:	center[0] -= halfWidth
