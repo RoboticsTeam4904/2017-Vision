@@ -12,12 +12,8 @@ from ContourFinding import filterContours
 from SpikeFinding import findCenter
 import GripRunner
 from config import debug, sampleImage
+import NetworkTabling
 
-try:
-	import NetworkTabling
-except:
-	if debug:
-		print "no networktables"
 
 if debug:
 	from Printing import printResults
@@ -32,7 +28,7 @@ def main():
 	try:
 		NetworkTabling.publishToTables(center)
 	except:
-		pass
+		print "The networktables are mean to us"
 
 if __name__ == '__main__':
 	main()

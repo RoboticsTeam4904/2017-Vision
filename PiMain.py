@@ -13,12 +13,7 @@ from SpikeFinding import findCenter
 import PiCamera
 import GripRunner
 from config import debug, exposure, resolution
-
-try:
-	import NetworkTabling
-except:
-	if debug:
-		print "no networktables"
+import NetworkTabling
 
 if debug:
 	from Printing import printResults
@@ -35,7 +30,7 @@ def main():
 		try:
 			NetworkTabling.publishToTables(center)
 		except:
-			pass
+			print "The networktables are mean to us"
 
 if __name__ == '__main__':
 	main()

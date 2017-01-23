@@ -13,15 +13,7 @@ from SpikeFinding import findCenter
 import WebCam
 import GripRunner
 from config import debug, exposure, resolution
-
-try:
-	import NetworkTabling
-except:
-	if debug:
-		print "no networktables"
-
-if debug:
-	from Printing import printResults
+import NetworkTabling
 
 def main():
 	WebCam.set(exposure=exposure, resolution=resolution)
@@ -31,11 +23,12 @@ def main():
 		targets = filterContours(contours, image) # To be edited if the last filter is changed in case of algorithmic changes. 
 		center = findCenter(targets) #if 2, join and find center, if 1, return val, if 0 return input. if adjustCoords:	center[0] -= halfWidth
 		if debug:
+			from Printing import printResults
 			printResults(image, contours, targets, center)
 		try:
 			NetworkTabling.publishToTables(center)
 		except:
-			pass
+			print "The networktables are mean to us"
 
 if __name__ == '__main__':
 	main()
