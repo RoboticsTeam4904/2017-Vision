@@ -31,7 +31,7 @@ def drawContours(image, contours, color=1, thickness=5):
 	if type(color) == int:
 		color = colors[color]
 	if type(contours) == np.ndarray:
-		if len(contours.shape == 3):
+		if len(contours.shape) == 3:
 			contours = [contours]
 	cv2.drawContours(image, contours, -1, color, thickness)
 

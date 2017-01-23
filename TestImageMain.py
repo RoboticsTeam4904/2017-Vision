@@ -25,7 +25,7 @@ if debug:
 def main():
 	image = cv2.imread(sampleImage)
 	contours = GripRunner.run(image)
-	targets = filterContours(contours) # To be edited if the last filter is changed in case of algorithmic changes. 
+	targets = filterContours(contours, image) # To be edited if the last filter is changed in case of algorithmic changes. 
 	center = findCenter(targets) #if 2, join and find center, if 1, return val, if 0 return input. if adjustCoords:	center[0] -= halfWidth
 	if debug:
 		printResults(image, contours, targets, center)
