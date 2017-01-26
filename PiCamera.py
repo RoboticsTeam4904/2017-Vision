@@ -6,8 +6,8 @@ rawCapture = PiRGBArray(camera, size=camera.resolution)
 def getImage():
 	rawCapture = PiRGBArray(camera, size=camera.resolution)
 	frame = camera.capture(rawCapture, format="bgr", use_video_port=True)
-	rawCapture.truncate(0)
-	return frame.array
+	# rawCapture.truncate(0)
+	return rawCapture
 
 def set(resolution=False, exposure=False, exposure_mode=False, shutter_speed=False): #e.g. 'snow'
 	global rawCapture
