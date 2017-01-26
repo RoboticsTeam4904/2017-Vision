@@ -9,6 +9,8 @@ def getImage():
 	return frame.array
 
 def set(resolution=False, exposure=False, exposure_mode=False, shutter_speed=False): #e.g. 'snow'
+	global rawCapture
+	rawCapture = PiRGBArray(camera, size=camera.resolution)
 	if resolution:
 		camera.resolution = resolution
 	if exposure:
