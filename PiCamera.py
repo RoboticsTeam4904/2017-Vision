@@ -4,6 +4,7 @@ camera = PiCamera()
 rawCapture = PiRGBArray(camera, size=camera.resolution)
 
 def getImage():
+	rawCapture = PiRGBArray(camera, size=camera.resolution)
 	frame = camera.capture(rawCapture, format="bgr", use_video_port=True)
 	rawCapture.truncate(0)
 	return frame.array
