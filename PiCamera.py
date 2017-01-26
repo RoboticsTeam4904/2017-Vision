@@ -8,18 +8,25 @@ def getImage():
 	rawCapture.truncate(0)
 	return frame.array
 
-def set(resolution=False, exposure=False): #e.g. 'snow'
+def set(resolution=False, exposure=False, exposure_mode=False, shutter_speed=False): #e.g. 'snow'
 	if resolution:
 		camera.resolution = resolution
 	if exposure:
+		pass
+	if shutter_speed:
+		camera.shutter_speed = shutter_speed
+	if exposure_mode:
 		camera.exposure_mode = exposure
-	return camera
+
 	# camera.brightness = 0 to 100 # default 50
 	# camera.contrast = -100 to 100 # default 0
 	# camera.saturation = -100 to 100 # default 0
 	# camera.exposure_compensation = -25 to 25 # default 0
 	# camera.contrast = -100 to 100 # default 0
 	# camera.image_effect - various effects
+
+def getShutterSpeed():
+	return camera.shutter_speed
 
 
 #camera.start_preview()
