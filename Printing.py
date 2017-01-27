@@ -13,7 +13,7 @@ def printResults(image, contours, targets, center):
 		print "spike x position is {}".format(center[0])
 		print "spike y position is {}".format(center[1])
 	else:
-		print "---Could not find center!---"
+		print "Could not find center!"
 	drawContours(image, contours)
 	drawContours(image, targets, color=2)
 	if center:

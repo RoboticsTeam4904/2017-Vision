@@ -8,4 +8,5 @@ ip = "10.49.4.2"
 team = 4904
 gripDoc = "grip.py"
 sampleImage = "TestImages/GearTest.png"
-extra_debug = True
+#step through each contour in the webcam by turning on extra_debug
+extra_debug = False
