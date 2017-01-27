@@ -12,7 +12,7 @@ from ContourFinding import filterContours
 from SpikeFinding import findCenter
 import WebCam
 import GripRunner
-from config import debug, exposure, resolution, edited
+from config import debug, exposure, resolution, edited, save, display
 import NetworkTabling
 if debug:
 	import Printing
@@ -28,7 +28,10 @@ def main():
 		center = findCenter(targets) #if 2, join and find center, if 1, return val, if 0 return input. if adjustCoords:	center[0] -= halfWidth
 		if debug:
 			image = Printing.printResults(image, contours, targets, center)
-			Printing.save(image)
+			if save:
+				Printing.save(image)
+			if display:
+				Printing.display(image)
 		try:
 			NetworkTabling.publishToTables(center)
 		except:
