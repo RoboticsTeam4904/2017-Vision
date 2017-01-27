@@ -1,9 +1,9 @@
 debug = True
 extra_debug = False
 save = False
-display = False
+display = True
 
-exposure = 1
+exposure = 12
 resolution = (640, 360)
 halfWidth = resolution[0]/2
 

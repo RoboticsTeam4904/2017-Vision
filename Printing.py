@@ -1,5 +1,6 @@
 import numpy as np
 import cv2
+import sys
 
 imageNum = 0
 colors = [(255,255,255), (255,255,0), (50,50,255)]
@@ -49,6 +50,8 @@ def save(image, name=None):
 
 def display(image, name="Contours Found"):
 	cv2.imshow(name, image)
-	cv2.waitKey(0)
-	cv2.destroyAllWindows()
+	key = cv2.waitKey(20)
+	if key == 27:
+		sys.exit()
+	#cv2.destroyAllWindows()
 

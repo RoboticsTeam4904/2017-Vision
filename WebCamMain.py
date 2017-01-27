@@ -8,7 +8,7 @@ Users need to:
 
 import cv2
 import numpy as np
-from ContourFinding import filterContours
+from ContourFinding import filterContours #, filterContoursFancy
 from SpikeFinding import findCenter
 import WebCam
 import GripRunner
@@ -21,6 +21,7 @@ def main():
 	WebCam.set(exposure=exposure, resolution=resolution)
 	if not edited:
 		GripRunner.editCode()
+	cv2.namedWindow("Contours Found")
 	while True:
 		image = WebCam.getImage()
 		contours = GripRunner.run(image)
@@ -32,10 +33,11 @@ def main():
 				Printing.save(image)
 			if display:
 				Printing.display(image)
-		#try:
+		try:
 			NetworkTabling.publishToTables(center)
-		#except:
-			#print "The networktables are mean to us"
+		except:
+			print "The networktables are mean to us"
+	cv2.destroyAllWindows()
 
 if __name__ == '__main__':
 	main()

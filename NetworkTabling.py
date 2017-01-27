@@ -11,7 +11,6 @@ def publishToTables(center, frameNum=0, distance=0):
 	if center:
 		isVisible = True
 		center = (center[0] - halfWidth, center[1])
-		
 	else:
 		isVisible = False
 		center = (0,0)
