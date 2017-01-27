@@ -12,13 +12,13 @@ from ContourFinding import filterContours #, filterContoursFancy
 from SpikeFinding import findCenter
 import WebCam
 import GripRunner
-from config import debug, exposure, resolution, edited, save, display
+from config import debug, exposure, resolution, edited, save, display, contrast, gain
 import NetworkTabling
 if debug:
 	import Printing
 
 def main():
-	WebCam.set(exposure=exposure, resolution=resolution)
+	WebCam.set(exposure=exposure, resolution=resolution, contrast=contrast, gain=gain)
 	if not edited:
 		GripRunner.editCode()
 	cv2.namedWindow("Contours Found")
