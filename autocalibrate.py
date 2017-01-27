@@ -13,7 +13,7 @@ def autocalibrate():
 		contours = GripRunner.run(image)
 		numContours = len(contours)
 		print numContours, exposure
-		randomVar = np.random()
+		randomVar = np.random.random_sample()
 		if config.display:
 			Printing.drawContours(image, contours)
 			Printing.display(image)
