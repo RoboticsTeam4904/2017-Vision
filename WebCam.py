@@ -22,4 +22,4 @@ def set(resolution=False, exposure=False, gain=False, contrast=False):
 
 
 def getExposure():
-	return camera.get(15)
+	return int(subprocess.check_output("/usr/bin/v4l2-ctl -d /dev/video0 -C exposure_absolute", shell=True)[19:].strip())
