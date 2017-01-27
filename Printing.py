@@ -18,8 +18,8 @@ def printResults(image, contours, targets, center):
 	drawContours(image, targets, color=2)
 	if center:
 		drawCenter(image, center)
-	image = resize(image)
-	display(image)
+	return resize(image)
+	#display(image)
 
 def resize(image, size=defaultSize):
 	return cv2.resize(image, size)
@@ -40,8 +40,12 @@ def drawCenter(image, center, size=defaultThickness, color=0):
 		color = colors[color]
 	cv2.circle(image, center, size, color, size)
 
-def save(image, name="image{}.jpg".format(imageNum)):
-	cv2.imwrite("TestImages/" + name, image)
+def save(image, name=None):
+	if name == None:
+		global imageNum
+		name="image{}".format(imageNum)
+		imageNum += 1
+	cv2.imwrite("TestImages/" + name + ".jpg", image)
 
 def display(image, name="Contours Found"):
 	cv2.imshow(name, image)
