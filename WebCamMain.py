@@ -32,10 +32,10 @@ def main():
 				Printing.save(image)
 			if display:
 				Printing.display(image)
-		try:
+		#try:
 			NetworkTabling.publishToTables(center)
-		except:
-			print "The networktables are mean to us"
+		#except:
+			#print "The networktables are mean to us"
 
 if __name__ == '__main__':
 	main()
