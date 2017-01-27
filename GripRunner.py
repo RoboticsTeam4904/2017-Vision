@@ -1,7 +1,9 @@
-from grip import GripPipeline  # TODO change the default module and class, if needed
-pipeline = GripPipeline()
+pipeline = False
 
 def run(image):
+	global pipeline
+	if not pipeline:
+		pipeline = editCode()
 	pipeline.process(image)
 	return pipeline.filter_contours_output
 
@@ -21,10 +23,14 @@ def calibrate(hsv=False, area=False):
 # So Team 4904 presents you the next level of programming:
 def editCode():
     import re
-    from config import withOpenCV3, gripDoc
-    code = open(gripDoc, 'r').read()
+    from config import withOpenCV3
+    code = open('grip.py', 'r').read()
     if withOpenCV3:
-        code = re.sub('    contours, hierarchy =cv2.findContours', '    im2, contours, hierarchy =cv2.findContours', code)
+        code = re.sub('contours, hierarchy =cv2.findContours', 'im2, contours, hierarchy =cv2.findContours', code)
     else:
         code = re.sub('im2, contours, hierarchy =cv2.findContours', 'contours, hierarchy =cv2.findContours', code)
-    open(gripDoc,"w").write(code)
+    open('grip_edited.py', 'w').write(code)
+
+    from grip_edited import GripPipeline  # TODO change the default module and class, if needed
+    global pipeline
+    pipeline = GripPipeline()
