@@ -1,5 +1,7 @@
 import numpy as np
 import GripRunner
+import Printing 
+import config
 
 def autocalibrate(camera):
 	print "Calibrating camera... (may not work)"
@@ -11,6 +13,9 @@ def autocalibrate(camera):
 		numContours = len(contours)
 		print numContours, exposure
 		randomVar = np.random()
+		if config.display:
+			Printing.drawContours(image, contours)
+			Printing.display(image)
 		exposure = np.multiply(exposure, np.true_divide(2+randomVar, numContours+randomVar)) #np.true_divide(sqrtTwo, np.sqrt(numContours)
 		camera.set(exposure=exposure)
 	# get range of exposure
