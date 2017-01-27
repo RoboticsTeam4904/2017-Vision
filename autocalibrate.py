@@ -20,6 +20,7 @@ def autocalibrate():
 		exposure = np.multiply(exposure, np.true_divide(2+randomVar, numContours+randomVar)) #np.true_divide(sqrtTwo, np.sqrt(numContours)
 		WebCam.set(exposure=exposure)
 	# get range of exposure
+	Printing.save(image, name="autocalibrate")
 
 
 # 	shutter_speed = WebCam.getShutterSpeed()
