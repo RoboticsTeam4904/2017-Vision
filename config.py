@@ -1,7 +1,7 @@
 debug = True
 extra_debug = False
 save = False
-display = False
+display = True
 
 exposure = 1
 resolution = (640, 360)
