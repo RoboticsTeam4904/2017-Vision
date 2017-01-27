@@ -3,7 +3,7 @@ pipeline = False
 def run(image):
 	global pipeline
 	if not pipeline:
-		pipeline = editCode()
+		editCode()
 	pipeline.process(image)
 	return pipeline.filter_contours_output
 
