@@ -1,22 +1,18 @@
 # OpenCV4904
 
-Setup
----
-This will set up your compiler and enable you to run `make` to build your code.
-```
-cmake .
-```
 
-Building
+Prerequisites
 ---
-Every time you modify the code, run this in a terminal to build it.
-```
-make
-```
+Make sure you have:
+-OpenCV (3.0 preferably)
+-Python 2.7
+-Raspberry Pi/TX1 (if applicable)
 
-Running
+Changing the Code
 ---
-Run this in a terminal to run the code.
-```
-./highgoal.bin
-```
+You might have to change some of the variables at the beginning of the file based on what you're using to run the program (set pi to True, etc.).
+
+Running the Code
+---
+Run ```python GripRunner.py```
+If you have iTerm, then an image should show up.
