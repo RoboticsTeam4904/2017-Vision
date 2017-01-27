@@ -16,7 +16,7 @@ from config import debug, exposure, resolution
 import NetworkTabling
 
 if debug:
-	from Printing import printResults
+	from Printing import printResults, save
 
 def main():
 	PiCamera.set(exposure=exposure, resolution=resolution)
@@ -27,6 +27,8 @@ def main():
 		center = findCenter(targets) #if 2, join and find center, if 1, return val, if 0 return input. if adjustCoords:	center[0] -= halfWidth
 		if debug:
 			printResults(image, contours, targets, center)
+			#display(image)
+			save(image)
 		try:
 			NetworkTabling.publishToTables(center)
 		except:
