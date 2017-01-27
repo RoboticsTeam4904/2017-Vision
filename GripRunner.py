@@ -12,3 +12,19 @@ def calibrate(hsv=False, area=False):
 		pipeline.__hsv_threshold_value = hsv[2]
 	if area:
 		pipeline.__filter_contours_min_area = area
+
+
+# This code was not what we planned to write; in fact, we still cringe at its sight
+# But, seeing how our code is a little rudamentary, we are forced to add some artificial intelligence. 
+# Sadly, we have written code that transcends programming itself. This code writes its own code. 
+# This horrid beast has taken our jobs and our enthusiasm. If we never code again, know it was because of this function.
+# So Team 4904 presents you the next level of programming:
+def editCode():
+    import re
+    from config import withOpenCV3, gripDoc
+    code = open(gripDoc, 'r').read()
+    if withOpenCV3:
+        code = re.sub('    contours, hierarchy =cv2.findContours', 'im2, contours, hierarchy =cv2.findContours', code)
+    else:
+        code = re.sub('im2, contours, hierarchy =cv2.findContours', 'contours, hierarchy =cv2.findContours', code)
+    open(gripDoc,"w").write(code)

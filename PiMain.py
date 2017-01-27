@@ -12,7 +12,7 @@ from ContourFinding import filterContours
 from SpikeFinding import findCenter
 import PiCamera
 import GripRunner
-from config import debug, exposure, resolution
+from config import debug, exposure, resolution, edited
 import NetworkTabling
 
 if debug:
@@ -20,6 +20,8 @@ if debug:
 
 def main():
 	PiCamera.set(exposure=exposure, resolution=resolution)
+	if not edited:
+		GripRunner.editCode()
 	while True:
 		image = PiCamera.getImage()
 		contours = GripRunner.run(image)

@@ -11,7 +11,7 @@ import numpy as np
 from ContourFinding import filterContours
 from SpikeFinding import findCenter
 import GripRunner
-from config import debug, sampleImage
+from config import debug, sampleImage, edited
 import NetworkTabling
 
 
@@ -19,6 +19,8 @@ if debug:
 	from Printing import printResults
 
 def main():
+	if not edited:
+		GripRunner.editCode()
 	image = cv2.imread(sampleImage)
 	contours = GripRunner.run(image)
 	targets = filterContours(contours) # To be edited if the last filter is changed in case of algorithmic changes. 
