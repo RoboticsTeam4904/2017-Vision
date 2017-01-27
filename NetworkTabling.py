@@ -18,7 +18,7 @@ def publishToTables(center, frameNum=0, distance=0):
 		print center
 		table.putNumber('centerX', center[0])
 		table.putNumber('centerY', center[1]) # Can be deleted
-		#table.putBool('isVisible', isVisible)
+		#table.putBoolean('isVisible', isVisible)
 		table.putNumber('frameNum', frameNum)
 		table.putNumber('distance', distance) # Feet away
 

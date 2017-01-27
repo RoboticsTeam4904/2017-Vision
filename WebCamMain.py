@@ -8,7 +8,7 @@ Users need to:
 
 import cv2
 import numpy as np
-from ContourFinding import filterContours
+from ContourFinding import filterContours #, filterContoursFancy
 from SpikeFinding import findCenter
 import WebCam
 import GripRunner
