@@ -24,7 +24,7 @@ def editCode():
     from config import withOpenCV3, gripDoc
     code = open(gripDoc, 'r').read()
     if withOpenCV3:
-        code = re.sub('    contours, hierarchy =cv2.findContours', 'im2, contours, hierarchy =cv2.findContours', code)
+        code = re.sub('    contours, hierarchy =cv2.findContours', '    im2, contours, hierarchy =cv2.findContours', code)
     else:
         code = re.sub('im2, contours, hierarchy =cv2.findContours', 'contours, hierarchy =cv2.findContours', code)
     open(gripDoc,"w").write(code)
