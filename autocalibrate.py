@@ -5,8 +5,8 @@ import config
 import WebCam
 import cv2
 
-minimumExposure = 3
-maximumExposure = 1000
+minExposure = 3
+maxExposure = 1000
 resolutionArea = 600000
 maxArea = resolutionArea/4
 # test image max area is 58106.0
