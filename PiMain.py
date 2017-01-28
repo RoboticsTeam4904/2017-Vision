@@ -22,6 +22,7 @@ def main():
 	PiCamera.set(exposure=exposure, resolution=resolution)
 	if not edited:
 		GripRunner.editCode()
+	frameNum = 1
 	while True:
 		image = PiCamera.getImage()
 		contours = GripRunner.run(image)
@@ -33,11 +34,12 @@ def main():
 			Printing.drawImage(image, contours, targets, center)
 			Printing.save(image)
 		try:
-			NetworkTabling.publishToTables(center)
+			NetworkTabling.publishToTables(center, distance=distance, frameNum=frameNum)
 		except Exception as error:
 			if debug:
 				print error
 				print "The networktables are mean to us"
+		frameNum += 1
 
 if __name__ == '__main__':
 	main()
