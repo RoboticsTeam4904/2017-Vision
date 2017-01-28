@@ -35,8 +35,10 @@ def main():
 				Printing.display(image)
 		try:
 			NetworkTabling.publishToTables(center)
-		except:
-			print "The networktables are mean to us"
+		except Exception as error:
+			if debug:
+				print error
+				print "The networktables are mean to us"
 	cv2.destroyAllWindows()
 
 if __name__ == '__main__':
