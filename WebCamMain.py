@@ -9,10 +9,10 @@ Users need to:
 import cv2
 import numpy as np
 from ContourFinding import filterContours #, filterContoursFancy
-from SpikeFinding import findCenter
+from SpikeFinding import findCenterandDist
 import WebCam
 import GripRunner
-from config import debug, exposure, resolution, edited, save, display, contrast, gain
+from config import *
 import NetworkTabling
 if debug:
 	import Printing
@@ -21,25 +21,31 @@ def main():
 	WebCam.set(exposure=exposure, resolution=resolution, contrast=contrast, gain=gain)
 	if not edited:
 		GripRunner.editCode()
-	cv2.namedWindow("Contours Found")
+	if display:
+		cv2.namedWindow("Contours Found")
+	frameNum = 1
 	while True:
 		image = WebCam.getImage()
 		contours = GripRunner.run(image)
 		targets = filterContours(contours) # To be edited if the last filter is changed in case of algorithmic changes. 
-		center = findCenter(targets) #if 2, join and find center, if 1, return val, if 0 return input. if adjustCoords:	center[0] -= halfWidth
-		if debug:
-			image = Printing.printResults(image, contours, targets, center)
+		center, distance = findCenterandDist(targets) #if 2, join and find center, if 1, return val, if 0 return input. if adjustCoords:	center[0] -= halfWidth
+		if display:
+			Printing.printResults(contours, center, distance)
+		if save or display:
+			Printing.drawImage(image, contours, targets, center)
 			if save:
 				Printing.save(image)
 			if display:
-				Printing.display(image)
+				Printing.display(image, defaultSize=True)
 		try:
-			NetworkTabling.publishToTables(center)
+			NetworkTabling.publishToTables(center, distance=distance, frameNum=frameNum)
 		except Exception as error:
 			if debug:
 				print error
 				print "The networktables are mean to us"
-	cv2.destroyAllWindows()
+		frameNum += 1
+	if display:
+		cv2.destroyAllWindows()
 
 if __name__ == '__main__':
 	main()
