@@ -3,11 +3,13 @@ import GripRunner
 import Printing 
 import config
 import WebCam
+import cv2
 
 minimumExposure = 3
 maximumExposure = 1000
 resolutionArea = 600000
-maxArea = resolutionArea/10
+maxArea = resolutionArea/4
+# test image max area is 58106.0
 
 def autocalibrate():
 	print "Calibrating WebCam... (may not work)"
@@ -24,7 +26,7 @@ def autocalibrate():
 			Printing.display(image)
 		exposure = np.multiply(exposure, np.true_divide(2+randomVar, numContours+randomVar)) #np.true_divide(sqrtTwo, np.sqrt(numContours)
 		if tooLarge(contours):
-			exposure = np.multiply(exposure, 0.11)
+			exposure = np.multiply(exposure, 0.1)
 		exposure = np.min(np.max(exposure, minExposure), maxExposure)
 		WebCam.set(exposure=exposure)
 	# get range of exposure
