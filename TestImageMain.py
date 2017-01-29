@@ -10,7 +10,7 @@ Users need to:
 
 import cv2
 import numpy as np
-from ContourFinding import filterContours
+from ContourFinding import filterContoursFancy
 from SpikeFinding import findCenterandDist
 import GripRunner
 from config import *
@@ -27,7 +27,7 @@ def main():
 		cv2.namedWindow("Contours Found")
 	image = cv2.imread(sampleImage)
 	contours = GripRunner.run(image)
-	targets = filterContours(contours) # To be edited if the last filter is changed in case of algorithmic changes. 
+	targets = filterContoursFancy(contours, image=image) # To be edited if the last filter is changed in case of algorithmic changes. 
 	center, distance = findCenterandDist(targets) #if 2, join and find center, if 1, return val, if 0 return input. if adjustCoords:	center[0] -= halfWidth
 	if debug:
 		Printing.printResults(contours, center, distance)
