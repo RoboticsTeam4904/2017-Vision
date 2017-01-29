@@ -52,13 +52,9 @@ def filterContoursFancy(contours, image=None):
 	
 	# Calculate a score for each contour that is the probability that it is correct
 	# contourScores = np.zeroes(len(contours))
-	# polygons = [cv2.approxPolyDP(contour, margin, True) for contour in contours]
 	quads = [Quadrify(contour) for contour in contours]
-	polyScores = [np.average(np.divide(np.absolute([cv2.pointPolygonTest(poly, (point[0][0], point[0][1]), True) for point in contour]),width)) if type(poly) == np.ndarray else 1 for poly,contour,width in zip(quads, contours, widths)]
-	# polyScores = np.divide(polyScores, widths)
-	print "POLYSCORES", np.multiply(polyScores, polyWeight)
-
-	# polyScores = np.zeros(numContours)
+	rotatedRectangles = np.array([cv2.boxPoints(cv2.minAreaRect(contour)) for contour in contours])
+	polyScores = [np.average(np.divide(np.absolute([cv2.pointPolygonTest(poly, (point[0][0], point[0][1]), True) for point in contour]),width)) if type(poly) == np.ndarray else 1 for poly,contour,width in zip(rotatedRectangles, contours, widths)]
 
 	# The dimensions of the tape is 2 x 5 inches, so expect ed height is 1.5 times the width
 	ratios = np.divide(np.true_divide(heights, widths), 1.5)
@@ -81,10 +77,9 @@ def filterContoursFancy(contours, image=None):
 
 	# Create a bounding rectangle around each contour, and then see what percentage
 	# of the rectangle is filled by the contour. The more the better.
-	rotatedRectangles = np.array([cv2.boxPoints(cv2.minAreaRect(contour)) for contour in contours]) # TODO: Enhancement
 	# print "W*YIUWDH", rotatedRectangles
-	boundingRectangles = np.array([cv2.boundingRect(contour) for contour in contours])
-	boundingAreas = np.multiply(boundingRectangles[:,2], boundingRectangles[:,3])
+	# boundingRectangles = np.array([cv2.boundingRect(contour) for contour in contours])
+	# boundingAreas = np.multiply(boundingRectangles[:,2], boundingRectangles[:,3])
 	rotatedAreas = [cv2.contourArea(rotatedRectangle) for rotatedRectangle in rotatedRectangles]
 	areas = [cv2.contourArea(contour) for contour in contours]
 	areaScores = np.absolute(np.log(np.divide(rotatedAreas, areas)))
@@ -95,49 +90,20 @@ def filterContoursFancy(contours, image=None):
 	scores = np.array([polyScores, ratioScores, toEdgesScores, areaScores])
 	contourScores = np.dot(weights, scores)
 	sortedScoresIndices = contourScores.argsort()
-	# print "scores", contourScores
-	# correct = contourScores[sortedScoresIndices[:minContours]]
-	# incorrect = contourScores[sortedScoresIndices[minContours:]]
-	# worstCorrect = np.amax(correct)
-	# bestIncorrect = np.amin(incorrect)
-	# worstdiff = np.subtract(bestIncorrect, worstCorrect)
-	# print "olddiff", worstdiff
-	# avgCorrect = np.average(correct)
-	# avgIncorrect = np.average(incorrect)
-	# avgdiff = np.subtract(avgIncorrect, avgCorrect)
-	# print "oldavgdiff", avgdiff
-	# correct = scores[:,sortedScoresIndices[:minContours]]
-	# incorrect = scores[:,sortedScoresIndices[minContours:]]
-	# worstCorrect = np.amax(correct, axis=1)
-	# bestIncorrect = np.amin(incorrect, axis=1)
-	# worstdiffs = np.subtract(bestIncorrect, worstCorrect)
-	# # worstdiffs = np.multiply(worstdiffs, weights)
-	# print "worstdiffs", worstdiffs
-	# avgCorrect = np.average(correct, axis=1)
-	# avgIncorrect = np.average(incorrect, axis=1)
-	# avgdiffs = np.subtract(avgIncorrect, avgCorrect)
-	# # avgdiffs = np.multiply(avgdiffs, weights)
-	# # newWeights = np.multiply(np.multiply(avgdiffs, worstdiffs),weights)
-	# newWeights = np.multiply(avgdiffs,weights)
-	# contourScores = np.dot(np.transpose(scores), newWeights)
-	# print "avgdiffs", avgdiffs
-	# print "scores", contourScores
-	# correct = contourScores[sortedScoresIndices[:minContours]]
-	# incorrect = contourScores[sortedScoresIndices[minContours:]]
-	# worstCorrect = np.amax(correct)
-	# bestIncorrect = np.amin(incorrect)
-	# worstdiff = np.subtract(bestIncorrect, worstCorrect)
-	# print "newdiff", worstdiff
-	# avgCorrect = np.average(correct)
-	# avgIncorrect = np.average(incorrect)
-	# avgdiff = np.subtract(avgIncorrect, avgCorrect)
-	# print "newavgdiff", avgdiff
+
+	correct = contourScores[sortedScoresIndices[:minContours]]
+	incorrect = contourScores[sortedScoresIndices[minContours:]]
+	avgCorrect = np.average(correct)
+	avgIncorrect = np.average(incorrect)
+	avgdiffs = np.subtract(avgIncorrect, avgCorrect)
+	newWeights = np.multiply(weights, avgdiffs)
 
 	# Return which contours are above the threshold, then lower the threshold if no contours
 	# would be returned
 	# sortedScores = np.sort(contourScores)
 	# correctContours = [contours[contourScores.index(contour)] for contour in sortedScores[-minContours:]]
 	# correctContours = [contour for score, contour in sorted(zip(contourScores, contours))]
+	contourScores = np.dot(newWeights, scores)
 	sortedScoresIndices = contourScores.argsort()
 	correctContours = np.array(contours)[sortedScoresIndices[:minContours]]
 
@@ -160,10 +126,8 @@ def filterContoursFancy(contours, image=None):
 		for i in range(numContours):
 			img = copy.deepcopy(image)
 			print "CONTOUR " + str(i)
-			print np.multiply(scores[:, i], weights)
+			print np.multiply(scores[:, i], weights) #newWeights
 			print contourScores[i]
-			# print heights[i], widths[i]
-			# print ratios[i]
 			Printing.drawImage(img, contours[:i] + contours[i+1:], contours[i], False)
 			Printing.display(img, "contour " + str(i), defaultSize=True)
 			cv2.waitKey(0)
@@ -176,7 +140,7 @@ def filterContoursFancy(contours, image=None):
 
 def Quadrify(contour):
 	epsilon = 10
-	for i in range(100):
+	for i in range(10):
 		quad = cv2.approxPolyDP(contour, epsilon, True)
 		length = len(quad)
 		randomVar = np.random.random()
@@ -184,6 +148,7 @@ def Quadrify(contour):
 		# print epsilon, length
 		if length == 4:
 			return quad
+	print "hi"
 	return False
 
 
@@ -195,3 +160,45 @@ def Quadrify(contour):
 # Paired or triplet contours
 
 
+
+
+
+
+	# print "scores", contourScores
+	# correct = contourScores[sortedScoresIndices[:minContours]]
+	# incorrect = contourScores[sortedScoresIndices[minContours:]]
+	# worstCorrect = np.amax(correct)
+	# bestIncorrect = np.amin(incorrect)
+	# worstdiff = np.divide(bestIncorrect, worstCorrect)
+	# print "olddiff", worstdiff
+	# avgCorrect = np.average(correct)
+	# avgIncorrect = np.average(incorrect)
+	# avgdiff = np.divide(avgIncorrect, avgCorrect)
+	# print "oldavgdiff", avgdiff
+	# correct = scores[:,sortedScoresIndices[:minContours]]
+	# incorrect = scores[:,sortedScoresIndices[minContours:]]
+	# worstCorrect = np.amax(correct, axis=1)
+	# bestIncorrect = np.amin(incorrect, axis=1)
+	# worstdiffs = np.subtract(bestIncorrect, worstCorrect)
+	# # worstdiffs = np.multiply(worstdiffs, weights)
+	# print "worstdiffs", worstdiffs
+	# avgCorrect = np.average(correct, axis=1)
+	# avgIncorrect = np.average(incorrect, axis=1)
+	# avgdiffs = np.subtract(avgIncorrect, avgCorrect)
+	# # avgdiffs = np.multiply(avgdiffs, weights)
+	# # newWeights = np.multiply(np.multiply(avgdiffs, worstdiffs),weights)
+	# newWeights = np.multiply(avgdiffs,weights)
+	# print newWeights
+	# contourScores = np.dot(np.transpose(scores), newWeights)
+	# print "avgdiffs", avgdiffs
+	# print "scores", contourScores
+	# correct = contourScores[sortedScoresIndices[:minContours]]
+	# incorrect = contourScores[sortedScoresIndices[minContours:]]
+	# worstCorrect = np.amax(correct)
+	# bestIncorrect = np.amin(incorrect)
+	# worstdiff = np.divide(bestIncorrect, worstCorrect)
+	# print "newdiff", worstdiff
+	# avgCorrect = np.average(correct)
+	# avgIncorrect = np.average(incorrect)
+	# avgdiff = np.divide(avgIncorrect, avgCorrect)
+	# print "newavgdiff", avgdiff
