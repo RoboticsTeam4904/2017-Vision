@@ -13,7 +13,7 @@ def printResults(contours, center, distance):
 	if center:
 		print "spike x position is {}".format(center[0])
 		print "spike y position is {}".format(center[1])
-		print "feet away is {}".format(distance)
+		print "I do believe that we are {} feet away from the target".format(distance)
 	else:
 		print "Could not find center!"
 

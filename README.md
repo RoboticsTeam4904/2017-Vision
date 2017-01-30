@@ -14,5 +14,5 @@ You might have to change some of the variables at the beginning of the file base
 
 Running the Code
 ---
-Run ```python GripRunner.py```
-If you have iTerm, then an image should show up.
+Run ```python TestImageMain.py```
+If you have the right things installed, then an image should show up.
