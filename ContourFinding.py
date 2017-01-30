@@ -158,7 +158,11 @@ def Quadrify(contour):
 # More ratios (check wpilib)
 # What about spike? Test image, test scores. How to get around it
 # Paired or triplet contours
+# Run approxPoly once and record num sides?
 
+
+# convexity defects
+# floodfill
 
 
 

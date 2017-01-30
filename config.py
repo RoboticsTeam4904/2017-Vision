@@ -1,7 +1,7 @@
 # Logging/debug settings
 # --------------
 debug = True
-extra_debug = False
+extra_debug = True
 save = False
 display = True
 
@@ -18,7 +18,7 @@ areaFromAFoot = 50000 # resolution[0]*resolution[1]/10
 # -------------
 ip = "10.49.4.2"
 team = 4904
-withOpenCV3 = False
+withOpenCV3 = True
 edited = False
 sampleImage = "TestImages/GearTest.png"
 #step through each contour in the webcam by turning on extra_debug
