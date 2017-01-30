@@ -171,14 +171,25 @@ def Quadrify(contour):
 	return 1
 
 
+# NOT OF VARIABLE SIZE
+def fitPattern(image, pattern, method=cv2.TM_SQDIFF):
+	location, patternSize = None, None
+	scores = cv2.matchTemplate(image, pattern, method)
+	minVal, maxVal, minLoc, maxLoc = cv2.minMaxLoc(scores)
+	if method  == cv2.TM_SQDIFF or method == cv2.TM_SQDIFF_NORMED:
+		location = minLoc
+	else:
+		location = maxLoc
+	center = np.add(location, patternSize)
+	return center
+
 
 # Parallelograms everywhere. Otherwise quads or minarearectangle
 # Perimeter
-# More ratios (check wpilib)
 # What about spike? Test image, test scores. How to get around it
 # Paired or triplet contours
 # Run approxPoly once and record num sides?
 
-
+# read about:
 # convexity defects
 # floodfill

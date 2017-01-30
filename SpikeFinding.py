@@ -17,6 +17,6 @@ def findCenterandDist(contours):
 	x,y,w,h = cv2.boundingRect(contour)
 	center = (int(np.add(x, np.divide(w,2))), int(np.add(y, np.true_divide(h,2))))
 	area = np.multiply(w,h)
-	feetAway = np.sqrt(np.divide(areaFromAFoot, area))
+	feetAway = np.sqrt(np.true_divide(areaFromAFoot, area))
 	return center, feetAway
 # Alternatively, use area of largest contour or area of bounding quadrilateral
