@@ -6,7 +6,7 @@ nativeAngle = 57
 displacement = 0.5 # Vertical feet from camera to bottom of vision target
 size = np.true_divide(5,12) # Height of target in feet
 degPerPxl = resolution[1]/nativeAngle
-k = 5
+k = 11
 cameraTilt = 0
 
 
@@ -29,7 +29,7 @@ def findCenterandDist(contours):
 	degrees = degPerPxl * (resolution[1]/2-y)
 	degrees += cameraTilt
 	feetAway = np.divide((displacement + size), np.tan(degrees)) # = displacement * cot(degreesFromMiddleToBottom)
-	return center, feetAway * k
+	# testFromAFoot(contours)
 	# height = h*1944/1136.0
 	# degrees = degPerPxl * h
 	# # k = displacement from p?
@@ -37,11 +37,12 @@ def findCenterandDist(contours):
 	# print "the height is", height
 	# print h
 	# #distanceInInches = -0.0075559*h*h + 3.3682*h - 346.59
-	# distanceInInches = -0.41758*height + 125.43
-	# feetAway = distanceInInches/12
-	# #feetAway = (5.53096 * 5 * resolution[1])/(h * cameraHeight)/12
+	#distanceInInches = -0.41758*height + 125.43
+	#feetAway = distanceInInches/12
+	feetAway = (5.53096 * 5 * resolution[1])/(h * cameraHeight)/12
+	print "height is ", h
 	# #feetAway = np.sqrt(np.divide(heightFromAFoot, h))
-
+	return center, feetAway * k
 	# Maybe score contours based on size and position on screen
 
 def testFromAFoot(contours):
