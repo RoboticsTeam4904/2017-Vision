@@ -1,16 +1,13 @@
 import numpy as np
-import GripRunner
-import Printing 
-import config
-import WebCam
-import cv2
+import GripRunner, Printing, WebCam, config
+import cv2, time
 
 minExposure = 3
 maxExposure = 1000
 resolutionArea = 600000
 maxArea = resolutionArea/4
-targetAverageValue = 50
-averageValueThreshold = 30
+targetAverageValue = 30
+averageValueThreshold = 20
 numTests = 5
 # test image max area is 58106.0
 
@@ -23,12 +20,18 @@ numTests = 5
 
 def autocalibrate():
 	print "Calibrating WebCam... (may not work)"
+	currentTime = time.clock()
 	exposure = WebCam.getExposure()
+	newTime = time.clock()
+	getExposureTime = np.subtract(newTime, currentTime)
+	currentTime = time.clock()
+	brightIters = []
+	runTimes = []
 	for i in range(10):
 		image = WebCam.getImage()
 		image = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
 		value = cv2.split(image)[2]
-		average = cv2.mean(value)
+		average = cv2.mean(value)[0]
 		if config.display:
 			Printing.display(image)
 		if np.absolute(np.subtract(average, targetAverageValue)) < averageValueThreshold:
@@ -37,28 +40,43 @@ def autocalibrate():
 		exposure = np.minimum(np.maximum(np.multiply(exposure, scaleBy), minExposure), maxExposure)
 		WebCam.set(exposure=exposure)
 
+		newTime = time.clock()
+		brightIters += [np.subtract(newTime, currentTime)]
+		currentTime = time.clock()
+
 	numGoodFrames = 0
 	for i in range(20):
 		image = WebCam.getImage()
+		tempTime = time.clock()
 		contours = GripRunner.run(image)
+		currentTime = time.clock()
+		runTimes += [np.subtract(currentTime, tempTime)]
 		numContours = len(contours)
-		print numContours, exposure, WebCam.getExposure()
-		if tooLarge(contours):
-			exposure = np.divide(exposure, 10)
+		# print numContours, exposure, WebCam.getExposure()
+		if numContours > 0:
+			if tooLarge(contours):
+				exposure = np.divide(exposure, 10)
 		if numContours == 2:
 			numGoodFrames += 1
 			if numGoodFrames == numTests:
-				return True
+				# image = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+				# value = cv2.split(image)[2]
+				# average = cv2.mean(value)[0]
+				# print average
+				break
+				# return True
 		else:
 			numGoodFrames = 0
 		randomVar = np.random.random_sample()
 		scaleBy = np.true_divide(2+randomVar, numContours+randomVar)
 		exposure = np.minimum(np.maximum(np.multiply(exposure, scaleBy), minExposure), maxExposure)
 		WebCam.set(exposure=exposure)
+		restTimes += [np.subtract(time.clock(),currentTime)]
 		if config.display:
 			Printing.drawContours(image, contours)
 			Printing.display(image)
-	return false
+
+	return False
 
 
 def tooLarge(contours):
@@ -69,6 +87,9 @@ def tooLarge(contours):
 	else:
 		return False
 
+
+def displace():
+	WebCam.set(exposure=1000)
 
 # 	shutter_speed = WebCam.getShutterSpeed()
 
@@ -85,5 +106,5 @@ def tooLarge(contours):
 # 			else:
 # 				break
 
-# if __name__ == '__main__':
-# 	autocalibrate()
+if __name__ == '__main__':
+	autocalibrate()
