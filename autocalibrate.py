@@ -19,41 +19,45 @@ numTests = 5
 # print average
 
 def autocalibrate():
+	displace()
 	print "Calibrating WebCam... (may not work)"
 	currentTime = time.clock()
 	exposure = WebCam.getExposure()
+	print exposure
 	newTime = time.clock()
 	getExposureTime = np.subtract(newTime, currentTime)
 	currentTime = time.clock()
 	brightIters = []
 	runTimes = []
 	restTimes = []
-	for i in range(10):
+	b = time.clock()
+	for i in range(1000):
+#		currentTime = time.clock()
 		image = WebCam.getImage()
 		image = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
 		value = cv2.split(image)[2]
 		average = cv2.mean(value)[0]
-		if config.display:
-			Printing.display(image)
+#		if config.display:
+#			Printing.display(image)
 		if np.absolute(np.subtract(average, targetAverageValue)) < averageValueThreshold:
 			break
 		scaleBy = np.divide(targetAverageValue, average)
 		exposure = np.minimum(np.maximum(np.multiply(exposure, scaleBy), minExposure), maxExposure)
 		WebCam.set(exposure=exposure)
 
-		newTime = time.clock()
-		brightIters += [np.subtract(newTime, currentTime)]
-		currentTime = time.clock()
-
+#		newTime = time.clock()
+#		brightIters += [np.subtract(newTime, currentTime)]
+        print "bright", time.clock() - b
 	numGoodFrames = 0
-	for i in range(20):
+	s = time.clock()
+	for i in range(1000):
 		image = WebCam.getImage()
-		tempTime = time.clock()
+#		tempTime = time.clock()
 		contours = GripRunner.run(image)
-		currentTime = time.clock()
-		runTimes += [np.subtract(currentTime, tempTime)]
+#		currentTime = time.clock()
+#		runTimes += [np.subtract(currentTime, tempTime)]
 		numContours = len(contours)
-		# print numContours, exposure, WebCam.getExposure()
+#		print numContours, exposure, WebCam.getExposure()
 		if numContours > 0:
 			if tooLarge(contours):
 				exposure = np.divide(exposure, 10)
@@ -64,7 +68,7 @@ def autocalibrate():
 				# value = cv2.split(image)[2]
 				# average = cv2.mean(value)[0]
 				# print average
-				break
+				print "DID IT___________"
 				# return True
 		else:
 			numGoodFrames = 0
@@ -73,13 +77,14 @@ def autocalibrate():
 		exposure = np.minimum(np.maximum(np.multiply(exposure, scaleBy), minExposure), maxExposure)
 		WebCam.set(exposure=exposure)
 		restTimes += [np.subtract(time.clock(),currentTime)]
-		if config.display:
-			Printing.drawContours(image, contours)
-			Printing.display(image)
-	print "getExposureTime", getExposureTime
-	print "bright", np.average(brightIters), brightIters
-	print "run", np.average(runTimes), runTimes
-	print "rest", np.average(restTimes), restTimes
+#		if config.display:
+#			Printing.drawContours(image, contours)
+#			Printing.display(image)
+#	print "getExposureTime", getExposureTime
+#	print "bright", np.sum(brightIters), np.average(brightIters), np.round(brightIters, decimals=2)
+#	print "run", np.sum(runTimes), np.average(runTimes), np.round(runTimes, decimals=2)
+#	print "rest", np.sum(restTimes), np.average(restTimes), np.round(restTimes, decimals=2)
+	print "grip", time.clock() - s
 	return False
 
 
@@ -99,7 +104,7 @@ def displace():
 
 # 		shutter_speed = np.multiply(shutter_speed, np.true_divide(numContours+randomVar, 2+randomVar)) #np.true_divide(sqrtTwo, np.sqrt(numContours)
 # 		WebCam.set(shutter_speed=shutter_speed)
- 
+
 # if numContours == 2:
 # 			for i in range(numTests):
 # 				image = WebCam.getImage()
@@ -111,4 +116,6 @@ def displace():
 # 				break
 
 if __name__ == '__main__':
+	start = time.clock()
 	autocalibrate()
+	print time.clock() - start
