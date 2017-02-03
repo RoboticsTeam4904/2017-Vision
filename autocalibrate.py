@@ -27,6 +27,7 @@ def autocalibrate():
 	currentTime = time.clock()
 	brightIters = []
 	runTimes = []
+	restTimes = []
 	for i in range(10):
 		image = WebCam.getImage()
 		image = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
@@ -75,7 +76,10 @@ def autocalibrate():
 		if config.display:
 			Printing.drawContours(image, contours)
 			Printing.display(image)
-
+	print "getExposureTime", getExposureTime
+	print "bright", np.average(brightIters), brightIters
+	print "run", np.average(runTimes), runTimes
+	print "rest", np.average(restTimes), restTimes
 	return False
 
 
