@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
 from config import *
+import math
 
 nativeAngle = 57
 displacement = 0.5 # Vertical feet from camera to bottom of vision target
@@ -9,6 +10,8 @@ degPerPxl = resolution[1]/nativeAngle
 k = 11
 cameraTilt = 0
 
+def findDistance(degPerPxl, pxlsFromCenter, size, disp):
+	return ((size+disp)/math.tan(degPerPxl*pxlsFromCenter*math.pi/180))/12
 
 def findCenter(contours):
 	if len(contours) == 0:
