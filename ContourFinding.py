@@ -38,14 +38,16 @@ def filterContours(contours):
 
 def filterContoursFancy(contours, image=None):
 	numContours = len(contours)
-
+	print contours[0]
 	areas = np.array([cv2.contourArea(contour) for contour in contours])
 
 	boundingRects = [cv2.boundingRect(contour) for contour in contours]
 	widths, heights, positions = boundingInfo(boundingRects)
 
 	rotatedRects = [cv2.minAreaRect(contour) for contour in contours]
-	rotatedBoxes = [cv2.boxPoints(rect) for rect in rotatedRects]
+	rotatedBoxes = [np.int0(cv2.cv.BoxPoints(rect)) for rect in rotatedRects]
+	print rotatedRects[0]
+	print rotatedBoxes[0]
 	rotatedAreas = [cv2.contourArea(box) for box in rotatedBoxes]
 
 	sizeScores = [size(area)for area in areas]
