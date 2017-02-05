@@ -14,11 +14,13 @@ import WebCam
 import GripRunner
 from config import *
 import NetworkTabling
+import autocalibrate
 if debug:
 	import Printing
 
 def main():
 	WebCam.set(exposure=exposure, resolution=resolution, contrast=contrast, gain=gain)
+	autocalibrate.calibrate()
 	if not edited:
 		GripRunner.editCode()
 	if display:
