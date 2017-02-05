@@ -10,8 +10,6 @@ def getImage():
 def set(resolution=False, exposure=False, exposure_mode=False, shutter_speed=False): #e.g. 'snow'
 	if resolution:
 		camera.resolution = resolution
-	if exposure:
-		pass
 	if shutter_speed:
 		camera.shutter_speed = shutter_speed
 	if exposure_mode:
