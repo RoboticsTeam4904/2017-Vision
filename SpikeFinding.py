@@ -28,6 +28,7 @@ def findCenter(contours):
 def findCenterandDist(contours):
 	numContours = len(contours)
 	if numContours == 0:
+		print "no contours"
 		return False, 0
 	contour = np.concatenate(contours)
 	x,y,w,h = cv2.boundingRect(contour)
@@ -45,11 +46,12 @@ def findCenterandDist(contours):
 
 		robotAngle = phi + angleToGoal
 		x, y = distance * np.cos(phi), distance * np.sin(phi)
-		degrees = np.multiply(degPerPxl, np.subtract(middleY, y))
+		print x, y, robotAngle
 
-		print np.degrees(phi - np.pi/2), "ANGLE OFF IN DEGREES"
+		# print np.degrees(phi - np.pi/2), "ANGLE OFF IN DEGREES"
 	else:
 		distance = distanceFromHeight(y)
+		print distance
 	return center, distance * k
 
 def distanceFromHeight(y):
@@ -61,16 +63,16 @@ def distanceFromHeight(y):
 def trueDistance(d1, d2):
 	squares = np.add(np.square(d1), np.square(d2))
 	squared = np.subtract(np.multiply(2, squares), np.square(width))
-	print squared, "not negative?" #SHOULDN"T BE NEGATIVE IF CAMERA MOUNTED PROPERLY AND CONSTANTS CORRECTLY LABELED
+	# print squared, "not negative?" #SHOULDN"T BE NEGATIVE IF CAMERA MOUNTED PROPERLY AND CONSTANTS CORRECTLY LABELED
 	d = np.divide(np.sqrt(squared), 2)
 	return d
 	# d = 1/2 * sqrt(2*(d1^2+d2^2)-w^2)
 
 def angle(d, d2):
 	squares = np.subtract(np.add(np.true_divide(np.square(width), 4), np.square(d)), np.square(d2))
-	print d, np.divide(squares, np.multiply(width, d))
+	# print d, np.divide(squares, np.multiply(width, d))
 	phi = np.arccos(np.divide(squares, np.multiply(width, d)))
-	print phi
+	# print phi
 	return np.subtract(np.pi, phi)
 	# angle = pi - acos(1/4*w^2 + d^2 - d2^2 / wd)
 

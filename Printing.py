@@ -24,7 +24,6 @@ def drawImage(image, contours, targets, center):
 		drawCenter(image, center)
 
 def resize(image, size=defaultSize):
-	print image.shape
 	return cv2.resize(image, size)
 
 def shrink(image, x=defaultShrinkX, y=defaultShrinkY):
