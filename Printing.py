@@ -42,8 +42,8 @@ def drawCenter(image, center, size=defaultThickness, color=0):
 		color = colors[color]
 	cv2.circle(image, center, size, color, size)
 
-def save(image, name=None):
-	if name == None:
+def save(image, name=False):
+	if not name:
 		global imageNum
 		name="image{}".format(imageNum)
 		imageNum += 1
