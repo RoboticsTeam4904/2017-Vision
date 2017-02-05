@@ -6,8 +6,8 @@ from config import *
 nativeAngle = np.radians(57)
 degPerPxl = np.divide(nativeAngle, resolution[1])
 
-# nativeAngleHorizontal = np.radians(90)
-# degPerPxlHorizontal = np.divide(nativeAngleHorizontal, resolution[0])
+nativeAngleX = np.radians(90)
+degPerPxlX = np.divide(nativeAngleX, resolution[0])
 
 displacement = 0.5 # Vertical feet from camera to bottom of vision target
 size = np.true_divide(5,12) # Height of target in feet
@@ -16,6 +16,7 @@ cameraTilt = 0
 
 width = np.divide(8.25, 12) #from centers. targets are 2x5 inches and 6.25 inches apart
 middleY = np.true_divide(resolution[1], 2)
+middleX = np.true_divide(resolution[0], 2)
 
 def findCenter(contours):
 	if len(contours) == 0:
@@ -33,20 +34,23 @@ def findCenterandDist(contours):
 	center = (int(np.add(x, np.divide(w,2))), int(np.add(y, np.true_divide(h,2))))
 	if numContours == 2:
 		x1,y1,w1,h1 = cv2.boundingRect(contours[0])
-		d1 = distanceFromHeight(y1)
 		x2,y2,w2,h2 = cv2.boundingRect(contours[1])
-		d2 = distanceFromHeight(y2)
+		d1, d2 = distanceFromHeight(y1), distanceFromHeight(y2)
 		if x1 > x2:
 			d1, d2 = d2, d1
-		d1, d2 = distanceFromHeight(y1), distanceFromHeight(y2)
+
 		distance = trueDistance(d1, d2)
-		print distance
 		phi = angle(distance, d2)
+		angleToGoal = np.multiply(degPerPxlX, np.subtract(middleX, y))
+
+		robotAngle = phi + angleToGoal
+		x, y = distance * np.cos(phi), distance * np.sin(phi)
+		degrees = np.multiply(degPerPxl, np.subtract(middleY, y))
+
 		print np.degrees(phi - np.pi/2), "ANGLE OFF IN DEGREES"
-		return center, distance * k
 	else:
 		distance = distanceFromHeight(y)
-		return center, distance * k
+	return center, distance * k
 
 def distanceFromHeight(y):
 	degrees = np.multiply(degPerPxl, np.subtract(middleY, y))
@@ -72,7 +76,7 @@ def angle(d, d2):
 
 
 # def widthFromData(d1, d2, pxlsBetween):
-# 	theta = np.multiply(pxlsBetween, degPerPxlHorizontal)
+# 	theta = np.multiply(pxlsBetween, degPerPxlX)
 # 	sqaures = np.add(np.square(d1), np.square(d2))
 # 	cos = np.multiply(2, np.multiply(d1, np.multiply(d2, np.cos(theta))))
 # 	width = np.sqrt(np.subtract(squares, cos))
