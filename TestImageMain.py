@@ -38,7 +38,7 @@ def main():
 		if display:
 			Printing.display(image)
 	try:
-		NetworkTabling.publishToTables(center, distance=distance)
+		NetworkTabling.publishToTables(center)
 	except Exception as error:
 		if debug:
 			print error
