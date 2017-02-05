@@ -10,7 +10,7 @@ display = True
 exposure = 12
 gain = 10
 contrast = 50
-resolution = (640, 360)
+resolution = (1920, 1080)
 halfWidth = resolution[0]/2
 
 # Misc

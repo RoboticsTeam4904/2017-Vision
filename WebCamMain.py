@@ -18,7 +18,7 @@ if debug:
 	import Printing
 
 def main():
-	WebCam.set(exposure=exposure, resolution=resolution, contrast=contrast, gain=gain)
+	WebCam.set(exposure=exposure, contrast=contrast, gain=gain)
 	if not edited:
 		GripRunner.editCode()
 	if display:
