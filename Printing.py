@@ -8,12 +8,11 @@ defaultSize = (640, 360)
 defaultShrinkX, defaultShrinkY = 0.3, 0.3
 defaultThickness = 5
 
-def printResults(contours, center, distance):
+def printResults(contours, center):
 	print "Started with {} contours".format(len(contours))
 	if center:
 		print "spike x position is {}".format(center[0])
 		print "spike y position is {}".format(center[1])
-		print "feet away is {}".format(distance)
 	else:
 		print "Could not find center!"
 
@@ -42,16 +41,14 @@ def drawCenter(image, center, size=defaultThickness, color=0):
 		color = colors[color]
 	cv2.circle(image, center, size, color, size)
 
-def save(image, name=False):
-	if not name:
+def save(image, name=None):
+	if name == None:
 		global imageNum
 		name="image{}".format(imageNum)
 		imageNum += 1
 	cv2.imwrite("TestImages/" + name + ".jpg", image)
 
-def display(image, name="Contours Found", defaultSize=False):
-	if resize:
-		image = resize(image)
+def display(image, name="Contours Found"):
 	cv2.imshow(name, image)
 	key = cv2.waitKey(20)
 	if key == 27:
