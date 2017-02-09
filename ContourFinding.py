@@ -38,7 +38,7 @@ def filterContours(contours):
 
 def filterContoursFancy(contours, image=None):
 	numContours = len(contours)
-	print contours[0]
+	#print contours[0]
 	areas = np.array([cv2.contourArea(contour) for contour in contours])
 
 	boundingRects = [cv2.boundingRect(contour) for contour in contours]
@@ -65,7 +65,7 @@ def filterContoursFancy(contours, image=None):
 
 	correctInds, incorrectInds = sortedInds(contourScores)
 	correctContours = np.array(contours)[correctInds]
-
+	print "contours", correctContours
 	if config.debug:
 		print "ratio, rotation, rectangular, area, quad"
 		print "Weights:", weights
