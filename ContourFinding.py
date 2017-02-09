@@ -7,14 +7,14 @@ import config
 numTargets = 2
 
 sizeWeight = 1
-ratioWeight = 10
+ratioWeight = 0.5
 rotationWeight = 0.1
 rectangularWeight = 3
-areaWeight = 5
-quadWeight = 50
+areaWeight = 0.5
+quadWeight = 5
 weights = np.array([sizeWeight, ratioWeight, rotationWeight, rectangularWeight, areaWeight, quadWeight])
 
-maxArea, minArea = 150000, 4000
+maxArea, minArea = 30000, 500
 
 def filterContours(contours):
 	numContours = len(contours)
@@ -37,6 +37,10 @@ def filterContours(contours):
 		return contours
 
 def filterContoursFancy(contours, image=None):
+
+	if len(contours) == 0:
+		return []
+
 	numContours = len(contours)
 	#print contours[0]
 	areas = np.array([cv2.contourArea(contour) for contour in contours])
@@ -67,7 +71,7 @@ def filterContoursFancy(contours, image=None):
 	correctContours = np.array(contours)[correctInds]
 	print "contours", correctContours
 	if config.debug:
-		print "ratio, rotation, rectangular, area, quad"
+		print "size, ratio, rotation, rectangular, area, quad"
 		print "Weights:", weights
 		print "Scores: ", contourScores
 		print np.average(scores, axis=1)
