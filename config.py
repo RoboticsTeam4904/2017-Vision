@@ -16,6 +16,8 @@ halfWidth = resolution[0]/2
 heightFromAFoot = 272#/(1944/resolution[1])
 
 cameraHeight = 12 #inches
+nativeAngleY = 1 # 57 degrees
+nativeAngleX = 1.2 # undetermined
 
 
 

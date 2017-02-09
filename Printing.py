@@ -17,7 +17,7 @@ def printResults(contours, center, distance):
 	else:
 		print "Could not find center!"
 
-def drawImage(image, contours, targets, center):
+def drawImage(image, contours, targets, center=False):
 	drawContours(image, contours)
 	drawContours(image, targets, color=2)
 	if center:

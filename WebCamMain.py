@@ -9,7 +9,7 @@ Users need to:
 import cv2
 import numpy as np
 from ContourFinding import filterContours #, filterContoursFancy
-from SpikeFinding import findCenterandDist
+from SpikeFinding import findSpike
 import WebCam
 import GripRunner
 from config import *
@@ -28,17 +28,17 @@ def main():
 		image = WebCam.getImage()
 		contours = GripRunner.run(image)
 		targets = filterContours(contours) # To be edited if the last filter is changed in case of algorithmic changes. 
-		center, distance = findCenterandDist(targets) #if 2, join and find center, if 1, return val, if 0 return input. if adjustCoords:	center[0] -= halfWidth
+		isVisible, angleToGoal, distance = findSpike(targets) #if 2, join and find center, if 1, return val, if 0 return input. if adjustCoords:	center[0] -= halfWidth
 		# if debug:
 		# 	Printing.printResults(contours, center, distance)
 		if save or display:
-			Printing.drawImage(image, contours, targets, center)
+			Printing.drawImage(image, contours, targets)
 			if save:
 				Printing.save(image)
 			if display:
 				Printing.display(image, defaultSize=True)
 		try:
-			NetworkTabling.publishToTables(center, distance=distance, frameNum=frameNum)
+			NetworkTabling.publishToTables(isVisible=isVisible, angleToGoal=angleToGoal, distance=distance, frameNum=frameNum)
 		except Exception as error:
 			if debug:
 				print error

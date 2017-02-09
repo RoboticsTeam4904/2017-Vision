@@ -3,10 +3,10 @@ import numpy as np
 from config import *
 
 # Convert to inches
-nativeAngle = np.radians(57)
-degPerPxl = np.divide(nativeAngle, resolution[1])
+nativeAngleY = np.radians(57)
+degPerPxl = np.divide(nativeAngleY, resolution[1])
 
-nativeAngleX = np.radians(90)
+# nativeAngleX = np.radians(90)
 degPerPxlX = np.divide(nativeAngleX, resolution[0])
 
 displacement = 0.5 # Vertical feet from camera to bottom of vision target
@@ -25,38 +25,39 @@ def findCenter(contours):
 	x,y,w,h = cv2.boundingRect(contour)
 	return (x + w/2, y + h/2)
 
-def findCenterandDist(contours):
+def findSpike(contours): # returns isVisible, angleToGoal, distance
 	numContours = len(contours)
 	if numContours == 0:
 		print "no contours"
-		return False, 0
+		return False, 0, 0
 	contour = np.concatenate(contours)
 	x,y,w,h = cv2.boundingRect(contour)
-	center = (int(np.add(x, np.divide(w,2))), int(np.add(y, np.true_divide(h,2))))
+	center = (np.add(x, np.divide(w,2)), np.add(y, np.true_divide(h,2)))
+	angleToGoal = np.multiply(degPerPxlX, np.subtract(middleX, center[0]))
 	if numContours == 2:
 		x1,y1,w1,h1 = cv2.boundingRect(contours[0])
 		x2,y2,w2,h2 = cv2.boundingRect(contours[1])
+		print middleY - y1, middleY - y2
 		d1, d2 = distanceFromHeight(y1), distanceFromHeight(y2)
 		if x1 > x2:
 			d1, d2 = d2, d1
 
 		distance = trueDistance(d1, d2)
 		phi = angle(distance, d2)
-		angleToGoal = np.multiply(degPerPxlX, np.subtract(middleX, y))
+		robotAngle = np.add(phi, angleToGoal)
+		x, y = np.multiply(distance, np.cos(phi)), np.multiply(distance, np.sin(phi))
+		print x, y, distance, distanceFromHeight(y), np.degrees(np.pi/2 - robotAngle), np.degrees(angleToGoal)
+		# horizontal distance, perpendicular distance, calculated distance, simple distance, robot direction (degrees), angle from robot to goal (degrees)
 
-		robotAngle = phi + angleToGoal
-		x, y = distance * np.cos(phi), distance * np.sin(phi)
-		print x, y, robotAngle
-
-		# print np.degrees(phi - np.pi/2), "ANGLE OFF IN DEGREES"
 	else:
 		distance = distanceFromHeight(y)
 		print distance
-	return center, distance * k
+	return True, angleToGoal, distance
 
 def distanceFromHeight(y):
 	degrees = np.multiply(degPerPxl, np.subtract(middleY, y))
-	degrees += cameraTilt
+	degrees = np.add(degrees, cameraTilt)
+	# print degrees, np.tan(degrees)
 	distance = np.divide(np.add(displacement, size), np.tan(degrees)) # = displacement * cot(degreesFromMiddleToBottom)
 	return distance
 
@@ -87,12 +88,6 @@ def angle(d, d2):
 # def distanceFromAngle(d1,d2,theta):
 # 	width = widthFromData(d1, d2, theta)
 # 	return trueDistance(d1, d2, width)
-
-
-def testFromAFoot(contours):
-	center, feetAway = findCenterandDist(contours)
-	global k
-	k = np.true_divide(k, feetAway)
 
 
 def largest(contours):
