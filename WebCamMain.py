@@ -29,8 +29,8 @@ def main():
 		contours = GripRunner.run(image)
 		targets = filterContours(contours) # To be edited if the last filter is changed in case of algorithmic changes. 
 		isVisible, angleToGoal, distance = findSpike(targets) #if 2, join and find center, if 1, return val, if 0 return input. if adjustCoords:	center[0] -= halfWidth
-		# if debug:
-		# 	Printing.printResults(contours, center, distance)
+		if debug:
+			Printing.printResults(contours, distance)
 		if save or display:
 			Printing.drawImage(image, contours, targets)
 			if save:
@@ -44,7 +44,7 @@ def main():
 				print error
 				# print "The networktables are mean to us"
 		frameNum += 1
-		cv2.waitKey(500)
+		#cv2.waitKey(500)
 	if display:
 		cv2.destroyAllWindows()
 

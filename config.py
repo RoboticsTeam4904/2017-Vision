@@ -8,7 +8,7 @@ display = True
 
 # Camera settings
 # --------------
-exposure = 12
+exposure = 100
 gain = 10
 contrast = 50
 resolution = (640, 360)
@@ -16,8 +16,8 @@ halfWidth = resolution[0]/2
 heightFromAFoot = 272#/(1944/resolution[1])
 
 cameraHeight = 12 #inches
-nativeAngleY = 1 # 57 degrees
-nativeAngleX = 1.2 # undetermined
+nativeAngleY = 0.726 # 57 degrees
+nativeAngleX = 1.19 # undetermined
 
 
 
@@ -25,6 +25,6 @@ nativeAngleX = 1.2 # undetermined
 # -------------
 ip = "10.49.4.2"
 team = 4904
-withOpenCV3 = True
+withOpenCV3 = False
 edited = False
 sampleImage = "TestImages/GearTest.png"

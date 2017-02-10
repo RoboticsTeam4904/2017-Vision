@@ -3,13 +3,13 @@ import numpy as np
 from config import *
 
 # Convert to inches
-nativeAngleY = np.radians(57)
+#nativeAngleY = np.radians(57)
 degPerPxl = np.divide(nativeAngleY, resolution[1])
 
 # nativeAngleX = np.radians(90)
 degPerPxlX = np.divide(nativeAngleX, resolution[0])
 
-displacement = 0.5 # Vertical feet from camera to bottom of vision target
+displacement = 0.55 # Vertical feet from camera to bottom of vision target
 size = np.true_divide(5,12) # Height of target in feet
 k = 1
 cameraTilt = 0
