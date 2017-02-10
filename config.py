@@ -8,7 +8,7 @@ display = True
 
 # Camera settings
 # --------------
-exposure = 100
+exposure = 30
 gain = 10
 contrast = 50
 resolution = (640, 360)

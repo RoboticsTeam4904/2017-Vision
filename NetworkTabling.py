@@ -7,7 +7,7 @@ NetworkTables.initialize(server=ip)
 table = NetworkTables.getTable("Vision")
 
 def publishToTables(isVisible=True, angleToGoal=0, distance=0, frameNum=0):
-	table.putBoolean('visible', isVisible)
+	table.putBoolean('trustable', isVisible)
 	table.putNumber('degrees', angleToGoal)
 	table.putNumber('distance', distance)
 	table.putNumber('frameNum', frameNum)

@@ -26,6 +26,7 @@ def findCenter(contours):
 	return (x + w/2, y + h/2)
 
 def findSpike(contours): # returns isVisible, angleToGoal, distance
+	isVisible=False
 	numContours = len(contours)
 	if numContours == 0:
 		print "no contours"
@@ -35,6 +36,7 @@ def findSpike(contours): # returns isVisible, angleToGoal, distance
 	center = (np.add(x, np.divide(w,2)), np.add(y, np.true_divide(h,2)))
 	angleToGoal = np.multiply(degPerPxlX, np.subtract(middleX, center[0]))
 	if numContours == 2:
+		isVisible = True
 		x1,y1,w1,h1 = cv2.boundingRect(contours[0])
 		x2,y2,w2,h2 = cv2.boundingRect(contours[1])
 		print middleY - y1, middleY - y2
@@ -52,7 +54,7 @@ def findSpike(contours): # returns isVisible, angleToGoal, distance
 	else:
 		distance = distanceFromHeight(y)
 		print distance
-	return True, angleToGoal, distance
+	return isVisible, np.degrees(angleToGoal), distance
 
 def distanceFromHeight(y):
 	degrees = np.multiply(degPerPxl, np.subtract(middleY, y))
