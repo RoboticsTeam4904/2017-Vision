@@ -1,7 +1,7 @@
 <grip:Pipeline>
   <sources>
     <grip:Camera>
-      <property name="address" value="http://10.49.4.80:8080/stream/video.mjpeg"/>
+      <property name="deviceNumber" value="0"/>
     </grip:Camera>
   </sources>
   <steps>
@@ -21,7 +21,7 @@
       </grip:Input>
       <grip:Input step="0" socket="3">
         <value>
-          <double>239.02903101247813</double>
+          <double>170.23406698370115</double>
           <double>255.0</double>
         </value>
       </grip:Input>
@@ -114,12 +114,16 @@
   </steps>
   <connections>
     <grip:Connection>
-      <grip:Output source="0" socket="0" previewed="true"/>
+      <grip:Output step="2" socket="0" previewed="true"/>
+      <grip:Input step="3" socket="0"/>
+    </grip:Connection>
+    <grip:Connection>
+      <grip:Output source="0" socket="0" previewed="false"/>
       <grip:Input step="0" socket="0"/>
     </grip:Connection>
     <grip:Connection>
-      <grip:Output step="2" socket="0" previewed="true"/>
-      <grip:Input step="3" socket="0"/>
+      <grip:Output step="3" socket="0" previewed="true"/>
+      <grip:Input step="4" socket="0"/>
     </grip:Connection>
     <grip:Connection>
       <grip:Output step="0" socket="0" previewed="true"/>
@@ -128,10 +132,6 @@
     <grip:Connection>
       <grip:Output step="1" socket="0" previewed="true"/>
       <grip:Input step="2" socket="0"/>
-    </grip:Connection>
-    <grip:Connection>
-      <grip:Output step="3" socket="0" previewed="true"/>
-      <grip:Input step="4" socket="0"/>
     </grip:Connection>
   </connections>
   <settings>
@@ -147,7 +147,7 @@
     <language>C++</language>
     <className>GripVisionPipeline</className>
     <implementWpilibPipeline>false</implementWpilibPipeline>
-    <saveDir>/Users/oshlern/GRIP</saveDir>
+    <saveDir>/Users/casmann/GRIP</saveDir>
     <packageName></packageName>
     <moduleName>grip</moduleName>
   </codeGenerationSettings>
