@@ -1,7 +1,7 @@
 import cv2
 import numpy
 import math
-#from enum import Enum
+# from enum import Enum
 
 class GripPipeline:
     """
@@ -12,22 +12,13 @@ class GripPipeline:
         """initializes all values to presets or None if need to be set
         """
 
-        self.__hsv_threshold_hue = [37.28813559322034, 116.17021276595746]
-        self.__hsv_threshold_saturation = [0.0, 255.0]
-        self.__hsv_threshold_value = [170.23406698370115, 255.0]
+        self.__hsv_threshold_hue = [43.70503597122301, 99.01528013582343]
+        self.__hsv_threshold_saturation = [202.2571942446043, 255.0]
+        self.__hsv_threshold_value = [20.638489208633093, 255.0]
 
         self.hsv_threshold_output = None
 
-        self.__cv_dilate_src = self.hsv_threshold_output
-        self.__cv_dilate_kernel = None
-        self.__cv_dilate_anchor = (-1, -1)
-        self.__cv_dilate_iterations = 1.0
-        self.__cv_dilate_bordertype = cv2.BORDER_CONSTANT
-        self.__cv_dilate_bordervalue = (-1)
-
-        self.cv_dilate_output = None
-
-        self.__find_contours_input = self.cv_dilate_output
+        self.__find_contours_input = self.hsv_threshold_output
         self.__find_contours_external_only = False
 
         self.find_contours_output = None
@@ -56,12 +47,8 @@ class GripPipeline:
         self.__hsv_threshold_input = source0
         (self.hsv_threshold_output) = self.__hsv_threshold(self.__hsv_threshold_input, self.__hsv_threshold_hue, self.__hsv_threshold_saturation, self.__hsv_threshold_value)
 
-        # Step CV_dilate0:
-        self.__cv_dilate_src = self.hsv_threshold_output
-        (self.cv_dilate_output) = self.__cv_dilate(self.__cv_dilate_src, self.__cv_dilate_kernel, self.__cv_dilate_anchor, self.__cv_dilate_iterations, self.__cv_dilate_bordertype, self.__cv_dilate_bordervalue)
-
         # Step Find_Contours0:
-        self.__find_contours_input = self.cv_dilate_output
+        self.__find_contours_input = self.hsv_threshold_output
         (self.find_contours_output) = self.__find_contours(self.__find_contours_input, self.__find_contours_external_only)
 
         # Step Filter_Contours0:
@@ -82,21 +69,6 @@ class GripPipeline:
         """
         out = cv2.cvtColor(input, cv2.COLOR_BGR2HSV)
         return cv2.inRange(out, (hue[0], sat[0], val[0]),  (hue[1], sat[1], val[1]))
-
-    @staticmethod
-    def __cv_dilate(src, kernel, anchor, iterations, border_type, border_value):
-        """Expands area of higher value in an image.
-        Args:
-           src: A numpy.ndarray.
-           kernel: The kernel for dilation. A numpy.ndarray.
-           iterations: the number of times to dilate.
-           border_type: Opencv enum that represents a border type.
-           border_value: value to be used for a constant border.
-        Returns:
-            A numpy.ndarray after dilation.
-        """
-        return cv2.dilate(src, kernel, anchor, iterations = (int) (iterations +0.5),
-                            borderType = border_type, borderValue = border_value)
 
     @staticmethod
     def __find_contours(input, external_only):
