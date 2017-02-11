@@ -18,6 +18,8 @@ heightFromAFoot = 272#/(1944/resolution[1])
 cameraHeight = 12 #inches
 nativeAngleY = 1 # 57 degrees
 nativeAngleX = 1.2 # undetermined
+# 16:9, 68.07x41.61
+# 4:3, 49.88, 63.6
 
 
 
@@ -25,6 +27,6 @@ nativeAngleX = 1.2 # undetermined
 # -------------
 ip = "10.49.4.2"
 team = 4904
-withOpenCV3 = True
+withOpenCV3 = False
 edited = False
 sampleImage = "TestImages/GearTest.png"
