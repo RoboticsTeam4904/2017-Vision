@@ -12,6 +12,7 @@ if config.debug:
 def main():
 	WebCam.set(exposure=config.exposure, resolution=config.resolution, contrast=config.contrast, gain=config.gain)
 	config.resolution = WebCam.getResolution()
+	config.degPerPxl = np.divide(config.nativeAngle, config.resolution)
 	if not config.edited:
 		GripRunner.editCode()
 	if config.display:

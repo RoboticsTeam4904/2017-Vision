@@ -13,6 +13,7 @@ if debug:
 def main():
 	PiCamera.set(exposure=config.exposure, resolution=config.resolution)
 	config.resolution = PiCamera.getResolution()
+	config.degPerPxl = np.divide(config.nativeAngle, config.resolution)
 	if not config.edited:
 		GripRunner.editCode()
 	frameNum = 1

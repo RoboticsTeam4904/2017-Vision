@@ -15,6 +15,7 @@ def main():
 		cv2.namedWindow("Contours Found")
 	image = cv2.imread(config.sampleImage)
 	config.resolution = image.shape[1], image.shape[0]
+	config.degPerPxl = np.divide(config.nativeAngle, config.resolution)
 	contours = GripRunner.run(image)
 	targets = filterContoursFancy(contours)
 	isVisible, angleToGoal, distance = findSpike(targets)

@@ -1,4 +1,5 @@
 import cv2
+import numpy as np
 # Logging/debug settings
 # --------------
 debug = True
@@ -11,11 +12,12 @@ display = True
 exposure = 15
 gain = 10
 contrast = 50
-degPerPxl = 0.1 #experimentally determined 10 pxl per deg, going down by a v smol amount at the edge of the frame
 displacement = (6.5 + 5)/12.0 # Vertical feet from camera to bottom of vision target + Height of target in feet
 cameraTilt = 0
 width = 8.25/12 #from centers. targets are 2x5 inches and 6.25 inches apart
-resolution = (640, 360)
+resolution = (640, 480)
+nativeAngle  = (np.radians(64), np.radians(48)) #experimentally determined 10 pxl per deg at 640x480, going down by a v smol amount at the edge of the frame
+degPerPxl = np.average(np.divide(nativeAngle, resolution))
 
 # Misc
 # -------------
