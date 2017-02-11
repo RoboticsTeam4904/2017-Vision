@@ -41,32 +41,32 @@ def findSpike(contours): # returns isVisible, angleToGoal, distance
 
 def distanceFromHeight(y):
 	degrees = np.multiply(config.degPerPxl, np.subtract(np.true_divide(config.resolution[1], 2), y))
-	degrees = np.add(degrees, cameraTilt)
-	distance = np.divide(displacement, np.tan(degrees))
+	degrees = np.add(degrees, config.cameraTilt)
+	distance = np.divide(config.displacement, np.tan(degrees))
 	return distance
 
 def trueDistance(d1, d2):
 	squares = np.add(np.square(d1), np.square(d2))
-	squared = np.subtract(np.multiply(2, squares), np.square(width))
+	squared = np.subtract(np.multiply(2, squares), np.square(config.width))
 	# print squared, "not negative?" #SHOULDN"T BE NEGATIVE IF CAMERA MOUNTED PROPERLY AND CONSTANTS CORRECTLY LABELED
 	d = np.divide(np.sqrt(squared), 2)
 	return d
 	# d = 1/2 * sqrt(2*(d1^2+d2^2)-w^2)
 
 def angle(d, d2):
-	squares = np.subtract(np.add(np.true_divide(np.square(width), 4), np.square(d)), np.square(d2))
-	phi = np.arccos(np.divide(squares, np.multiply(width, d)))
+	squares = np.subtract(np.add(np.true_divide(np.square(config.width), 4), np.square(d)), np.square(d2))
+	phi = np.arccos(np.divide(squares, np.multiply(config.width, d)))
 	return np.subtract(np.pi, phi)
 	# angle = pi - acos(1/4*w^2 + d^2 - d2^2 / wd)
 
 
 # def widthFromData(d1, d2, pxlsBetween):
-# 	theta = np.multiply(pxlsBetween, degPerPxlX)
+# 	theta = np.multiply(pxlsBetween, config.degPerPxl)
 # 	sqaures = np.add(np.square(d1), np.square(d2))
 # 	cos = np.multiply(2, np.multiply(d1, np.multiply(d2, np.cos(theta))))
-# 	width = np.sqrt(np.subtract(squares, cos))
-# 	return width
+# 	config.width = np.sqrt(np.subtract(squares, cos))
+# 	return config.width
 
 # def distanceFromAngle(d1,d2,theta):
-# 	width = widthFromData(d1, d2, theta)
-# 	return trueDistance(d1, d2, width)
+# 	config.width = widthFromData(d1, d2, theta)
+# 	return trueDistance(d1, d2, config.width)
