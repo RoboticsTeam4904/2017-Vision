@@ -8,6 +8,8 @@ def getImage():
 
 def set(exposure=False, gain=False, contrast=False):
 	settingStr = "/usr/bin/v4l2-ctl -d /dev/video0"
+	if resolution:
+		settingStr += " --set-fmt-video=width={},height={}".format(resolution[0], resolution[1])
 	if exposure:
 		settingStr += " -c exposure_auto=1 -c exposure_auto_priority=0 -c exposure_absolute={}".format(exposure)
 	if gain:

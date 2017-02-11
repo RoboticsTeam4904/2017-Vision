@@ -8,7 +8,7 @@ Users need to:
 
 import cv2
 import numpy as np
-from ContourFinding import filterContours #, filterContoursFancy
+from ContourFinding import filterContoursFancy
 from SpikeFinding import findCenter
 import WebCam
 import GripRunner
@@ -27,7 +27,7 @@ def main():
 	while True:
 		image = WebCam.getImage()
 		contours = GripRunner.run(image)
-		targets = filterContours(contours) # To be edited if the last filter is changed in case of algorithmic changes. 
+		targets = filterContoursFancy(contours, image=image) # To be edited if the last filter is changed in case of algorithmic changes. 
 		center = findCenter(targets) #if 2, join and find center, if 1, return val, if 0 return input. if adjustCoords:	center[0] -= halfWidth
 		if display:
 			Printing.printResults(contours, center)
