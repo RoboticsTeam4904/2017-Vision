@@ -1,5 +1,5 @@
 from networktables import NetworkTables
-from config import team, ip, halfWidth
+from config import team, ip
 
 NetworkTables.setTeam(team)
 NetworkTables.initialize(server=ip)

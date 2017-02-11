@@ -12,16 +12,18 @@ from ContourFinding import filterContours #, filterContoursFancy
 from SpikeFinding import findSpike
 import WebCam
 import GripRunner
-from config import *
+import config
 import NetworkTabling
-if debug:
+if config.debug:
 	import Printing
 
 def main():
-	WebCam.set(exposure=exposure, resolution=resolution, contrast=contrast, gain=gain)
-	if not edited:
+	WebCam.set(exposure=config.exposure, resolution=config.resolution, contrast=config.contrast, gain=config.gain)
+	config.resolution = WebCam.getResolution()
+	config.middleX, config.middleY = np.divide(config.resolution, 2)
+	if not config.edited:
 		GripRunner.editCode()
-	if display:
+	if config.display:
 		cv2.namedWindow("Contours Found")
 	frameNum = 1
 	while True:
@@ -29,13 +31,13 @@ def main():
 		contours = GripRunner.run(image)
 		targets = filterContours(contours) # To be edited if the last filter is changed in case of algorithmic changes. 
 		isVisible, angleToGoal, distance = findSpike(targets) #if 2, join and find center, if 1, return val, if 0 return input. if adjustCoords:	center[0] -= halfWidth
-		if debug:
+		if config.debug:
 			Printing.printResults(contours, distance)
-		if save or display:
+		if config.save or config.display:
 			Printing.drawImage(image, contours, targets)
-			if save:
+			if config.save:
 				Printing.save(image)
-			if display:
+			if config.display:
 				Printing.display(image, defaultSize=True)
 		try:
 			NetworkTabling.publishToTables(isVisible=isVisible, angleToGoal=angleToGoal, distance=distance, frameNum=frameNum)

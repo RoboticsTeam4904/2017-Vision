@@ -1,22 +1,16 @@
 import cv2
 import numpy as np
-from config import *
+import config
 
-# Convert to inches
-#nativeAngleY = np.radians(57)
-degPerPxl = np.divide(nativeAngleY, resolution[1])
+# degPerPxl = np.divide(nativeAngleY, resolution[1])
+# degPerPxlX = np.divide(nativeAngleX, resolution[0])
 
-# nativeAngleX = np.radians(90)
-degPerPxlX = np.divide(nativeAngleX, resolution[0])
-
-displacement = 0.55 # Vertical feet from camera to bottom of vision target
-size = np.true_divide(5,12) # Height of target in feet
-k = 1
+displacement = 0.55 + np.true_divide(5,12) # Vertical feet from camera to bottom of vision target + Height of target in feet
 cameraTilt = 0
 
 width = np.divide(8.25, 12) #from centers. targets are 2x5 inches and 6.25 inches apart
-middleY = np.true_divide(resolution[1], 2)
-middleX = np.true_divide(resolution[0], 2)
+# middleY = np.true_divide(resolution[1], 2)
+# middleX = np.true_divide(resolution[0], 2)
 
 def findCenter(contours):
 	if len(contours) == 0:
@@ -34,12 +28,12 @@ def findSpike(contours): # returns isVisible, angleToGoal, distance
 	contour = np.concatenate(contours)
 	x,y,w,h = cv2.boundingRect(contour)
 	center = (np.add(x, np.divide(w,2)), np.add(y, np.true_divide(h,2)))
-	angleToGoal = np.multiply(degPerPxlX, np.subtract(middleX, center[0]))
+	angleToGoal = np.multiply(config.degPerPxl, np.subtract(config.middleX, center[0]))
 	if numContours == 2:
 		isVisible = True
 		x1,y1,w1,h1 = cv2.boundingRect(contours[0])
 		x2,y2,w2,h2 = cv2.boundingRect(contours[1])
-		print middleY - y1, middleY - y2
+		# print config.middleY - y1, config.middleY - y2
 		d1, d2 = distanceFromHeight(y1), distanceFromHeight(y2)
 		if x1 > x2:
 			d1, d2 = d2, d1
@@ -48,7 +42,7 @@ def findSpike(contours): # returns isVisible, angleToGoal, distance
 		phi = angle(distance, d2)
 		robotAngle = np.add(phi, angleToGoal)
 		x, y = np.multiply(distance, np.cos(phi)), np.multiply(distance, np.sin(phi))
-		print x, y, distance, distanceFromHeight(y), np.degrees(np.pi/2 - robotAngle), np.degrees(angleToGoal)
+		# print x, y, distance, distanceFromHeight(y), np.degrees(np.pi/2 - robotAngle), np.degrees(angleToGoal)
 		# horizontal distance, perpendicular distance, calculated distance, simple distance, robot direction (degrees), angle from robot to goal (degrees)
 
 	else:
@@ -57,10 +51,10 @@ def findSpike(contours): # returns isVisible, angleToGoal, distance
 	return isVisible, np.degrees(angleToGoal), distance
 
 def distanceFromHeight(y):
-	degrees = np.multiply(degPerPxl, np.subtract(middleY, y))
+	degrees = np.multiply(config.degPerPxl, np.subtract(config.middleY, y))
 	degrees = np.add(degrees, cameraTilt)
 	# print degrees, np.tan(degrees)
-	distance = np.divide(np.add(displacement, size), np.tan(degrees)) # = displacement * cot(degreesFromMiddleToBottom)
+	distance = np.divide(displacement, np.tan(degrees)) # = displacement * cot(degreesFromMiddleToBottom)
 	return distance
 
 def trueDistance(d1, d2):
