@@ -1,18 +1,17 @@
 # Logging/debug settings
 # --------------
 debug = True
-extra_debug = True
+extra_debug = False
 save = False
 display = True
 
 # Camera settings
 # --------------
-exposure = 300
+exposure = 12
 gain = 10
 contrast = 50
 resolution = (640, 360)
 halfWidth = resolution[0]/2
-areaFromAFoot = 50000 # resolution[0]*resolution[1]/10
 
 # Misc
 # -------------
