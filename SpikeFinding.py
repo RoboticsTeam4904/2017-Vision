@@ -20,6 +20,8 @@ def findSpike(contours): # returns isVisible, angleToGoal, distance
 		if x1 > x2:
 			d1, d2 = d2, d1
 		distance = trueDistance(d1, d2)
+		if not distance: # Something went wrong with mounting or detection.
+			isVisible = False
 		phi = angle(distance, d2)
 		robotAngle = np.add(phi, angleToGoal)
 		x, y = np.multiply(distance, np.cos(phi)), np.multiply(distance, np.sin(phi))
@@ -39,7 +41,8 @@ def distanceFromHeight(y):
 def trueDistance(d1, d2):
 	squares = np.add(np.square(d1), np.square(d2))
 	squared = np.subtract(np.multiply(2, squares), np.square(config.width))
-	# print squared, "not negative?" #SHOULDN"T BE NEGATIVE IF CAMERA MOUNTED PROPERLY AND CONSTANTS CORRECTLY LABELED
+	if squared < 0:
+		return False # Something went wrong
 	d = np.divide(np.sqrt(squared), 2)
 	return d
 	# d = 1/2 * sqrt(2*(d1^2+d2^2)-w^2)
@@ -49,15 +52,3 @@ def angle(d, d2):
 	phi = np.arccos(np.divide(squares, np.multiply(config.width, d)))
 	return np.subtract(np.pi, phi)
 	# angle = pi - acos(1/4*w^2 + d^2 - d2^2 / wd)
-
-
-# def widthFromData(d1, d2, pxlsBetween):
-# 	theta = np.multiply(pxlsBetween, config.degPerPxl)
-# 	sqaures = np.add(np.square(d1), np.square(d2))
-# 	cos = np.multiply(2, np.multiply(d1, np.multiply(d2, np.cos(theta))))
-# 	config.width = np.sqrt(np.subtract(squares, cos))
-# 	return config.width
-
-# def distanceFromAngle(d1,d2,theta):
-# 	config.width = widthFromData(d1, d2, theta)
-# 	return trueDistance(d1, d2, config.width)

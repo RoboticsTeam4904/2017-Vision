@@ -1,8 +1,8 @@
 from networktables import NetworkTables
-from config import team, ip
+import config
 
-NetworkTables.setTeam(team)
-NetworkTables.initialize(server=ip)
+NetworkTables.setTeam(config.team)
+NetworkTables.initialize(server=config.ip)
 
 table = NetworkTables.getTable("Vision")
 

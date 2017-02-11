@@ -36,7 +36,6 @@ def main():
 			if config.debug:
 				print error
 		frameNum += 1
-		#cv2.waitKey(500)
 	if display:
 		cv2.destroyAllWindows()
 
