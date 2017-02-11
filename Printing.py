@@ -9,8 +9,8 @@ defaultShrinkX, defaultShrinkY = 0.3, 0.3
 defaultThickness = 5
 
 def printResults(contours, distance, center=False):
-	print "Started with {} contours".format(len(contours))
-	print "I do believe that we are {} feet away from the target".format(distance)
+	print "{} contours".format(len(contours))
+	print "{} feet away".format(distance)
 	if center:
 		print "spike x position is {}".format(center[0])
 		print "spike y position is {}".format(center[1])

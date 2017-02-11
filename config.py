@@ -1,10 +1,10 @@
 # Logging/debug settings
 # --------------
-debug = False
+debug = True
 #step through each contour in the webcam by turning on extra_debug
 extra_debug = False
 save = False
-display = False
+display = True
 
 # Camera settings
 # --------------

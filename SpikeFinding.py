@@ -11,14 +11,6 @@ cameraTilt = 0
 width = np.divide(8.25, 12) #from centers. targets are 2x5 inches and 6.25 inches apart
 # middleY = np.true_divide(resolution[1], 2)
 # middleX = np.true_divide(resolution[0], 2)
-
-def findCenter(contours):
-	if len(contours) == 0:
-		return False
-	contour = np.concatenate(contours)
-	x,y,w,h = cv2.boundingRect(contour)
-	return (x + w/2, y + h/2)
-
 def findSpike(contours): # returns isVisible, angleToGoal, distance
 	isVisible=False
 	numContours = len(contours)
@@ -26,35 +18,31 @@ def findSpike(contours): # returns isVisible, angleToGoal, distance
 		print "no contours"
 		return False, 0, 0
 	contour = np.concatenate(contours)
-	x,y,w,h = cv2.boundingRect(contour)
-	center = (np.add(x, np.divide(w,2)), np.add(y, np.true_divide(h,2)))
-	angleToGoal = np.multiply(config.degPerPxl, np.subtract(config.middleX, center[0]))
+	X,Y,W,H = cv2.boundingRect(contour)
+	center = (np.add(X, np.divide(W,2)), np.add(Y, np.true_divide(H,2)))
+	angleToGoal = np.multiply(config.degPerPxl, np.subtract(np.true_divide(config.resolution[0], 2), center[0]))
 	if numContours == 2:
 		isVisible = True
 		x1,y1,w1,h1 = cv2.boundingRect(contours[0])
 		x2,y2,w2,h2 = cv2.boundingRect(contours[1])
-		# print config.middleY - y1, config.middleY - y2
 		d1, d2 = distanceFromHeight(y1), distanceFromHeight(y2)
 		if x1 > x2:
 			d1, d2 = d2, d1
-
 		distance = trueDistance(d1, d2)
 		phi = angle(distance, d2)
 		robotAngle = np.add(phi, angleToGoal)
 		x, y = np.multiply(distance, np.cos(phi)), np.multiply(distance, np.sin(phi))
-		# print x, y, distance, distanceFromHeight(y), np.degrees(np.pi/2 - robotAngle), np.degrees(angleToGoal)
-		# horizontal distance, perpendicular distance, calculated distance, simple distance, robot direction (degrees), angle from robot to goal (degrees)
-
+		if config.debug:
+			print "distance                      ", distance, distanceFromHeight(Y)
+			print "x,y,angle     ", x, y, np.degrees(angleToGoal)
 	else:
-		distance = distanceFromHeight(y)
-		print distance
+		distance = distanceFromHeight(Y)
 	return isVisible, np.degrees(angleToGoal), distance
 
 def distanceFromHeight(y):
-	degrees = np.multiply(config.degPerPxl, np.subtract(config.middleY, y))
+	degrees = np.multiply(config.degPerPxl, np.subtract(np.true_divide(config.resolution[1], 2), y))
 	degrees = np.add(degrees, cameraTilt)
-	# print degrees, np.tan(degrees)
-	distance = np.divide(displacement, np.tan(degrees)) # = displacement * cot(degreesFromMiddleToBottom)
+	distance = np.divide(displacement, np.tan(degrees))
 	return distance
 
 def trueDistance(d1, d2):
@@ -67,9 +55,7 @@ def trueDistance(d1, d2):
 
 def angle(d, d2):
 	squares = np.subtract(np.add(np.true_divide(np.square(width), 4), np.square(d)), np.square(d2))
-	# print d, np.divide(squares, np.multiply(width, d))
 	phi = np.arccos(np.divide(squares, np.multiply(width, d)))
-	# print phi
 	return np.subtract(np.pi, phi)
 	# angle = pi - acos(1/4*w^2 + d^2 - d2^2 / wd)
 
@@ -84,9 +70,3 @@ def angle(d, d2):
 # def distanceFromAngle(d1,d2,theta):
 # 	width = widthFromData(d1, d2, theta)
 # 	return trueDistance(d1, d2, width)
-
-
-def largest(contours):
-	areas = [cv2.contourArea(contour) for contour in contours]
-	largest = np.amax(areas)
-	return contours[areas.index(largest)]
