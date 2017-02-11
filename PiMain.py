@@ -9,7 +9,7 @@ Users need to:
 import cv2
 import numpy as np
 from ContourFinding import filterContours
-from SpikeFinding import findCenterandDist
+from SpikeFinding import findCenter
 import PiCamera
 import GripRunner
 from config import *
@@ -27,14 +27,14 @@ def main():
 		image = PiCamera.getImage()
 		contours = GripRunner.run(image)
 		targets = filterContours(contours) # To be edited if the last filter is changed in case of algorithmic changes. 
-		center, distance = findCenterandDist(targets) #if 2, join and find center, if 1, return val, if 0 return input. if adjustCoords:	center[0] -= halfWidth
+		center = findCenter(targets) #if 2, join and find center, if 1, return val, if 0 return input. if adjustCoords:	center[0] -= halfWidth
 		if debug:
-			Printing.printResults(contours, center, distance)
+			Printing.printResults(contours, center)
 		if save:
 			Printing.drawImage(image, contours, targets, center)
 			Printing.save(image)
 		try:
-			NetworkTabling.publishToTables(center, distance=distance, frameNum=frameNum)
+			NetworkTabling.publishToTables(center, frameNum=frameNum)
 		except Exception as error:
 			if debug:
 				print error

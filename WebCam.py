@@ -6,7 +6,7 @@ def getImage():
 	retval, image = camera.read()
 	return image
 
-def set(resolution=False, exposure=False, gain=False, contrast=False):
+def set(exposure=False, gain=False, contrast=False):
 	settingStr = "/usr/bin/v4l2-ctl -d /dev/video0"
 	if resolution:
 		settingStr += " --set-fmt-video=width={},height={}".format(resolution[0], resolution[1])

@@ -8,7 +8,7 @@ defaultSize = (640,360)
 defaultShrinkX, defaultShrinkY = 0.3, 0.3
 defaultThickness = 5
 
-def printResults(image, contours, targets, center):
+def printResults(contours, center):
 	print "Started with {} contours".format(len(contours))
 	if center:
 		print "spike x position is {}".format(center[0])
@@ -48,7 +48,9 @@ def save(image, name=None):
 		imageNum += 1
 	cv2.imwrite("TestImages/" + name + ".jpg", image)
 
-def display(image, name="Contours Found"):
+def display(image, name="Contours Found", doResize=True):
+	if doResize:
+		image = resize(image)
 	cv2.imshow(name, image)
 	key = cv2.waitKey(20)
 	if key == 27:

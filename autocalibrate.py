@@ -1,50 +1,33 @@
 import numpy as np
-import GripRunner
-import Printing 
-import config
-import WebCam
-import cv2
 
-minExposure = 3
-maxExposure = 1000
-resolutionArea = 600000
-maxArea = resolutionArea/4
-# test image max area is 58106.0
-
-def autocalibrate():
-	print "Calibrating WebCam... (may not work)"
-	exposure = WebCam.getExposure()
+def autocalibrate(camera, grip):
+	print "Calibrating camera... (may not work)"
+	shutter_speed = camera.getShutterSpeed()
 	numContours = 0
 	while numContours != 2:
-		image = WebCam.getImage()
-		contours = GripRunner.run(image)
+		image = camera.getImage()
+		contours = grip.run(image)
+		# filtered = filterContours(contours) #maybe skip this step?
 		numContours = len(contours)
-		print numContours, exposure, WebCam.getExposure()
-		randomVar = np.random.random_sample()
-		if config.display:
-			Printing.drawContours(image, contours)
-			Printing.display(image)
-		exposure = np.multiply(exposure, np.true_divide(2+randomVar, numContours+randomVar)) #np.true_divide(sqrtTwo, np.sqrt(numContours)
-		if tooLarge(contours):
-			exposure = np.multiply(exposure, 0.1)
-		exposure = np.min(np.max(exposure, minExposure), maxExposure)
-		WebCam.set(exposure=exposure)
-	# get range of exposure
-	Printing.save(image, name="autocalibrate")
-
-def tooLarge(contours):
-	areas = [cv2.contourArea(contour, False) for contour in contours]
-	largest = np.amax(areas)
-	if largest > maxArea:
-		return True
-	else:
-		return False
+		randomVar = np.random()
+		shutter_speed = np.multiply(shutter_speed, np.true_divide(numContours+randomVar, 2+randomVar)) #np.true_divide(sqrtTwo, np.sqrt(numContours)
+		camera.set(shutter_speed=shutter_speed)
+		# min and Max this, maybe make negative, depending on range
 
 
-# 	shutter_speed = WebCam.getShutterSpeed()
+# def autocalibrate(camera, grip):
+# 	print "Calibrating camera... (may not work)"
+# 	exposure = camera.getExposure
+# 	numContours = 0
+# 	while numContours != 2:
+# 		image = camera.getImage()
+# 		contours = grip.run(image)
+# 		# filtered = filterContours(contours) #maybe skip this step?
+# 		numContours = len(contours)
+# 		randomVar = np.random()
+# 		exposure = np.multiply(exposure, np.true_divide(2+randomVar, numContours+randomVar)) #np.true_divide(sqrtTwo, np.sqrt(numContours)
+# 		camera.set(exposure=exposure)
+# 		# min and Max this, maybe make negative, depending on range
 
-# 		shutter_speed = np.multiply(shutter_speed, np.true_divide(numContours+randomVar, 2+randomVar)) #np.true_divide(sqrtTwo, np.sqrt(numContours)
-# 		WebCam.set(shutter_speed=shutter_speed)
- 
-if __name__ == '__main__':
-	autocalibrate()
+# def 
+# camera.set(exposure=10)
