@@ -8,14 +8,12 @@ defaultSize = (640, 360)
 defaultShrinkX, defaultShrinkY = 0.3, 0.3
 defaultThickness = 5
 
-def printResults(contours, center, distance):
+def printResults(contours, distance, center=False):
 	print "Started with {} contours".format(len(contours))
+	print "I do believe that we are {} feet away from the target".format(distance)
 	if center:
 		print "spike x position is {}".format(center[0])
 		print "spike y position is {}".format(center[1])
-		print "I do believe that we are {} feet away from the target".format(distance)
-	else:
-		print "Could not find center!"
 
 def drawImage(image, contours, targets, center=False):
 	drawContours(image, contours)

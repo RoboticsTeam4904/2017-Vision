@@ -3,13 +3,13 @@ import numpy as np
 from config import *
 
 # Convert to inches
-nativeAngleY = np.radians(57)
+#nativeAngleY = np.radians(57)
 degPerPxl = np.divide(nativeAngleY, resolution[1])
 
 # nativeAngleX = np.radians(90)
 degPerPxlX = np.divide(nativeAngleX, resolution[0])
 
-displacement = 0.5 # Vertical feet from camera to bottom of vision target
+displacement = 0.55 # Vertical feet from camera to bottom of vision target
 size = np.true_divide(5,12) # Height of target in feet
 k = 1
 cameraTilt = 0
@@ -26,6 +26,7 @@ def findCenter(contours):
 	return (x + w/2, y + h/2)
 
 def findSpike(contours): # returns isVisible, angleToGoal, distance
+	isVisible=False
 	numContours = len(contours)
 	if numContours == 0:
 		print "no contours"
@@ -35,6 +36,7 @@ def findSpike(contours): # returns isVisible, angleToGoal, distance
 	center = (np.add(x, np.divide(w,2)), np.add(y, np.true_divide(h,2)))
 	angleToGoal = np.multiply(degPerPxlX, np.subtract(middleX, center[0]))
 	if numContours == 2:
+		isVisible = True
 		x1,y1,w1,h1 = cv2.boundingRect(contours[0])
 		x2,y2,w2,h2 = cv2.boundingRect(contours[1])
 		print middleY - y1, middleY - y2
@@ -52,7 +54,7 @@ def findSpike(contours): # returns isVisible, angleToGoal, distance
 	else:
 		distance = distanceFromHeight(y)
 		print distance
-	return True, np.degrees(angleToGoal), distance
+	return isVisible, np.degrees(angleToGoal), distance
 
 def distanceFromHeight(y):
 	degrees = np.multiply(degPerPxl, np.subtract(middleY, y))
