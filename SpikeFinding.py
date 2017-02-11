@@ -52,7 +52,7 @@ def findSpike(contours): # returns isVisible, angleToGoal, distance
 	else:
 		distance = distanceFromHeight(y)
 		print distance
-	return True, angleToGoal, np.degrees(distance)
+	return True, np.degrees(angleToGoal), distance
 
 def distanceFromHeight(y):
 	degrees = np.multiply(degPerPxl, np.subtract(middleY, y))
