@@ -20,7 +20,6 @@ nativeAngleY = 0.726 # 57 degrees
 nativeAngleX = 1.19 # undetermined
 
 
-
 # Misc
 # -------------
 ip = "10.49.4.2"
