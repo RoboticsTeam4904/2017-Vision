@@ -77,8 +77,8 @@ def filterContoursFancy(contours, image=None):
 			print "CONTOUR " + str(i)
 			print np.multiply(scores[:, i], weights) #newWeights
 			print contourScores[i]
-			Printing.drawImage(img, contours[:i] + contours[i+1:], contours[i], False)
-			Printing.display(img, "contour " + str(i), defaultSize=True)
+			Printing.drawImage(img, contours[:i] + contours[i+1:], [contours[i]], False)
+			Printing.display(img, "contour " + str(i), doResize=True)
 			cv2.waitKey(0)
 			cv2.destroyAllWindows()
 	return correctContours

@@ -11,6 +11,7 @@ def findSpike(contours): # returns isVisible, angleToGoal, distance
 	contour = np.concatenate(contours)
 	X,Y,W,H = cv2.boundingRect(contour)
 	center = (np.add(X, np.divide(W,2)), np.add(Y, np.true_divide(H,2)))
+	print np.degrees(np.multiply(config.degPerPxl[0], np.subtract(np.true_divide(config.resolution[0], 2), 0)))
 	angleToGoal = np.multiply(config.degPerPxl[0], np.subtract(np.true_divide(config.resolution[0], 2), center[0]))
 	if numContours == 2:
 		isVisible = True

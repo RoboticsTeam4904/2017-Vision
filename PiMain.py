@@ -20,7 +20,7 @@ def main():
 	while True:
 		image = PiCamera.getImage()
 		contours = GripRunner.run(image)
-		targets = filterContoursFancy(contours)
+		targets = filterContoursFancy(contours, image=image)
 		isVisible, angleToGoal, distance = findSpike(targets)
 		if config.debug:
 			Printing.printResults(contours, center)
