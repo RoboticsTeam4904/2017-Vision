@@ -4,7 +4,7 @@ import sys
 
 imageNum = 0
 colors = [(255,255,255), (255,255,0), (50,50,255)]
-defaultSize = (640, 360)
+defaultSize = (640,360)
 defaultShrinkX, defaultShrinkY = 0.3, 0.3
 defaultThickness = 5
 
@@ -20,6 +20,8 @@ def drawImage(image, contours, targets, center=False):
 	drawContours(image, targets, color=2)
 	if center:
 		drawCenter(image, center)
+	return resize(image)
+	#display(image)
 
 def resize(image, size=defaultSize):
 	return cv2.resize(image, size)
@@ -47,8 +49,8 @@ def save(image, name=None):
 		imageNum += 1
 	cv2.imwrite("TestImages/" + name + ".jpg", image)
 
-def display(image, name="Contours Found", defaultSize=False):
-	if resize:
+def display(image, name="Contours Found", doResize=True):
+	if doResize:
 		image = resize(image)
 	cv2.imshow(name, image)
 	key = cv2.waitKey(20)

@@ -11,8 +11,6 @@ display = True
 exposure = 15
 gain = 10
 contrast = 50
-resolution = (640, 360)
-
 # nativeAngleY = 0.83 # not sure
 # nativeAngleX = 1.1 # 63
 degPerPxl = 0.1 #experimentally determined 10 pxl per deg, going down by a v smol amount at the edge of the frame

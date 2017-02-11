@@ -10,7 +10,7 @@ Users need to:
 
 import cv2
 import numpy as np
-from ContourFinding import filterContours
+from ContourFinding import filterContoursFancy
 from SpikeFinding import findSpike
 import GripRunner
 from config import *
@@ -27,16 +27,16 @@ def main():
 		cv2.namedWindow("Contours Found")
 	image = cv2.imread(sampleImage)
 	contours = GripRunner.run(image)
-	targets = filterContours(contours) # To be edited if the last filter is changed in case of algorithmic changes. 
-	isVisible, angleToGoal, distance = findSpike(targets) #if 2, join and find center, if 1, return val, if 0 return input. if adjustCoords:	center[0] -= halfWidth
+	targets = filterContoursFancy(contours)
+	isVisible, angleToGoal, distance = findSpike(targets)
 	if debug:
-		Printing.printResults(contours, center, distance)
+		Printing.printResults(contours, center)
 	if save or display:
 		Printing.drawImage(image, contours, targets, center)
 		if save:
 			Printing.save(image)
 		if display:
-			Printing.display(image, defaultSize=True)
+			Printing.display(image)
 	try:
 		NetworkTabling.publishToTables(isVisible=isVisible, angleToGoal=angleToGoal, distance=distance, frameNum=frameNum)
 	except Exception as error:
