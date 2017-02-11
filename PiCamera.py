@@ -25,14 +25,7 @@ def set(resolution=False, exposure=False, exposure_mode=False, shutter_speed=Fal
 def getShutterSpeed():
 	return camera.shutter_speed
 
-
-#camera.start_preview()
-
-# Constants
-# camera.nativeResolution = (2592, 1944)
-# camera.nativeAngle = (math.radians(53.5), math.radians(41.41))
-# camera.mountAngle = (0, math.radians(45))
-# camera.distToShooter = (13.25, 2.5)
-# camera.goalHeight = 8 * 12
-# camera.height = 296 / 25.4 #to inches
+def getResolution():
+	resolution = getImage().shape
+	return resolution[1], resolution[0]
 

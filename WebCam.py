@@ -6,7 +6,7 @@ def getImage():
 	retval, image = camera.read()
 	return image
 
-def set(exposure=False, gain=False, contrast=False):
+def set(resolution=False, exposure=False, gain=False, contrast=False):
 	settingStr = "/usr/bin/v4l2-ctl -d /dev/video0"
 	if resolution:
 		settingStr += " --set-fmt-video=width={},height={}".format(resolution[0], resolution[1])
@@ -16,8 +16,7 @@ def set(exposure=False, gain=False, contrast=False):
 		settingStr += " -c gain={}".format(gain)
 	if contrast:
 		settingStr += " -c contrast={}".format(contrast)
-	subprocess.call(settingStr, shell=True)	
-
+	subprocess.call(settingStr, shell=True)
 
 
 def getExposure():
@@ -25,5 +24,4 @@ def getExposure():
 
 def getResolution():
 	resolution = getImage().shape
-	print resolution
 	return resolution[1], resolution[0]

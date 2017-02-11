@@ -16,12 +16,9 @@ weights = np.array([sizeWeight, ratioWeight, rotationWeight, rectangularWeight, 
 
 maxArea, minArea = 30000, 500
 
-def filterContours(contours):
+def filterContours(contours): # Find 2 largest contours.
 	numContours = len(contours)
-	# if debug:
-	# 	print "Number of contours: {}".format(numContours)
 	if numContours > 1:
-		# Find 2 largest contours.
 		largest_contour, second_largest_contour, largest_area, second_largest_area = None, None, 0, 0
 		for i in range(numContours):
 			temp_area = cv2.contourArea(contours[i], False)
@@ -49,9 +46,10 @@ def filterContoursFancy(contours, image=None):
 	widths, heights, positions = boundingInfo(boundingRects)
 
 	rotatedRects = [cv2.minAreaRect(contour) for contour in contours]
-	rotatedBoxes = [np.int0(cv2.cv.BoxPoints(rect)) for rect in rotatedRects]
-	print rotatedRects[0]
-	print rotatedBoxes[0]
+	if config.withOpenCV3:
+		rotatedBoxes = [np.int0(cv2.boxPoints(rect)) for rect in rotatedRects]
+	else:
+		rotatedBoxes = [np.int0(cv2.cv.BoxPoints(rect)) for rect in rotatedRects]
 	rotatedAreas = [cv2.contourArea(box) for box in rotatedBoxes]
 
 	sizeScores = [size(area)for area in areas]
@@ -69,16 +67,14 @@ def filterContoursFancy(contours, image=None):
 
 	correctInds, incorrectInds = sortedInds(contourScores)
 	correctContours = np.array(contours)[correctInds]
-	print "contours", correctContours
-	if config.debug:
+
+	if config.extra_debug:
 		print "size, ratio, rotation, rectangular, area, quad"
 		print "Weights:", weights
 		print "Scores: ", contourScores
 		print np.average(scores, axis=1)
 		if len(incorrectInds) != 0:
 			print "AVG, WORST", test(scores, correctInds, incorrectInds)
-
-	if config.extra_debug:
 		for i in range(numContours):
 			img = copy.deepcopy(image)
 			print "CONTOUR " + str(i)

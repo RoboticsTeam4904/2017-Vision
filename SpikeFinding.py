@@ -2,15 +2,6 @@ import cv2
 import numpy as np
 import config
 
-# degPerPxl = np.divide(nativeAngleY, resolution[1])
-# degPerPxlX = np.divide(nativeAngleX, resolution[0])
-
-displacement = 0.55 + np.true_divide(5,12) # Vertical feet from camera to bottom of vision target + Height of target in feet
-cameraTilt = 0
-
-width = np.divide(8.25, 12) #from centers. targets are 2x5 inches and 6.25 inches apart
-# middleY = np.true_divide(resolution[1], 2)
-# middleX = np.true_divide(resolution[0], 2)
 def findSpike(contours): # returns isVisible, angleToGoal, distance
 	isVisible=False
 	numContours = len(contours)
