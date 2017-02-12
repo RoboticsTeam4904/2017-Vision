@@ -3,7 +3,7 @@ import numpy as np
 # Logging/debug settings
 # --------------
 debug = True
-extra_debug = True #step through each contour in the webcam by turning on extra_debug
+extra_debug = False #step through each contour in the webcam by turning on extra_debug
 save = False
 display = True
 
