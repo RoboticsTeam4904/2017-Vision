@@ -8,7 +8,7 @@ numTargets = 2
 
 sizeWeight = 1
 ratioWeight = 0.5
-rotationWeight = 0.1
+rotationWeight = 0.05
 rectangularWeight = 3
 areaWeight = 0.5
 quadWeight = 5
@@ -77,7 +77,7 @@ def filterContoursFancy(contours, image=None):
 			print "CONTOUR " + str(i)
 			print np.multiply(scores[:, i], weights) #newWeights
 			print contourScores[i]
-			Printing.drawImage(img, contours[:i] + contours[i+1:], [contours[i]], False)
+			Printing.drawImage(img, contours[:i] + contours[i+1:], contours[i], False)
 			Printing.display(img, "contour " + str(i), doResize=True)
 			cv2.waitKey(0)
 			cv2.destroyAllWindows()
@@ -112,7 +112,7 @@ def distToPolygon(contour, polygon):
 	tests = [cv2.pointPolygonTest(polygon, (point[0][0], point[0][1]), True) for point in contour]
 	return np.average(np.absolute(tests))
 
-def rotation(rotatedRect):
+def rotation(rotatedRect): # not super good
 	angle = rotatedRect[2]
 	rotation = np.minimum(np.add(angle, 90), np.negative(angle)) #That's just how minarearect works
 	return rotation
