@@ -17,7 +17,7 @@ cameraTilt = 0
 width = 8.25/12 #from centers. targets are 2x5 inches and 6.25 inches apart
 resolution = (640, 480)
 nativeAngle  = (np.radians(64), np.radians(48)) #experimentally determined 10 pxl per deg at 640x480, going down by a v smol amount at the edge of the frame
-degPerPxl = np.average(np.divide(nativeAngle, resolution))
+degPerPxl = np.divide(nativeAngle, resolution)
 
 # Misc
 # -------------

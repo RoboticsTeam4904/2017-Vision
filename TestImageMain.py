@@ -20,7 +20,7 @@ def main():
 	targets = filterContoursFancy(contours, image=image)
 	isVisible, angleToGoal, distance = findSpike(targets)
 	if config.debug:
-		Printing.printResults(contours, distance)
+		Printing.printResults(contours=contours, distance=distance, angleToGoal=angleToGoal, isVisible=isVisible)
 	if config.save or config.display:
 		Printing.drawImage(image, contours, targets)
 		if config.save:

@@ -6,7 +6,6 @@ def findSpike(contours): # returns isVisible, angleToGoal, distance
 	isVisible=False
 	numContours = len(contours)
 	if numContours == 0:
-		print "no contours"
 		return False, 0, 0
 	contour = np.concatenate(contours)
 	X,Y,W,H = cv2.boundingRect(contour)
@@ -15,7 +14,7 @@ def findSpike(contours): # returns isVisible, angleToGoal, distance
 	angleToGoal = np.multiply(config.degPerPxl[0], np.subtract(np.true_divide(config.resolution[0], 2), center[0]))
 	if numContours == 2:
 		isVisible = True
-		x1,y1,w1,h1 = cv2.boundingRect(contours[0])
+		x1,y1,w1,h1 = cv2.boundingRect(contours[0]) #possibly change to make more resistant to small anomalies at the top of the contour
 		x2,y2,w2,h2 = cv2.boundingRect(contours[1])
 		d1, d2 = distanceFromHeight(y1), distanceFromHeight(y2)
 		if x1 > x2:

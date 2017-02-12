@@ -73,14 +73,15 @@ def filterContoursFancy(contours, image=None):
 		if len(incorrectInds) != 0:
 			print "AVG, WORST", test(scores, correctInds, incorrectInds)
 		for i in range(numContours):
-			img = copy.deepcopy(image)
 			print "CONTOUR " + str(i)
 			print np.multiply(scores[:, i], weights) #newWeights
 			print contourScores[i]
-			Printing.drawImage(img, contours[:i] + contours[i+1:], contours[i], False)
-			Printing.display(img, "contour " + str(i), doResize=True)
+			if image:
+				img = copy.deepcopy(image)
+				Printing.drawImage(img, contours[:i] + contours[i+1:], contours[i], False)
+				Printing.display(img, "contour " + str(i), doResize=True)
 			cv2.waitKey(0)
-			cv2.destroyAllWindows()
+		cv2.destroyAllWindows()
 	return correctContours
 
 def sortedInds(scores):
