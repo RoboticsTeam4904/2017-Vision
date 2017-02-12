@@ -8,7 +8,7 @@ numTargets = 2
 
 sizeWeight = 1
 ratioWeight = 0.5
-rotationWeight = 0.1
+rotationWeight = 0.05
 rectangularWeight = 3
 areaWeight = 0.5
 quadWeight = 5
@@ -16,12 +16,9 @@ weights = np.array([sizeWeight, ratioWeight, rotationWeight, rectangularWeight, 
 
 maxArea, minArea = 30000, 500
 
-def filterContours(contours):
+def filterContours(contours): # Find 2 largest contours.
 	numContours = len(contours)
-	# if debug:
-	# 	print "Number of contours: {}".format(numContours)
 	if numContours > 1:
-		# Find 2 largest contours.
 		largest_contour, second_largest_contour, largest_area, second_largest_area = None, None, 0, 0
 		for i in range(numContours):
 			temp_area = cv2.contourArea(contours[i], False)
@@ -37,21 +34,20 @@ def filterContours(contours):
 		return contours
 
 def filterContoursFancy(contours, image=None):
-
 	if len(contours) == 0:
 		return []
 
 	numContours = len(contours)
-	#print contours[0]
 	areas = np.array([cv2.contourArea(contour) for contour in contours])
 
 	boundingRects = [cv2.boundingRect(contour) for contour in contours]
 	widths, heights, positions = boundingInfo(boundingRects)
 
 	rotatedRects = [cv2.minAreaRect(contour) for contour in contours]
-	rotatedBoxes = [np.int0(cv2.cv.BoxPoints(rect)) for rect in rotatedRects]
-	print rotatedRects[0]
-	print rotatedBoxes[0]
+	if config.withOpenCV3:
+		rotatedBoxes = [np.int0(cv2.boxPoints(rect)) for rect in rotatedRects]
+	else:
+		rotatedBoxes = [np.int0(cv2.cv.BoxPoints(rect)) for rect in rotatedRects]
 	rotatedAreas = [cv2.contourArea(box) for box in rotatedBoxes]
 
 	sizeScores = [size(area)for area in areas]
@@ -60,7 +56,6 @@ def filterContoursFancy(contours, image=None):
 	rectangularScores = [distToPolygon(contour, poly) for contour,poly in zip(contours, rotatedBoxes)]
 	areaScores = polygonAreaDiff(areas, rotatedAreas)
 	quadScores = [Quadrify(contour) for contour in contours]
-	# quadScores = [distToPolygon(contour, quad) for contour,quad in zip(contour,quad)]
 
 	rectangularScores = np.divide(rectangularScores, widths)
 
@@ -69,25 +64,24 @@ def filterContoursFancy(contours, image=None):
 
 	correctInds, incorrectInds = sortedInds(contourScores)
 	correctContours = np.array(contours)[correctInds]
-	print "contours", correctContours
-	if config.debug:
+
+	if config.extra_debug:
 		print "size, ratio, rotation, rectangular, area, quad"
 		print "Weights:", weights
 		print "Scores: ", contourScores
 		print np.average(scores, axis=1)
 		if len(incorrectInds) != 0:
 			print "AVG, WORST", test(scores, correctInds, incorrectInds)
-
-	if config.extra_debug:
 		for i in range(numContours):
-			img = copy.deepcopy(image)
 			print "CONTOUR " + str(i)
 			print np.multiply(scores[:, i], weights) #newWeights
 			print contourScores[i]
-			Printing.drawImage(img, contours[:i] + contours[i+1:], contours[i], False)
-			Printing.display(img, "contour " + str(i), defaultSize=True)
+			if image:
+				img = copy.deepcopy(image)
+				Printing.drawImage(img, contours[:i] + contours[i+1:], contours[i], False)
+				Printing.display(img, "contour " + str(i), doResize=True)
 			cv2.waitKey(0)
-			cv2.destroyAllWindows()
+		cv2.destroyAllWindows()
 	return correctContours
 
 def sortedInds(scores):
@@ -115,27 +109,16 @@ def boundingInfo(rects):
 	positions = rects[:,:2]
 	return widths, heights, positions
 
-def rotatedInfo(rects):
-	widths, heights = np.array([]), np.array([])
-	for rect in rects:
-		widths.append(rect[1][0])
-		heights.append(rect[1][1])
-		# center = rect[0] + rotate(rect[1] by angles)
-	return widths, heights
-
 def distToPolygon(contour, polygon):
 	tests = [cv2.pointPolygonTest(polygon, (point[0][0], point[0][1]), True) for point in contour]
 	return np.average(np.absolute(tests))
-	# (point[0][0], point[0][1]) replace with point?
 
-def rotation(rotatedRect):
+def rotation(rotatedRect): # not super good
 	angle = rotatedRect[2]
 	rotation = np.minimum(np.add(angle, 90), np.negative(angle)) #That's just how minarearect works
 	return rotation
 
-def size(area):
-	# DONT DO MAYBE
-	# Too large bad, too small bad
+def size(area): # Too large bad, too small bad
 	diff = 1
 	if area > maxArea:
 		diff = np.divide(area, maxArea)
@@ -148,21 +131,10 @@ def size(area):
 def ratios(widths, heights):
 	ratios = np.divide(np.true_divide(heights, widths), 1.5)
 	return np.absolute(np.log(ratios))
-	# Subtract the difference from what is expected from that contour's score
-	# contourScores[i] -= abs(heights[i] - widths[i]*1.5)
-	# Log instead of subtraction so it scales
-
-# def multipleRatioTest(rectOne, rectTwo):
-#	Same width (same height, stuff)
-#	https://wpilib.screenstepslive.com/s/4485/m/24194/l/683625-processing-images-from-the-2017-frc-game maybe
-#	Pairs all contours with each other, and checks that the bounding rectangle around
-#	both of them is the dimensions that it should be
 
 def polygonAreaDiff(areas, polyAreas):
 	ratios = np.divide(polyAreas, areas)
 	return np.absolute(np.log(ratios))
-	# cv2.contourArea(poly)
-
 
 def Quadrify(contour):
 	epsilon = 10
@@ -173,29 +145,5 @@ def Quadrify(contour):
 		epsilon = np.multiply(epsilon, np.true_divide(np.add(length, randomVar), np.add(4, randomVar)))
 		# print epsilon, length
 		if length == 4:
-			return np.multiply(i,0.01)
+			return np.multiply(i, 0.01)
 	return 1
-
-
-# NOT OF VARIABLE SIZE
-def fitPattern(image, pattern, method=cv2.TM_SQDIFF):
-	location, patternSize = None, None
-	scores = cv2.matchTemplate(image, pattern, method)
-	minVal, maxVal, minLoc, maxLoc = cv2.minMaxLoc(scores)
-	if method  == cv2.TM_SQDIFF or method == cv2.TM_SQDIFF_NORMED:
-		location = minLoc
-	else:
-		location = maxLoc
-	center = np.add(location, patternSize)
-	return center
-
-
-# Parallelograms everywhere. Otherwise quads or minarearectangle
-# Perimeter
-# What about spike? Test image, test scores. How to get around it
-# Paired or triplet contours
-# Run approxPoly once and record num sides?
-
-# read about:
-# convexity defects
-# floodfill

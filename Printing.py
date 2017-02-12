@@ -8,19 +8,25 @@ defaultSize = (640,360)
 defaultShrinkX, defaultShrinkY = 0.3, 0.3
 defaultThickness = 5
 
-def printResults(contours, center):
-	print "Started with {} contours".format(len(contours))
+def printResults(contours=False, distance=False, angleToGoal=False, isVisible=True, center=False):
+	if not isVisible:
+		print "CANNOT SEE GOAL"
+	if contours:
+		print "{} contours".format(len(contours))
+	if distance:
+		print "{} feet away".format(distance)
+	if angleToGoal:
+		print "{} degrees off".format(angleToGoal)
 	if center:
 		print "spike x position is {}".format(center[0])
 		print "spike y position is {}".format(center[1])
-	else:
-		print "Could not find center!"
+
+
+def drawImage(image, contours, targets, center=False):
 	drawContours(image, contours)
 	drawContours(image, targets, color=2)
 	if center:
 		drawCenter(image, center)
-	return resize(image)
-	#display(image)
 
 def resize(image, size=defaultSize):
 	return cv2.resize(image, size)
@@ -55,5 +61,3 @@ def display(image, name="Contours Found", doResize=True):
 	key = cv2.waitKey(20)
 	if key == 27:
 		sys.exit()
-	#cv2.destroyAllWindows()
-
