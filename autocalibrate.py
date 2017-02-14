@@ -9,10 +9,10 @@ resolutionArea = np.multiply(resolution[0], resolution[1])
 maxArea = np.divide(resolutionArea, 4)
 
 targetAverage = 30
-averageThreshold = 20
+averageThreshold = 10
 
 numTests = 5
-maxBrightnessIterations = 3
+maxBrightnessIterations = 4
 
 
 def calibrate():
