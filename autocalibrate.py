@@ -12,7 +12,7 @@ targetAverage = 30
 averageThreshold = 20
 
 numTests = 5
-maxBrightnessIterations = 20
+maxBrightnessIterations = 3
 
 
 def calibrate():
@@ -30,7 +30,7 @@ def calibrate():
 		average = cv2.mean(value)[0]
 		if np.absolute(np.subtract(average, targetAverage)) < averageThreshold:
 			if debug:
-				print i, "num iterations, brightness lowering"
+				pass # print i, "num iterations, brightness lowering"
 			break
 
 		scaleBy = np.divide(targetAverage, average)
