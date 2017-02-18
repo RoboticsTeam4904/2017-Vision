@@ -2,17 +2,18 @@ import numpy as np
 import GripRunner, Printing, WebCam
 from config import debug, display, resolution
 import cv2, time
+from ContourFinding import *
 
-minExposure = 5
-maxExposure = 100
+minExposure = 1
+maxExposure = 50
 resolutionArea = np.multiply(resolution[0], resolution[1])
 maxArea = np.divide(resolutionArea, 4)
 
 targetAverage = 30
 averageThreshold = 10
 
-numTests = 5
-maxBrightnessIterations = 4
+numTests = 2
+maxBrightnessIterations = 400
 
 
 def calibrate():
@@ -21,16 +22,18 @@ def calibrate():
 		b = time.clock()
 
 	for iteration in xrange(maxBrightnessIterations):
-		image = WebCam.getImage()
+		for k in range(10):
+			image = WebCam.getImage()
 		if display:
 			Printing.display(image)
 
 		image = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
 		value = cv2.split(image)[2]
 		average = cv2.mean(value)[0]
+		print "average brightness is ", average
 		if np.absolute(np.subtract(average, targetAverage)) < averageThreshold:
 			if debug:
-				pass # print i, "num iterations, brightness lowering"
+				print iteration, "num iterations, brightness lowering"
 			break
 
 		scaleBy = np.divide(targetAverage, average)
@@ -40,12 +43,16 @@ def calibrate():
 		exposure = newExposure
 		WebCam.set(exposure=exposure)
 	if debug:
-		print "bright", time.clock() - b
+		print exposure, "bright", time.clock() - b
 
 	numGoodFrames = 0
 	if debug:
 		s = time.clock()
 	for i in range(1000):
+		print "Sleeping!"
+		for i in range(10):
+			image = WebCam.getImage()
+		time.sleep(0)
 		image = WebCam.getImage()
 		contours = GripRunner.run(image)
 		numContours = len(contours)
@@ -55,6 +62,7 @@ def calibrate():
 		if numContours != 0:
 			if tooLarge(contours):
 				exposure = np.divide(exposure, 10)
+		print "num contours", numContours
 		if numContours == 2:
 			numGoodFrames += 1
 			if numGoodFrames == numTests:
@@ -65,8 +73,10 @@ def calibrate():
 		else:
 			numGoodFrames = 0
 		randomVar = np.random.random_sample()
-		scaleBy = np.true_divide(2+randomVar, numContours+randomVar)
+		scaleBy = np.true_divide(2+randomVar, numContours+randomVar)/3
+		print "old exposure: ", exposure
 		exposure = np.minimum(np.maximum(np.multiply(exposure, scaleBy), minExposure), maxExposure)
+		print "new exposure: ", exposure
 		WebCam.set(exposure=exposure)
 		if display:
 			Printing.drawContours(image, contours)
