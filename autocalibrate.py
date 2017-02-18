@@ -85,6 +85,20 @@ def calibrate():
 		print "Failed grip", time.clock() - s
 	return False
 
+def newCalibrate():
+	maxScore = 0
+	maxScoreExposure = 0
+	for exposure in range(1, 60):
+		WebCam.set(exposure=exposure)
+		image = WebCam.getImage()
+		contours = GripRunner.run(image)
+		averageScore = filtercontoursAutocalibrate(image, contours)
+		if averageScore > maxScore:
+			maxScore = averageScore
+			maxScoreExposure = exposure
+	WebCam.set(exposure=exposure)
+	return True
+
 
 def tooLarge(contours):
 	areas = [cv2.contourArea(contour, False) for contour in contours]
