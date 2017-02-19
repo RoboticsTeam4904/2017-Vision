@@ -20,7 +20,7 @@ if debug:
 
 def main():
 	WebCam.set(exposure=exposure, resolution=resolution, contrast=contrast, gain=gain)
-	autocalibrate.newCalibrate()
+	autocalibrate.calibrate()
 	if not edited:
 		GripRunner.editCode()
 	if display:

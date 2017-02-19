@@ -16,7 +16,7 @@ numTests = 2
 maxBrightnessIterations = 400
 
 
-def calibrate():
+def oldDecrepidAndFrailCalibrate():
 	exposure = WebCam.getExposure()
 	if debug:
 		b = time.clock()
@@ -85,7 +85,7 @@ def calibrate():
 		print "Failed grip", time.clock() - s
 	return False
 
-def newCalibrate():
+def calibrate():
 	maxScore = 0
 	maxScoreExposure = 0
 	for exposure in range(1, 60):
