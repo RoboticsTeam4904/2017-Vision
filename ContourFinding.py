@@ -182,7 +182,7 @@ def filterContoursAutocalibrate(contours, image=None):
 	correctContours = np.array(contours)[correctInds]
 
 	averageScore = 0
-	for i in numContours:
+	for i in range(numContours):
 		averageScore += sizeScores[i]
 		averageScore +=  ratioScores[i]
 		averageScore +=  rotationScores[i]

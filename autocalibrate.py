@@ -92,7 +92,7 @@ def newCalibrate():
 		WebCam.set(exposure=exposure)
 		image = WebCam.getImage()
 		contours = GripRunner.run(image)
-		averageScore = filtercontoursAutocalibrate(image, contours)
+		averageScore = filterContoursAutocalibrate(contours, image)
 		if averageScore > maxScore:
 			maxScore = averageScore
 			maxScoreExposure = exposure
@@ -115,7 +115,7 @@ def displace():
 def test():
 	displace()
 	start = time.clock()
-	calibrate()
+	newCalibrate()
 	exposure = WebCam.getExposure()
 	print time.clock() - start, "TOTAL TIME"
 
