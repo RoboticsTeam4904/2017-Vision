@@ -1,16 +1,20 @@
 import cv2
 import numpy as np
-from ContourFinding import filterContoursFancy
+from ContourFinding import filterContours, filterContoursFancy
 from SpikeFinding import findSpike
 import WebCam
 import GripRunner
 import config
+import autocalibrate
 import NetworkTabling
+
+
 if config.debug:
 	import Printing
 
 def main():
 	WebCam.set(exposure=config.exposure, resolution=config.resolution, contrast=config.contrast, gain=config.gain)
+	autocalibrate.calibrate()
 	config.resolution = WebCam.getResolution()
 	config.degPerPxl = np.divide(config.nativeAngle, config.resolution)
 	if not config.edited:
@@ -21,16 +25,17 @@ def main():
 	while True:
 		image = WebCam.getImage()
 		contours = GripRunner.run(image)
+
 		targets = filterContoursFancy(contours)
 		isVisible, angleToGoal, distance = findSpike(targets)
 		if config.debug:
 			Printing.printResults(contours=contours, distance=distance, angleToGoal=angleToGoal, isVisible=isVisible)
 		if config.save or config.display:
 			Printing.drawImage(image, contours, targets)
-			if config.save:
-				Printing.save(image)
-			if config.display:
-				Printing.display(image)
+		if config.save:
+			Printing.save(image)
+		if config.display:
+			Printing.display(image)
 		try:
 			NetworkTabling.publishToTables(isVisible=isVisible, angleToGoal=angleToGoal, distance=distance, frameNum=frameNum)
 		except Exception as error:
