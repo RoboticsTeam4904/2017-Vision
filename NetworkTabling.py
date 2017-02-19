@@ -1,27 +1,16 @@
 from networktables import NetworkTables
-from config import team, ip, halfWidth
+import config
 
-NetworkTables.setTeam(team)
-NetworkTables.initialize(server=ip)
+NetworkTables.setTeam(config.team)
+NetworkTables.initialize(server=config.ip)
 
-table = NetworkTables.getTable("SmartDashboard")
+table = NetworkTables.getTable("Vision")
 
-def publishToTables(center, frameNum=0, distance=0):
-	isVisible = False
-	if center:
-		isVisible = True
-		center = (center[0] - halfWidth, center[1])
-	else:
-		isVisible = False
-		center = (0,0)
-	table.putNumber('centerX', center[0])
-	table.putNumber('centerY', center[1]) # Can be deleted
-	table.putBoolean('isVisible', isVisible)
+def publishToTables(isVisible=True, angleToGoal=0, distance=0, frameNum=0):
+	table.putBoolean('trustable', isVisible)
+	table.putNumber('degrees', angleToGoal)
+	table.putNumber('distance', distance)
 	table.putNumber('frameNum', frameNum)
-	table.putNumber('distance', distance) # Feet away
-
-	# if debug:
-		# print "Published to network tables."
 
 def calibrateFromTables():
 	import GripRunner

@@ -1,4 +1,5 @@
 import numpy as np
+
 import GripRunner, Printing, WebCam
 from config import debug, display, resolution
 import cv2, time
