@@ -1,35 +1,35 @@
-import java.io.BufferedReader;
+package org.usfirst.frc.team4904.robot;
+
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.InetAddress;
-import java.net.ServerSocket;
-import java.net.Socket;
+
+import edu.wpi.first.wpilibj.networktables.NetworkTable;
 
 public class AutocalibrateRunner {
 
-	private static final String HOSTNAME = "tegra-ubuntu.local";
-	private static final int PORT_NUMBER = 5001;
-	private static BufferedReader input;
-	static ServerSocket listener = null;
-	
-	public static void main(String[] args) {
+	double numCalibrations = 0;
 
-		try {
-			listener = new ServerSocket(PORT_NUMBER, 100, InetAddress.getByName(HOSTNAME));
-			Socket socket = listener.accept();
-			BufferedReader in = new BufferedReader(new InputStreamReader(
-					socket.getInputStream()));
-			
-			while (true) {
-				String line = in.readLine();
-				if(line != null) {
-					if(line.contains("autocalibrate")) {
-						Process p = Runtime.getRuntime().exec("python autocalibrate.py");
-					}
-				}
+	public static void main(String[] args) {
+		new AutocalibrateRunner2().run();
+	}
+	
+	public void run() {
+		NetworkTable.setClientMode();
+		NetworkTable.setIPAddress("tegra-ubuntu.local");
+		NetworkTable table = NetworkTable.getTable("autocalibration");
+		double calibrate = table.getNumber("autocalibrate");
+		if(calibrate > numCalibrations) {
+			numCalibrations += 1;
+			Process p;
+			try {
+				p = Runtime.getRuntime().exec("python autocalibrate.py");
+				p.waitFor();
+				System.out.println("Finished Autocalibrating!");
+			} catch (IOException e) {
+				e.printStackTrace();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
 			}
-		} catch (IOException e) {
-			e.printStackTrace();
+			
 		}
 	}
 }
