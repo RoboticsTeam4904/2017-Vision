@@ -135,4 +135,4 @@ def test():
 	# average = cv2.mean(value)
 	# print average
 
-calibrate()
+

@@ -39,6 +39,7 @@ def main():
 		try:
 			NetworkTabling.publishToTables(isVisible=isVisible, angleToGoal=angleToGoal, distance=distance, frameNum=frameNum)
 		except Exception as error:
+			print "errororoeroeieorijaw;"
 			if config.debug:
 				print error
 		frameNum += 1
