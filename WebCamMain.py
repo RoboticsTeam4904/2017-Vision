@@ -18,7 +18,7 @@ def main():
 		autocalibrate.calibrate()
 		NetworkTabling.publishAutocal(exposure=WeCam.getExposure())
 	if config.debug:
-		print WebCam.getExposure()
+		print "EXPOSURE: {}".format(WebCam.getExposure())
 	config.resolution = WebCam.getResolution()
 	config.degPerPxl = np.divide(config.nativeAngle, config.resolution)
 	if not config.edited:

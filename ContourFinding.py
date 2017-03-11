@@ -149,9 +149,9 @@ def Quadrify(contour):
 	return 1
 
 
-def filterContoursAutocalibrate(contours, image=None):
+def filterContoursAutocalibrate(contours):
 	if len(contours) == 0:
-		return []
+		return 10000
 
 	numContours = len(contours)
 	areas = np.array([cv2.contourArea(contour) for contour in contours])
@@ -166,7 +166,7 @@ def filterContoursAutocalibrate(contours, image=None):
 		rotatedBoxes = [np.int0(cv2.cv.BoxPoints(rect)) for rect in rotatedRects]
 	rotatedAreas = [cv2.contourArea(box) for box in rotatedBoxes]
 
-	sizeScores = [size(area)for area in areas]
+	sizeScores = [size(area) for area in areas]
 	ratioScores = ratios(widths, heights)
 	rotationScores = [rotation(rect) for rect in rotatedRects]
 	rectangularScores = [distToPolygon(contour, poly) for contour,poly in zip(contours, rotatedBoxes)]
@@ -179,15 +179,10 @@ def filterContoursAutocalibrate(contours, image=None):
 	contourScores = np.dot(weights, scores)
 
 	correctInds, incorrectInds = sortedInds(contourScores)
-	correctContours = np.array(contours)[correctInds]
+	averageCorrectScore = np.average(contourScores[correctInds])
+	if len(incorrectInds) == 0:
+		averageIncorrectScore = 1000
+	else:
+		averageIncorrectScore = np.average(contourScores[incorrectInds])
 
-	averageScore = 0
-	for i in range(numContours):
-		averageScore += sizeScores[i]
-		averageScore +=  ratioScores[i]
-		averageScore +=  rotationScores[i]
-		averageScore +=  rectangularScores[i]
-		averageScore +=  areaScores[i]
-		averageScore +=  quadScores[i]
-	averageScore /= numContours
-	return averageScore
+	return averageIncorrectScore - averageScore
