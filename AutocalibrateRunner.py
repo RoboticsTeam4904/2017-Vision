@@ -4,6 +4,7 @@ from config import ip, team
 NetworkTables.setTeam(team)
 NetworkTables.initialize(server=ip)
 table = NetworkTables.getTable('autocalibrate')
+#in the future, use network tables from networkTabling in report-autocalibrate branch
 
 calibrations = 0
 
