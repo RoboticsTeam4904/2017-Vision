@@ -1,15 +1,17 @@
 from networktables import NetworkTables
 from autocalibrate import calibrate
-NetworkTables.initialize(server='10.49.4.2')
+from config import ip, team
+NetworkTables.setTeam(team)
+NetworkTables.initialize(server=ip)
 table = NetworkTables.getTable('autocalibrate')
 
-calibrations = 10000
+calibrations = 0
 
-print "starting!"
+print "Starting Button Autocalibration!"
 while True:
-	foo = table.getNumber('autocalibrate', -1)
-	print "foo is ", foo
-	if foo > calibrations:
+	robotPresses = table.getNumber('autocalibrate', -1)
+	print "robotPresses is ", robotPresses
+	if robotPresses > calibrations:
 		print "For some reason, we are calibrating the camera"
 		calibrations += 1
 		calibrate()
