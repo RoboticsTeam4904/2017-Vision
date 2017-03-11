@@ -2,15 +2,7 @@ import cv2
 import numpy as np
 from ContourFinding import filterContours, filterContoursFancy
 from SpikeFinding import findSpike
-import WebCam
-import GripRunner
-import config
-import autocalibrate
-import NetworkTabling
-
-
-if config.debug:
-	import Printing
+import config, WebCam, GripRunner, autocalibrate, NetworkTabling, Printing
 
 def main():
 	WebCam.set(exposure=config.exposure, resolution=config.resolution, contrast=config.contrast, gain=config.gain)
@@ -23,11 +15,16 @@ def main():
 		cv2.namedWindow("Contours Found")
 	frameNum = 1
 	while True:
+		if NetworkTabling.checkForCalibrate():
+			print "CALIBRATING the camera due to button press"
+			autocalibrate.calibrate()
+			NetworkTabling.putCalibrated()
+
 		image = WebCam.getImage()
 		contours = GripRunner.run(image)
-
 		targets = filterContoursFancy(contours)
 		isVisible, angleToGoal, distance = findSpike(targets)
+
 		if config.debug:
 			Printing.printResults(contours=contours, distance=distance, angleToGoal=angleToGoal, isVisible=isVisible)
 		if config.save or config.display:
@@ -36,6 +33,7 @@ def main():
 			Printing.save(image)
 		if config.display:
 			Printing.display(image)
+
 		try:
 			NetworkTabling.publishToTables(isVisible=isVisible, angleToGoal=angleToGoal, distance=distance, frameNum=frameNum)
 		except Exception as error:
