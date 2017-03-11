@@ -16,7 +16,7 @@ def main():
 	WebCam.set(exposure=config.exposure, resolution=config.resolution, contrast=config.contrast, gain=config.gain)
 	if config.autocalibrate:
 		autocalibrate.calibrate()
-		NetworkTabling.publishAutocal(exposure=WeCam.getExposure())
+		NetworkTabling.publishAutocal(exposure=WebCam.getExposure())
 	if config.debug:
 		print "EXPOSURE: {}".format(WebCam.getExposure())
 	config.resolution = WebCam.getResolution()

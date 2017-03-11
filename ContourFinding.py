@@ -151,7 +151,7 @@ def Quadrify(contour):
 
 def filterContoursAutocalibrate(contours):
 	if len(contours) == 0:
-		return 10000
+		return 0
 
 	numContours = len(contours)
 	areas = np.array([cv2.contourArea(contour) for contour in contours])
@@ -181,8 +181,8 @@ def filterContoursAutocalibrate(contours):
 	correctInds, incorrectInds = sortedInds(contourScores)
 	averageCorrectScore = np.average(contourScores[correctInds])
 	if len(incorrectInds) == 0:
-		averageIncorrectScore = 1000
+		averageIncorrectScore = 2
 	else:
 		averageIncorrectScore = np.average(contourScores[incorrectInds])
 
-	return averageIncorrectScore - averageScore
+	return averageIncorrectScore - averageCorrectScore

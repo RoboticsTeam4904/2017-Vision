@@ -5,13 +5,15 @@ from config import debug, display, resolution
 import cv2, time
 from ContourFinding import *
 
+granularity = 3
 minExposure = 1
-maxExposure = 50
+maxExposure = 100
 resolutionArea = np.multiply(resolution[0], resolution[1])
 maxArea = np.divide(resolutionArea, 4)
 
 targetAverage = 30
 averageThreshold = 10
+
 
 numTests = 2
 maxBrightnessIterations = 400
@@ -19,7 +21,7 @@ maxBrightnessIterations = 400
 def calibrate():
 	maxScore = 0
 	maxScoreExposure = 0
-	for exposure in range(1, 60):
+	for exposure in range(minExposure, maxExposure, granularity):
 		WebCam.set(exposure=exposure)
 		image = WebCam.getImage()
 		contours = GripRunner.run(image)
@@ -27,8 +29,7 @@ def calibrate():
 		if averageScore > maxScore:
 			maxScore = averageScore
 			maxScoreExposure = exposure
-	WebCam.set(exposure=exposure)
-	return True
+	WebCam.set(exposure=maxScoreExposure)
 
 
 def oldDecrepidAndFrailCalibrate():
