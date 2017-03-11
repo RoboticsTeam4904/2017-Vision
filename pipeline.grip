@@ -3,6 +3,15 @@
     <grip:Camera>
       <property name="deviceNumber" value="0"/>
     </grip:Camera>
+    <grip:ImageFile>
+      <property name="path" value="/Users/oshlern/Downloads/TEST2 (2).jpg"/>
+    </grip:ImageFile>
+    <grip:ImageFile>
+      <property name="path" value="/Users/oshlern/Downloads/TEST1 (2).jpg"/>
+    </grip:ImageFile>
+    <grip:ImageFile>
+      <property name="path" value="/Users/oshlern/Downloads/TEST0 (2).jpg"/>
+    </grip:ImageFile>
   </sources>
   <steps>
     <grip:Step name="HSV Threshold">
@@ -114,24 +123,24 @@
   </steps>
   <connections>
     <grip:Connection>
-      <grip:Output step="1" socket="0" previewed="true"/>
-      <grip:Input step="2" socket="0"/>
+      <grip:Output source="3" socket="0" previewed="true"/>
+      <grip:Input step="0" socket="0"/>
     </grip:Connection>
     <grip:Connection>
       <grip:Output step="3" socket="0" previewed="true"/>
       <grip:Input step="4" socket="0"/>
     </grip:Connection>
     <grip:Connection>
-      <grip:Output source="0" socket="0" previewed="false"/>
-      <grip:Input step="0" socket="0"/>
-    </grip:Connection>
-    <grip:Connection>
-      <grip:Output step="2" socket="0" previewed="true"/>
-      <grip:Input step="3" socket="0"/>
+      <grip:Output step="1" socket="0" previewed="true"/>
+      <grip:Input step="2" socket="0"/>
     </grip:Connection>
     <grip:Connection>
       <grip:Output step="0" socket="0" previewed="true"/>
       <grip:Input step="1" socket="0"/>
+    </grip:Connection>
+    <grip:Connection>
+      <grip:Output step="2" socket="0" previewed="true"/>
+      <grip:Input step="3" socket="0"/>
     </grip:Connection>
   </connections>
   <settings>
@@ -144,10 +153,10 @@
     <deployJvmOptions>-Xmx50m -XX:-OmitStackTraceInFastThrow -XX:+HeapDumpOnOutOfMemoryError -XX:MaxNewSize=16m</deployJvmOptions>
   </settings>
   <codeGenerationSettings>
-    <language>C++</language>
-    <className>GripVisionPipeline</className>
+    <language>Python</language>
+    <className>GripPipeline</className>
     <implementWpilibPipeline>false</implementWpilibPipeline>
-    <saveDir>/Users/oshlern/GRIP</saveDir>
+    <saveDir>/Users/oshlern/Documents/Programming/team4904/2017-Vision</saveDir>
     <packageName></packageName>
     <moduleName>grip</moduleName>
   </codeGenerationSettings>
