@@ -16,6 +16,20 @@ averageThreshold = 10
 numTests = 2
 maxBrightnessIterations = 400
 
+def calibrate():
+	maxScore = 0
+	maxScoreExposure = 0
+	for exposure in range(1, 60):
+		WebCam.set(exposure=exposure)
+		image = WebCam.getImage()
+		contours = GripRunner.run(image)
+		averageScore = filterContoursAutocalibrate(contours, image)
+		if averageScore > maxScore:
+			maxScore = averageScore
+			maxScoreExposure = exposure
+	WebCam.set(exposure=exposure)
+	return True
+
 
 def oldDecrepidAndFrailCalibrate():
 	exposure = WebCam.getExposure()
@@ -85,20 +99,6 @@ def oldDecrepidAndFrailCalibrate():
 	if debug: 
 		print "Failed grip", time.clock() - s
 	return False
-
-def calibrate():
-	maxScore = 0
-	maxScoreExposure = 0
-	for exposure in range(1, 60):
-		WebCam.set(exposure=exposure)
-		image = WebCam.getImage()
-		contours = GripRunner.run(image)
-		averageScore = filterContoursAutocalibrate(contours, image)
-		if averageScore > maxScore:
-			maxScore = averageScore
-			maxScoreExposure = exposure
-	WebCam.set(exposure=exposure)
-	return True
 
 
 def tooLarge(contours):

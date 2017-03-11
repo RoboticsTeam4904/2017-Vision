@@ -12,6 +12,12 @@ def publishToTables(isVisible=True, angleToGoal=0, distance=0, frameNum=0):
 	table.putNumber('distance', distance)
 	table.putNumber('frameNum', frameNum)
 
+def publishAutocal(autocalibrated=True, exposure=False):
+	table.putBoolean('autocalibrated', autocalibrated)
+	if exposure:
+		table.putNumber('exposure', exposure)
+
+
 def calibrateFromTables():
 	import GripRunner
 	GripRunner.calibrate(hsv=[[table.getNumber('hsv_threshold_hue_bottom'), table.getNumber('hsv_threshold_hue_top')], [table.getNumber('hsv_saturation_value_bottom'), table.getNumber('hsv_saturation_value_top')], [table.getNumber('hsv_threshold_value_bottom'), table.getNumber('hsv_threshold_value_top')]])
