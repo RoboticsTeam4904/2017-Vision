@@ -134,5 +134,3 @@ def test():
 	# # value = np.array([image[:,:,2]])
 	# average = cv2.mean(value)
 	# print average
-
-
