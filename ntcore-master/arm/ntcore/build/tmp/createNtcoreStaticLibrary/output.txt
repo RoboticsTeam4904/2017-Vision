@@ -1,0 +1,4 @@
+See file:///home/ubuntu/2017-Vision/ntcore-master/arm/ntcore/build/tmp/createNtcoreStaticLibrary/output.txt for all output for createNtcoreStaticLibrary.
+archiving libntcore.a successful.
+
+Finished createNtcoreStaticLibrary, see full log file:///home/ubuntu/2017-Vision/ntcore-master/arm/ntcore/build/tmp/createNtcoreStaticLibrary/output.txt.

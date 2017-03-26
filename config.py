@@ -2,17 +2,17 @@ import cv2
 import numpy as np
 # Logging/debug settings
 # --------------
-debug = True
+debug = False
 extra_debug = False #step through each contour in the webcam by turning on extra_debug
 save = False
-display = True
+display = False
 
 # Camera settings
 # --------------
 exposure = 15
 gain = 10
 contrast = 50
-displacement = (6.5 + 5)/12.0 # Vertical feet from camera to bottom of vision target + Height of target in feet
+displacement = (4.25 + 5)/12.0 # Vertical feet from camera to bottom of vision target + Height of target in feet
 cameraTilt = 0
 width = 8.25/12 #from centers. targets are 2x5 inches and 6.25 inches apart
 resolution = (640, 480)
