@@ -1,4 +1,5 @@
 import time, config
+from networktables import NetworkTables
 
 NetworkTables.setTeam(config.team)
 NetworkTables.initialize(server=config.ip)
