@@ -6,6 +6,7 @@ debug = False
 extra_debug = False #step through each contour in the webcam by turning on extra_debug
 save = False
 display = False
+autocalibrate = True
 
 # Camera settings
 # --------------

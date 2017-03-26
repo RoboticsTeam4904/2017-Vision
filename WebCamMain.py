@@ -6,7 +6,10 @@ import config, WebCam, GripRunner, autocalibrate, NetworkTabling, Printing
 def main():
 	lastAngle = 0
 	WebCam.set(exposure=config.exposure, resolution=config.resolution, contrast=config.contrast, gain=config.gain)
-	autocalibrate.calibrate()
+	if config.autocalibrate:
+		autocalibrate.calibrate()
+	if config.debug:
+		print "Exposure: ", WebCam.getExposure()
 	config.resolution = WebCam.getResolution()
 	config.degPerPxl = np.divide(config.nativeAngle, config.resolution)
 	if not config.edited:
