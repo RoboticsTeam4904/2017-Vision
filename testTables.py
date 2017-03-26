@@ -3,7 +3,7 @@ import time, config
 NetworkTables.setTeam(config.team)
 NetworkTables.initialize(server=config.ip)
 table = NetworkTables.getTable("Test")
-delay = 100
+delay = 0.1
 i = 1
 while True:
 	while True:
@@ -14,5 +14,5 @@ while True:
 		i += 1
 		print i
 		time.sleep(delay)
-	delay -= 10
+	delay -= 0.01
 	table.putBoolean("Failed", False)
