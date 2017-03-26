@@ -1,4 +1,0 @@
-See file:///home/ubuntu/2017-Vision/ntcore-master/arm/wpiutil/build/tmp/createWpiutilStaticLibrary/output.txt for all output for createWpiutilStaticLibrary.
-archiving libwpiutil.a successful.
-
-Finished createWpiutilStaticLibrary, see full log file:///home/ubuntu/2017-Vision/ntcore-master/arm/wpiutil/build/tmp/createWpiutilStaticLibrary/output.txt.

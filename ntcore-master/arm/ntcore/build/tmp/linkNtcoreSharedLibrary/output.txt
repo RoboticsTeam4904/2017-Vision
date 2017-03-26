@@ -1,4 +1,0 @@
-See file:///home/ubuntu/2017-Vision/ntcore-master/arm/ntcore/build/tmp/linkNtcoreSharedLibrary/output.txt for all output for linkNtcoreSharedLibrary.
-linking libntcore.so successful.
-
-Finished linkNtcoreSharedLibrary, see full log file:///home/ubuntu/2017-Vision/ntcore-master/arm/ntcore/build/tmp/linkNtcoreSharedLibrary/output.txt.
