@@ -7,6 +7,9 @@ colors = [(255,255,255), (255,255,0), (50,50,255)]
 defaultSize = (640,360)
 defaultShrinkX, defaultShrinkY = 0.3, 0.3
 defaultThickness = 5
+imageName = "img"
+gripImageName = "contours"
+rand = "match" + str(np.random.randint(1000)) + "-"
 
 def printResults(contours=False, distance=False, angleToGoal=False, isVisible=True, center=False):
 	if not isVisible:
@@ -47,12 +50,20 @@ def drawCenter(image, center, size=defaultThickness, color=0):
 		color = colors[color]
 	cv2.circle(image, center, size, color, size)
 
-def save(image, name=None):
-	if name == None:
-		global imageNum
-		name="image{}".format(imageNum)
-		imageNum += 1
+def save(image, name=None, withGrip=False, withRand=False):
+	if name != None:
+		cv2.imwrite("TestImages/" + name + ".jpg", image)
+		return
+	if withGrip:
+		name = gripImageName
+	else:
+		name = imageName
+	if withRand:
+		name = rand + name
+	global imageNum
+	name += str(imageNum)
 	cv2.imwrite("TestImages/" + name + ".jpg", image)
+	imageNum += 1
 
 def display(image, name="Contours Found", doResize=True):
 	if doResize:
