@@ -4,9 +4,9 @@ import numpy as np
 # --------------
 debug = False
 extra_debug = False #step through each contour in the webcam by turning on extra_debug
-save = False
+save = True
 display = False
-autocalibrate = True
+autocalibrate = False
 
 # Camera settings
 # --------------
