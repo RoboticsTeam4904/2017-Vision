@@ -66,14 +66,15 @@ def save(image, name=None, withGrip=False, withFolder=True):
 		cv2.imwrite("TestImages/" + name + ".jpg", image)
 		return
 	if withGrip:
+		global gripImageNum
 		name = gripImageName + str(gripImageNum)
 		gripImageNum += 1
 	else:
+		global imageNum
 		name = imageName + str(imageNum)
 		imageNum += 1
 	if withFolder:
 		name = folder + "/" + name
-	global imageNum
 	cv2.imwrite("TestImages/" + name + ".jpg", image)
 
 def display(image, name="Contours Found", doResize=True):
