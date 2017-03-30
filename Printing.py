@@ -20,6 +20,7 @@ def findMatchNum():
 	return i
 
 folder = "match" + str(findMatchNum())
+os.makedirs(folder)
 
 
 def printResults(contours=False, distance=False, angleToGoal=False, isVisible=True, center=False):

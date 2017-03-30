@@ -34,12 +34,12 @@ def main():
 			lastAngle = angleToGoal
 		if config.debug:
 			Printing.printResults(contours=contours, distance=distance, angleToGoal=angleToGoal, isVisible=isVisible)
-		if config.save:
+		if config.save and frameNum % 50 == 0:
 			Printing.save(image)
 		if config.display:
 			Printing.drawImage(image, contours, targets)
 			Printing.display(image)
-		if config.save:
+		if config.save and frameNum % 50 == 0:
 			Printing.save(image, withGrip=True)
 
 		try:
