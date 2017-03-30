@@ -52,3 +52,9 @@ def angle(d, d2):
 	phi = np.arccos(np.divide(squares, np.multiply(config.width, d)))
 	return np.subtract(np.pi, phi)
 	# angle = pi - acos(1/4*w^2 + d^2 - d2^2 / wd)
+
+def trueAngle(angle, distance):
+	robotDistance = np.sqrt(np.square(config.displacement) + np.square(distance) + 2*distance*config.displacement*np.cos(angle))
+	return np.arcsin(np.sin(angle)*np.divide(distance,trueDistance))
+
+
