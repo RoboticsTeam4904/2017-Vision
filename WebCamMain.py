@@ -27,11 +27,10 @@ def main():
 
 		if config.debug:
 			Printing.printResults(contours=contours, distance=distance, angleToGoal=angleToGoal, isVisible=isVisible)
-		if config.save or config.display:
-			Printing.drawImage(image, contours, targets)
 		if config.save:
 			Printing.save(image)
 		if config.display:
+			Printing.drawImage(image, contours, targets)
 			Printing.display(image)
 
 		try:
