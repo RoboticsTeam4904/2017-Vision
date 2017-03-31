@@ -3,6 +3,12 @@ import numpy as np
 from ContourFinding import filterContours, filterContoursFancy
 from SpikeFinding import findSpike
 import config, WebCam, GripRunner, autocalibrate, NetworkTabling, Printing
+import socket
+
+try:
+	clientSocket = socket.socket(socket.AF_INET, socket.SOCKET_DGRAM)
+except socket.error:
+	print "Error initializing UDP socket"
 
 def main():
 	lastAngle = 0
@@ -41,6 +47,11 @@ def main():
 			Printing.display(image)
 		if config.save and frameNum % 50 == 0:
 			Printing.save(image, withGrip=True)
+
+		try:
+			clientSocket.sendto(str(angleToGoal), (config.ip, config.port))
+		except socket.error:
+			print "Error sending on UDP socket"
 
 		try:
 			NetworkTabling.publishToTables(isVisible=isVisible, angleToGoal=angleToGoal, distance=distance, frameNum=frameNum)
