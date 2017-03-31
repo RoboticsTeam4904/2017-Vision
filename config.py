@@ -10,7 +10,7 @@ autocalibrate = False
 
 # Camera settings
 # --------------
-exposure = 15
+exposure = 90
 gain = 10
 contrast = 50
 displacement = (4.25 + 5)/12.0 # Vertical feet from camera to bottom of vision target + Height of target in feet
