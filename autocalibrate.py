@@ -30,7 +30,7 @@ def calibrate():
 		if averageScore > maxScore:
 			maxScore = averageScore
 			maxScoreExposure = exposure
-	WebCam.set(exposure=exposure)
+	WebCam.set(exposure=maxScoreExposure)
 	return True
 
 def displace():
