@@ -1,12 +1,27 @@
 import numpy as np
 import cv2
-import sys
+import sys, os
 
-imageNum = 0
+imageNum, gripImageNum = 0, 0
 colors = [(255,255,255), (255,255,0), (50,50,255)]
 defaultSize = (640,360)
 defaultShrinkX, defaultShrinkY = 0.3, 0.3
 defaultThickness = 5
+imageName = "img"
+gripImageName = "contours"
+# folder = "match" + str(np.random.randint(1000))
+# if not os.path.exists("TestImages/" + folder):
+#     os.makedirs("TestImages/" + folder)
+
+def findMatchNum():
+	i = 1
+	while os.path.exists("TestImages/" + "match" + str(i)):
+		i += 1
+	return i
+
+folder = "match" + str(findMatchNum())
+os.makedirs(folder)
+
 
 def printResults(contours=False, distance=False, angleToGoal=False, isVisible=True, center=False):
 	if not isVisible:
@@ -47,11 +62,20 @@ def drawCenter(image, center, size=defaultThickness, color=0):
 		color = colors[color]
 	cv2.circle(image, center, size, color, size)
 
-def save(image, name=None):
-	if name == None:
+def save(image, name=None, withGrip=False, withFolder=True):
+	if name != None:
+		cv2.imwrite("TestImages/" + name + ".jpg", image)
+		return
+	if withGrip:
+		global gripImageNum
+		name = gripImageName + str(gripImageNum)
+		gripImageNum += 1
+	else:
 		global imageNum
-		name="image{}".format(imageNum)
+		name = imageName + str(imageNum)
 		imageNum += 1
+	if withFolder:
+		name = folder + "/" + name
 	cv2.imwrite("TestImages/" + name + ".jpg", image)
 
 def display(image, name="Contours Found", doResize=True):
