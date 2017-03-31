@@ -27,3 +27,4 @@ networkSpeed = 0.02
 withOpenCV3 = int(cv2.__version__[0]) == 3
 edited = False
 sampleImage = "TestImages/GearTest.png"
+port = 5802

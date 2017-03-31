@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 from ContourFinding import filterContours, filterContoursFancy
 from SpikeFinding import findSpike
-import config, WebCam, GripRunner, autocalibrate, NetworkTabling, Printing
+import config, WebCam, GripRunner, autocalibrate, NetworkTabling, Printing, socket
 
 def main():
 	WebCam.set(exposure=config.exposure, resolution=config.resolution, contrast=config.contrast, gain=config.gain)
@@ -34,6 +34,14 @@ def main():
 		if config.display:
 			Printing.display(image)
 
+		clientSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+		try:
+			clientSocket.connect((config.ip, config.port))
+			clientSocket.send(str(angleToGoal))
+			clientSocket.close()
+		except Exception as error:
+			if config.debug:
+				print error
 		try:
 			NetworkTabling.publishToTables(isVisible=isVisible, angleToGoal=angleToGoal, distance=distance, frameNum=frameNum)
 		except Exception as error:
