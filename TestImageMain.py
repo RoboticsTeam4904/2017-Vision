@@ -1,12 +1,6 @@
 import cv2
 import numpy as np
-from ContourFinding import filterContoursFancy
-from SpikeFinding import findSpike
-import GripRunner
-import config
-import NetworkTabling
-if config.debug:
-	import Printing
+import config, GripRunner, NetworkTabling, SpikeFinding, ContourFinding, Printing
 
 def main():
 	if not config.edited:
@@ -17,8 +11,8 @@ def main():
 	config.resolution = image.shape[1], image.shape[0]
 	config.degPerPxl = np.divide(config.nativeAngle, config.resolution)
 	contours = GripRunner.run(image)
-	targets = filterContoursFancy(contours, image=image)
-	isVisible, angleToGoal, distance = findSpike(targets)
+	targets = ContourFinding.filterContours(contours, image=image)
+	isVisible, angleToGoal, distance = SpikeFinding.findSpike(targets)
 	if config.debug:
 		Printing.printResults(contours=contours, distance=distance, angleToGoal=angleToGoal, isVisible=isVisible)
 	if config.save or config.display:

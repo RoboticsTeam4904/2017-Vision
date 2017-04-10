@@ -1,14 +1,6 @@
 import cv2
 import numpy as np
-from ContourFinding import filterContoursFancy
-from SpikeFinding import findSpike
-import PiCamera
-import GripRunner
-import config
-import NetworkTabling
-
-if debug:
-	import Printing
+import config, GripRunner, NetworkTabling, SpikeFinding, ContourFinding, Printing, PiCamera
 
 def main():
 	PiCamera.set(exposure=config.exposure, resolution=config.resolution)
@@ -20,8 +12,8 @@ def main():
 	while True:
 		image = PiCamera.getImage()
 		contours = GripRunner.run(image)
-		targets = filterContoursFancy(contours, image=image)
-		isVisible, angleToGoal, distance = findSpike(targets)
+		targets = ContourFinding.filterContours(contours, image=image)
+		isVisible, angleToGoal, distance = SpikeFinding.findSpike(targets)
 		if config.debug:
 			Printing.printResults(contours=contours, distance=distance, angleToGoal=angleToGoal, isVisible=isVisible)
 		if config.save:

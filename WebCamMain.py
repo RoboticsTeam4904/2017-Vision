@@ -1,8 +1,6 @@
 import cv2
 import numpy as np
-from ContourFinding import filterContours, filterContoursFancy
-from SpikeFinding import findSpike
-import config, WebCam, GripRunner, autocalibrate, NetworkTabling, Printing
+import config, GripRunner, NetworkTabling, SpikeFinding, ContourFinding, Printing, WebCam
 
 def main():
 	lastAngle = 0
@@ -26,8 +24,8 @@ def main():
 
 		image = WebCam.getImage()
 		contours = GripRunner.run(image)
-		targets = filterContoursFancy(contours)
-		isVisible, angleToGoal, distance = findSpike(targets)
+		targets = ContourFinding.filterContours(contours)
+		isVisible, angleToGoal, distance = SpikeFinding.findSpike(targets)
 		if lastAngle != 0 and not isVisible:
 			angleToGoal = lastAngle
 		else:
