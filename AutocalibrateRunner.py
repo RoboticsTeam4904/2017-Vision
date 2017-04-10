@@ -1,9 +1,6 @@
-from networktables import NetworkTables
+from NetworkTabling import table
 from autocalibrate import calibrate
 import config
-NetworkTables.setTeam(config.team)
-NetworkTables.initialize(server=config.ip)
-table = NetworkTables.getTable('Vision')
 
 while True:
 	if table.getBoolean('Autocalibration', False):
