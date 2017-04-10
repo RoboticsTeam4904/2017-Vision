@@ -1,6 +1,6 @@
 import cv2
 import numpy as np
-import config, GripRunner, NetworkTabling, SpikeFinding, ContourFinding, Printing, PiCamera
+import config, GripRunner, NetworkTabling, SpikeFinding, ContourFinding, Printing, PiCamera, autocalibrate
 
 def main():
 	PiCamera.set(exposure=config.exposure, resolution=config.resolution)

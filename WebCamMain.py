@@ -1,6 +1,6 @@
 import cv2
 import numpy as np
-import config, GripRunner, NetworkTabling, SpikeFinding, ContourFinding, Printing, WebCam
+import config, GripRunner, NetworkTabling, SpikeFinding, ContourFinding, Printing, WebCam, autocalibrate
 
 def main():
 	WebCam.set(exposure=config.exposure, resolution=config.resolution, contrast=config.contrast, gain=config.gain)
