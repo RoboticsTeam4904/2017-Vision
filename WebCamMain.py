@@ -26,23 +26,22 @@ def main():
 			angleToGoal = lastAngle
 		else:
 			lastAngle = angleToGoal
-		if config.debug:
-			Printing.printResults(contours=contours, distance=distance, angleToGoal=angleToGoal, isVisible=isVisible)
-		saveFrame = config.save and frameNum % config.saveFrequency
-		if saveFrame:
-			Printing.save(image)
-		if config.display or saveFrame:
-			Printing.drawImage(image, contours, targets)
-		if config.display:
-			Printing.display(image)
-		if saveFrame:
-			Printing.save(image, withGrip=True)
 
 		try:
 			NetworkTabling.publishToTables(isVisible=isVisible, angleToGoal=angleToGoal, distance=distance, frameNum=frameNum)
 		except Exception as error:
 			if config.debug:
 				print error
+
+		if config.debug:
+			Printing.printResults(contours=contours, distance=distance, angleToGoal=angleToGoal, isVisible=isVisible)
+		if config.save and frameNum % config.saveFrequency:
+			Printing.save(image)
+			Printing.drawImage(image, contours, targets)
+			Printing.save(image, withGrip=True)
+		if config.display:
+			Printing.drawImage(image, contours, targets) # redraws in case of save and display (that's ok)
+			Printing.display(image)
 		frameNum += 1
 
 if __name__ == '__main__':
