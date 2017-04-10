@@ -16,7 +16,7 @@ def findSpike(contours): # returns isVisible, angleToGoal, distance
 		isVisible = True
 		x1,y1,w1,h1 = cv2.boundingRect(contours[0]) #possibly change to make more resistant to small anomalies at the top of the contour
 		x2,y2,w2,h2 = cv2.boundingRect(contours[1])
-		d1, d2 = distanceFromHeight(y1), distanceFromHeight(y2)
+		d1, d2 = distanceFromHeight(y1+h1), distanceFromHeight(y2+h2)
 		if x1 > x2:
 			d1, d2 = d2, d1
 		distance = trueDistance(d1, d2)
