@@ -14,6 +14,8 @@ def set(resolution=False, exposure=False, exposure_mode=False, shutter_speed=Fal
 		camera.shutter_speed = shutter_speed
 	if exposure_mode:
 		camera.exposure_mode = exposure
+	if resolution:
+		config.setResolution(getResolution())
 
 	# camera.brightness = 0 to 100 # default 50
 	# camera.contrast = -100 to 100 # default 0

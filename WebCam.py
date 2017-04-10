@@ -1,5 +1,6 @@
-import cv2
-import subprocess
+import cv2, subprocess
+import config
+
 camera = cv2.VideoCapture(0)
 
 def getImage():
@@ -17,6 +18,8 @@ def set(resolution=False, exposure=False, gain=False, contrast=False):
 	if contrast:
 		settingStr += " -c contrast={}".format(contrast)
 	subprocess.call(settingStr, shell=True)
+	if resolution:
+		config.setResolution(getResolution())
 
 def getExposure():
 	return int(subprocess.check_output("/usr/bin/v4l2-ctl -d /dev/video0 -C exposure_absolute", shell=True)[19:].strip())
