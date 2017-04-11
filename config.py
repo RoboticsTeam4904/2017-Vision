@@ -26,8 +26,6 @@ setResolution((640, 480))
 
 # Misc
 # -------------
-ip = "10.49.4.2"
-team = 4904
 withOpenCV3 = int(cv2.__version__[0]) == 3
 sampleImage = "TestImages/GearTest.png"
 

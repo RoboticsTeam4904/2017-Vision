@@ -1,8 +1,11 @@
 from networktables import NetworkTables
 import config
 
-NetworkTables.setTeam(config.team)
-NetworkTables.initialize(server=config.ip)
+ip = "10.49.4.2"
+team = 4904
+
+NetworkTables.setTeam(team)
+NetworkTables.initialize(server=ip)
 
 table = NetworkTables.getTable("Vision")
 
@@ -18,7 +21,3 @@ def checkForCalibrate():
 def putCalibrated():
 	table.putBoolean('Autocalibration complete', True)
 	table.putBoolean('Autocalibration', False)
-
-def calibrateFromTables():
-	import GripRunner
-	GripRunner.calibrate(hsv=[[table.getNumber('hsv_threshold_hue_bottom'), table.getNumber('hsv_threshold_hue_top')], [table.getNumber('hsv_saturation_value_bottom'), table.getNumber('hsv_saturation_value_top')], [table.getNumber('hsv_threshold_value_bottom'), table.getNumber('hsv_threshold_value_top')]])
