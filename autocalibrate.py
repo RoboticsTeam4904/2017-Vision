@@ -6,7 +6,7 @@ maxExposure = 100
 granularity = 2
 
 def calibrate():
-	bestScore, bestScoreExposure = 0, 0
+	bestScore, bestExposure = 0, 0
 	if config.debug:
 		print "Checking exposures between {} and {} by incrementing by {}".format(minExposure, maxExposure, granularity)
 	for exposure in range(minExposure, maxExposure, granularity):
@@ -18,10 +18,10 @@ def calibrate():
 			Printing.display(image)
 		averageScore = ContourFinding.filterContoursAutocalibrate(contours, image)
 		if averageScore < bestScore:
-			bestScore, bestScoreExposure = averageScore, exposure
+			bestScore, bestExposure = averageScore, exposure
 	if config.debug:
-		print "Determined best exposure to be {} with a score of {}".format(bestScoreExposure, bestScore)
-	WebCam.set(exposure=bestScoreExposure)
+		print "Determined best exposure to be {} with a score of {}".format(bestExposure, bestScore)
+	WebCam.set(exposure=bestExposure)
 
 def test():
 	import cv2, time
