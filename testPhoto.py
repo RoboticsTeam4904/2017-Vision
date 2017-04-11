@@ -11,7 +11,7 @@ def s():
 	n += 1
 
 def e(exposure):
-	WebCam.set(exposure=exposure)
+	WebCam.setCamera(exposure=exposure)
 
 def o():
 	image = WebCam.getImage()
