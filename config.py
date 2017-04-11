@@ -5,7 +5,6 @@ import numpy as np
 debug = False
 extra_debug = False #step through each contour in the webcam by turning on extra_debug
 display = False
-autocalibrate = False # REMOVE
 save = True
 saveFrequency = 50
 

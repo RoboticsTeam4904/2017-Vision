@@ -4,8 +4,6 @@ import config, GripRunner, NetworkTabling, SpikeFinding, ContourFinding, Printin
 
 def main():
 	PiCamera.set(exposure=config.exposure, resolution=config.resolution)
-	if config.autocalibrate:
-		Autocalibrate.calibrate()
 	if config.debug:
 		print "Exposure: ", PiCamera.getExposure()
 	if config.display:

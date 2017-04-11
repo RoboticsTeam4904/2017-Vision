@@ -4,8 +4,6 @@ import config, GripRunner, NetworkTabling, SpikeFinding, ContourFinding, Printin
 
 def main():
 	WebCam.set(exposure=config.exposure, resolution=config.resolution, contrast=config.contrast, gain=config.gain)
-	if config.autocalibrate:
-		Autocalibrate.calibrate()
 	if config.debug:
 		print "Exposure: ", WebCam.getExposure()
 	if config.display:
