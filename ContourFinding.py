@@ -1,7 +1,7 @@
 import cv2, copy
 import config, Printing
 import numpy as np
-
+# RENAME FILE
 numTargets = 2 # Number of targets being searched for
 badScore = 10
 
@@ -15,17 +15,7 @@ weights = np.array([sizeWeight, ratioWeight, rotationWeight, rectangularWeight, 
 
 minArea, maxArea = 500, 30000
 
-def filterContoursByArea(contours): # Find 2 largest contours.
-	numContours = len(contours)
-	if numContours <= numTargets:
-		return contours
-	# sortedInds = sorted(range(numContours), key=lambda index: cv2.contourArea(contours[i], False))  # Alternative method
-	areas = np.array([cv2.contourArea(contour, False) for contour in contours])
-	sortedInds = areas.argsort()
-	largestContours = [contours[i] for i in sortedInds]
-	return largestContours[-numTargets:]
-
-def scoreContours(contours, display=False, image=None):
+def scoreContours(contours, image=blankImage()):
 	numContours = len(contours)
 
 	areas = np.array([cv2.contourArea(contour) for contour in contours])
@@ -63,7 +53,7 @@ def scoreContours(contours, display=False, image=None):
 			print "CONTOUR " + str(i)
 			print np.multiply(scores[:, i], weights) #newWeights
 			print contourScores[i]
-			if display:
+			if config.display:
 				img = copy.deepcopy(image)
 				Printing.drawImage(img, contours[:i] + contours[i+1:], contours[i], False)
 				Printing.display(img, "contour " + str(i), doResize=True)
@@ -72,18 +62,18 @@ def scoreContours(contours, display=False, image=None):
 
 	return contourScores
 
-def filterContours(contours, image=None):
+def filterContours(contours, image=blankImage()):
 	if len(contours) <= numTargets:
 		return contours
-	contourScores = scoreContours(contours, display=(config.display and image), image=image)
+	contourScores = scoreContours(contours, image=image)
 	correctInds, incorrectInds = sortedInds(contourScores)
 	correctContours = np.array(contours)[correctInds]
 	return correctContours
 
-def averageContourScore(contours, image=None):
+def averageContourScore(contours, image=blankImage()):
 	if len(contours):
 		return badScore
-	contourScores = scoreContours(contours, display=(config.display and image), image=image)
+	contourScores = scoreContours(contours, image=image)
 	averageScore = np.average(contourScores)
 	return averageScore
 
@@ -151,3 +141,6 @@ def Quadrify(contour):
 		if length == 4:
 			return np.multiply(i, 0.01)
 	return 1
+
+def blankImage():
+	return np.zeros((config.resolution[1], config.resolution[0], 3))
