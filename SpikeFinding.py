@@ -2,6 +2,10 @@ import cv2
 import numpy as np
 import config
 
+displacement = 4.25/12.0 # Vertical feet from camera to bottom of vision target
+cameraTilt = 0
+width = 8.25/12.0 #from centers. targets are 2x5 inches and 6.25 inches apart
+
 def findSpike(contours): # returns isVisible, angleToGoal, distance
 	isVisible=False
 	numContours = len(contours)
@@ -34,13 +38,13 @@ def findSpike(contours): # returns isVisible, angleToGoal, distance
 
 def distanceFromHeight(y):
 	degrees = np.multiply(config.degPerPxl[1], np.subtract(np.true_divide(config.resolution[1], 2), y))
-	degrees = np.add(degrees, config.cameraTilt)
-	distance = np.divide(config.displacement, np.tan(degrees))
+	degrees = np.add(degrees, cameraTilt)
+	distance = np.divide(displacement, np.tan(degrees))
 	return distance
 
 def trueDistance(d1, d2):
 	squares = np.add(np.square(d1), np.square(d2))
-	squared = np.subtract(np.multiply(2, squares), np.square(config.width))
+	squared = np.subtract(np.multiply(2, squares), np.square(width))
 	if squared < 0:
 		return False # Something went wrong
 	d = np.divide(np.sqrt(squared), 2)
@@ -48,7 +52,7 @@ def trueDistance(d1, d2):
 	# d = 1/2 * sqrt(2*(d1^2+d2^2)-w^2)
 
 def angle(d, d2):
-	squares = np.subtract(np.add(np.true_divide(np.square(config.width), 4), np.square(d)), np.square(d2))
-	phi = np.arccos(np.divide(squares, np.multiply(config.width, d)))
+	squares = np.subtract(np.add(np.true_divide(np.square(width), 4), np.square(d)), np.square(d2))
+	phi = np.arccos(np.divide(squares, np.multiply(width, d)))
 	return np.subtract(np.pi, phi)
 	# angle = pi - acos(1/4*w^2 + d^2 - d2^2 / wd)
