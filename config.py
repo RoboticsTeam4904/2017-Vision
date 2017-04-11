@@ -26,5 +26,3 @@ setResolution((640, 480))
 # Misc
 # -------------
 withOpenCV3 = int(cv2.__version__[0]) == 3
-sampleImage = "TestImages/GearTest.png"
-

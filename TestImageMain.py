@@ -2,10 +2,11 @@ import cv2
 import numpy as np
 import config, GripRunner, NetworkTabling, SpikeFinding, ContourFinding, Printing
 
+sampleImage = "TestImages/GearTest.png"
 def main():
 	if config.display:
 		cv2.namedWindow("Contours Found")
-	image = cv2.imread(config.sampleImage)
+	image = cv2.imread(sampleImage)
 	config.resolution = image.shape[1], image.shape[0]
 	config.degPerPxl = np.divide(config.nativeAngle, config.resolution)
 	contours = GripRunner.run(image)
