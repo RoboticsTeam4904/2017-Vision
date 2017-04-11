@@ -3,10 +3,10 @@ import config, GripRunner, Printing, WebCam, ContourFinding
 
 minExposure = 3
 maxExposure = 100
-granularity = 2
+granularity = 3
 
 def calibrate():
-	bestScore, bestExposure = 0, 0
+	bestScore, bestExposure = 1000, minExposure
 	if config.debug:
 		print "Checking exposures between {} and {} by incrementing by {}".format(minExposure, maxExposure, granularity)
 	for exposure in range(minExposure, maxExposure, granularity):
@@ -16,7 +16,7 @@ def calibrate():
 		if config.display:
 			Printing.drawContours(image, contours)
 			Printing.display(image)
-		averageScore = ContourFinding.filterContoursAutocalibrate(contours, image)
+		averageScore = ContourFinding.averageContourScore(contours, image)
 		if averageScore < bestScore:
 			bestScore, bestExposure = averageScore, exposure
 	if config.debug:
@@ -26,7 +26,7 @@ def calibrate():
 def test():
 	import cv2, time
 	if config.debug:
-		"Testing autocalibration"
+		print "Testing autocalibration"
 	WebCam.set(exposure=2000) # Displace camera's exposure
 	start = time.clock()
 	calibrate()

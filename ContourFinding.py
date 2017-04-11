@@ -80,7 +80,7 @@ def filterContours(contours, image=None):
 	correctContours = np.array(contours)[correctInds]
 	return correctContours
 
-def filterContoursAutocalibrate(contours, image=None):
+def averageContourScore(contours, image=None):
 	if len(contours):
 		return badScore
 	contourScores = scoreContours(contours, display=(config.display and image), image=image)
