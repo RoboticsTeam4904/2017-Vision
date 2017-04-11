@@ -3,7 +3,7 @@ import numpy as np
 import config, GripRunner, NetworkTabling, SpikeFinding, ContourFinding, Printing, PiCamera, Autocalibrate
 
 def main():
-	PiCamera.set(exposure=config.exposure, resolution=config.resolution)
+	PiCamera.set(exposure=config.exposure, resolution=config.resolution) # move into PiCamera (or at least stay consistent with WebCam)
 	if config.debug:
 		print "Shutter Speed: ", PiCamera.getShutterSpeed()
 	if config.display:

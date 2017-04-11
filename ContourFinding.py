@@ -1,5 +1,5 @@
 import cv2, copy
-import config, Printing, WebCam
+import config, Printing, SpikeFinding
 import numpy as np
 # RENAME FILE
 numTargets = 2 # Number of targets being searched for
@@ -16,7 +16,7 @@ weights = np.array([sizeWeight, ratioWeight, rotationWeight, rectangularWeight, 
 minArea, maxArea = 500, 30000
 
 def blankImage():
-	return np.zeros((WebCam.resolution[1], WebCam.resolution[0], 3))
+	return np.zeros((SpikeFinding.resolution[1], SpikeFinding.resolution[0], 3))
 
 def scoreContours(contours, image=blankImage()):
 	numContours = len(contours)

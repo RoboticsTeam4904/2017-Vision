@@ -1,10 +1,14 @@
 import cv2
 import numpy as np
-import config, WebCam
+import config
 
+# Camera constants for calculation:
 displacement = 4.25/12.0 # Vertical feet from camera to bottom of vision target
 cameraTilt = 0
 width = 8.25/12.0 #from centers. targets are 2x5 inches and 6.25 inches apart
+nativeAngle  = (np.radians(64), np.radians(48)) #experimentally determined 10 pxl per deg at 640x480, going down by a v smol amount at the edge of the frame
+resolution = (640, 480)
+degPerPxl = np.divide(nativeAngle, resolution)
 
 def findSpike(contours): # returns isVisible, angleToGoal, distance
 	isVisible=False
@@ -14,8 +18,8 @@ def findSpike(contours): # returns isVisible, angleToGoal, distance
 	contour = np.concatenate(contours)
 	X,Y,W,H = cv2.boundingRect(contour)
 	center = (np.add(X, np.divide(W,2)), np.add(Y, np.true_divide(H,2)))
-	print np.degrees(np.multiply(WebCam.degPerPxl[0], np.subtract(np.true_divide(WebCam.resolution[0], 2), 0)))
-	angleToGoal = np.multiply(WebCam.degPerPxl[0], np.subtract(np.true_divide(WebCam.resolution[0], 2), center[0]))
+	print np.degrees(np.multiply(degPerPxl[0], np.subtract(np.true_divide(resolution[0], 2), 0)))
+	angleToGoal = np.multiply(degPerPxl[0], np.subtract(np.true_divide(resolution[0], 2), center[0]))
 	if numContours == 2:
 		isVisible = True
 		x1,y1,w1,h1 = cv2.boundingRect(contours[0]) #possibly change to make more resistant to small anomalies at the top of the contour
@@ -37,7 +41,7 @@ def findSpike(contours): # returns isVisible, angleToGoal, distance
 	return isVisible, np.degrees(angleToGoal), distance
 
 def distanceFromHeight(y):
-	degrees = np.multiply(WebCam.degPerPxl[1], np.subtract(np.true_divide(WebCam.resolution[1], 2), y))
+	degrees = np.multiply(degPerPxl[1], np.subtract(np.true_divide(resolution[1], 2), y))
 	degrees = np.add(degrees, cameraTilt)
 	distance = np.divide(displacement, np.tan(degrees))
 	return distance

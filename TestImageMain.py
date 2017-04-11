@@ -2,13 +2,13 @@ import cv2
 import numpy as np
 import config, GripRunner, NetworkTabling, SpikeFinding, ContourFinding, Printing
 
-sampleImage = "TestImages/GearTest.png"
+sampleImage = "TestImages/match2/img60.jpg"
 def main():
 	if config.display:
 		cv2.namedWindow("Contours Found")
 	image = cv2.imread(sampleImage)
-	config.resolution = image.shape[1], image.shape[0]
-	config.degPerPxl = np.divide(config.nativeAngle, config.resolution)
+	SpikeFinding.resolution = image.shape[1], image.shape[0]
+	SpikeFinding.degPerPxl = np.divide(SpikeFinding.nativeAngle, SpikeFinding.resolution)
 	contours = GripRunner.run(image)
 	targets = ContourFinding.filterContours(contours, image=image)
 	isVisible, angleToGoal, distance = SpikeFinding.findSpike(targets)
