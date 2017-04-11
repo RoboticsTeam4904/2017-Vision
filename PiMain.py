@@ -5,7 +5,7 @@ import config, GripRunner, NetworkTabling, SpikeFinding, ContourFinding, Printin
 def main():
 	PiCamera.set(exposure=config.exposure, resolution=config.resolution)
 	if config.debug:
-		print "Exposure: ", PiCamera.getExposure()
+		print "Shutter Speed: ", PiCamera.getShutterSpeed()
 	if config.display:
 		cv2.namedWindow("Contours Found")
 	frameNum = 1

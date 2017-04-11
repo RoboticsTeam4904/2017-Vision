@@ -71,13 +71,13 @@ def filterContours(contours, image=blankImage()):
 	return correctContours
 
 def averageContourScore(contours, image=blankImage()):
-	if len(contours):
+	if len(contours) == 0:
 		return badScore
 	contourScores = scoreContours(contours, image=image)
 	averageScore = np.average(contourScores)
 	return averageScore
 
-def sortedInds(scores):
+def sortedInds(scores): # Sorts the inputted list of scores and returns the indices of the top 2 (numTargets) as well as the indices of the others
 	sortedScoresIndices = scores.argsort()
 	return sortedScoresIndices[:numTargets], sortedScoresIndices[numTargets:]
 
