@@ -1,11 +1,11 @@
 import cv2
 import numpy as np
-import config, GripRunner, NetworkTabling, SpikeFinding, ContourFinding, Printing, WebCam, autocalibrate
+import config, GripRunner, NetworkTabling, SpikeFinding, ContourFinding, Printing, WebCam, Autocalibrate
 
 def main():
 	WebCam.set(exposure=config.exposure, resolution=config.resolution, contrast=config.contrast, gain=config.gain)
 	if config.autocalibrate:
-		autocalibrate.calibrate()
+		Autocalibrate.calibrate()
 	if config.debug:
 		print "Exposure: ", WebCam.getExposure()
 	if config.display:
@@ -15,7 +15,7 @@ def main():
 	while True:
 		if NetworkTabling.checkForCalibrate():
 			print "CALIBRATING the camera due to button press"
-			autocalibrate.calibrate()
+			Autocalibrate.calibrate()
 			NetworkTabling.putCalibrated()
 
 		image = WebCam.getImage()

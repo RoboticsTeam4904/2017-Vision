@@ -1,6 +1,6 @@
 import cv2
 import numpy as np
-import config, GripRunner, NetworkTabling, SpikeFinding, ContourFinding, Printing, autocalibrate
+import config, GripRunner, NetworkTabling, SpikeFinding, ContourFinding, Printing
 
 def main():
 	if config.display:

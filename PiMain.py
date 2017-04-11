@@ -1,11 +1,11 @@
 import cv2
 import numpy as np
-import config, GripRunner, NetworkTabling, SpikeFinding, ContourFinding, Printing, PiCamera, autocalibrate
+import config, GripRunner, NetworkTabling, SpikeFinding, ContourFinding, Printing, PiCamera, Autocalibrate
 
 def main():
 	PiCamera.set(exposure=config.exposure, resolution=config.resolution)
 	if config.autocalibrate:
-		autocalibrate.calibrate()
+		Autocalibrate.calibrate()
 	if config.debug:
 		print "Exposure: ", PiCamera.getExposure()
 	if config.display:
@@ -15,7 +15,7 @@ def main():
 	while True:
 		if NetworkTabling.checkForCalibrate():
 			print "CALIBRATING the camera due to button press"
-			autocalibrate.calibrate()
+			Autocalibrate.calibrate()
 			NetworkTabling.putCalibrated()
 
 		image = PiCamera.getImage()
