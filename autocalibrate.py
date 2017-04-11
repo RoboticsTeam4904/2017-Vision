@@ -25,14 +25,11 @@ def calibrate():
 	WebCam.set(exposure=maxScoreExposure)
 	return True
 
-def displace():
-	WebCam.set(exposure=2000)
-
 def test():
 	import cv2, time
 	if config.debug:
-		"Testing autocalibrate"
-	displace()
+		"Testing autocalibration"
+	WebCam.set(exposure=2000) # Displace camera's exposure
 	start = time.clock()
 	calibrate()
 	print time.clock() - start, "TOTAL TIME"
