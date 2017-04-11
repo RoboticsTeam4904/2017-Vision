@@ -14,6 +14,19 @@ def getImage():
 	retval, image = camera.read()
 	return image
 
+
+def fireBlanks(numBlanks=3):
+	for i in range(numBlanks):
+		getImage()
+
+def reloadTime(duration=30): #in miliseconds
+	cv2.waitkey(duration)
+
+def setRealExposure(exposure):
+	setCamera(exposure=exposure)
+	reloadTime()
+	fireBlanks()
+
 def setCamera(cameraResolution=False, exposure=False, gain=False, contrast=False):
 	settingStr = "/usr/bin/v4l2-ctl -d /dev/video0"
 	if cameraResolution:
