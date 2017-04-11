@@ -1,5 +1,5 @@
 import cv2, copy
-import config, Printing
+import config, Printing, WebCam
 import numpy as np
 # RENAME FILE
 numTargets = 2 # Number of targets being searched for
@@ -14,6 +14,9 @@ quadWeight = 5
 weights = np.array([sizeWeight, ratioWeight, rotationWeight, rectangularWeight, areaWeight, quadWeight])
 
 minArea, maxArea = 500, 30000
+
+def blankImage():
+	return np.zeros((WebCam.resolution[1], WebCam.resolution[0], 3))
 
 def scoreContours(contours, image=blankImage()):
 	numContours = len(contours)
@@ -141,6 +144,3 @@ def Quadrify(contour):
 		if length == 4:
 			return np.multiply(i, 0.01)
 	return 1
-
-def blankImage():
-	return np.zeros((config.resolution[1], config.resolution[0], 3))
