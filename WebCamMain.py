@@ -3,7 +3,6 @@ import numpy as np
 import config, GripRunner, NetworkTabling, SpikeFinding, ContourFinding, Printing, WebCam, Autocalibrate
 
 def main():
-	WebCam.set(exposure=config.exposure, resolution=config.resolution, contrast=config.contrast, gain=config.gain)
 	if config.debug:
 		print "Exposure: ", WebCam.getExposure()
 	if config.display:
