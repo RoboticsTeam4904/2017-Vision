@@ -3,25 +3,64 @@
     <grip:ImageFile>
       <property name="path" value="/Users/oshlern/Downloads/IMG_5026.JPG"/>
     </grip:ImageFile>
+    <grip:ImageFile>
+      <property name="path" value="/Users/oshlern/Downloads/Photo on 4-18-17 at 3.56 PM.jpg"/>
+    </grip:ImageFile>
+    <grip:ImageFile>
+      <property name="path" value="/Users/oshlern/Downloads/IMG_20170418_160434.jpg"/>
+    </grip:ImageFile>
+    <grip:ImageFile>
+      <property name="path" value="/Users/oshlern/Downloads/IMG_20170418_160410.jpg"/>
+    </grip:ImageFile>
+    <grip:ImageFile>
+      <property name="path" value="/Users/oshlern/Downloads/IMG_20170418_160349.jpg"/>
+    </grip:ImageFile>
+    <grip:ImageFile>
+      <property name="path" value="/Users/oshlern/Downloads/IMG_20170418_160341.jpg"/>
+    </grip:ImageFile>
+    <grip:ImageFile>
+      <property name="path" value="/Users/oshlern/Downloads/IMG_20170418_160324.jpg"/>
+    </grip:ImageFile>
+    <grip:ImageFile>
+      <property name="path" value="/Users/oshlern/Downloads/IMG_20170418_160307.jpg"/>
+    </grip:ImageFile>
+    <grip:ImageFile>
+      <property name="path" value="/Users/oshlern/Downloads/IMG_20170418_160300.jpg"/>
+    </grip:ImageFile>
+    <grip:ImageFile>
+      <property name="path" value="/Users/oshlern/Downloads/IMG_20170418_160250.jpg"/>
+    </grip:ImageFile>
+    <grip:ImageFile>
+      <property name="path" value="/Users/oshlern/Downloads/IMG_20170418_160242.jpg"/>
+    </grip:ImageFile>
+    <grip:ImageFile>
+      <property name="path" value="/Users/oshlern/Downloads/IMG_20170418_160240.jpg"/>
+    </grip:ImageFile>
+    <grip:ImageFile>
+      <property name="path" value="/Users/oshlern/Downloads/IMG_20170418_160236.jpg"/>
+    </grip:ImageFile>
+    <grip:ImageFile>
+      <property name="path" value="/Users/oshlern/Downloads/IMG_20170418_160233.jpg"/>
+    </grip:ImageFile>
   </sources>
   <steps>
     <grip:Step name="HSV Threshold">
       <grip:Input step="0" socket="0"/>
       <grip:Input step="0" socket="1">
         <value>
-          <double>24.28057553956834</double>
-          <double>59.28692699490662</double>
+          <double>8.474576271186441</double>
+          <double>22.021276595744702</double>
         </value>
       </grip:Input>
       <grip:Input step="0" socket="2">
         <value>
-          <double>73.38129496402877</double>
-          <double>181.40067911714772</double>
+          <double>187.28813559322037</double>
+          <double>255.0</double>
         </value>
       </grip:Input>
       <grip:Input step="0" socket="3">
         <value>
-          <double>171.98741007194246</double>
+          <double>120.05649717514123</double>
           <double>255.0</double>
         </value>
       </grip:Input>
@@ -32,7 +71,7 @@
       <grip:Input step="1" socket="1"/>
       <grip:Input step="1" socket="2"/>
       <grip:Input step="1" socket="3">
-        <value>9.0</value>
+        <value>20.0</value>
       </grip:Input>
       <grip:Input step="1" socket="4">
         <value>BORDER_CONSTANT</value>
@@ -50,7 +89,7 @@
     <grip:Step name="Filter Contours">
       <grip:Input step="3" socket="0"/>
       <grip:Input step="3" socket="1">
-        <value>0.0</value>
+        <value>10000.0</value>
       </grip:Input>
       <grip:Input step="3" socket="2">
         <value>0.0</value>
@@ -80,7 +119,7 @@
         <value>0.0</value>
       </grip:Input>
       <grip:Input step="3" socket="10">
-        <value>0.0</value>
+        <value>0.2</value>
       </grip:Input>
       <grip:Input step="3" socket="11">
         <value>1000.0</value>
@@ -114,7 +153,11 @@
   </steps>
   <connections>
     <grip:Connection>
-      <grip:Output source="0" socket="0" previewed="true"/>
+      <grip:Output step="1" socket="0" previewed="true"/>
+      <grip:Input step="2" socket="0"/>
+    </grip:Connection>
+    <grip:Connection>
+      <grip:Output source="9" socket="0" previewed="true"/>
       <grip:Input step="0" socket="0"/>
     </grip:Connection>
     <grip:Connection>
@@ -128,10 +171,6 @@
     <grip:Connection>
       <grip:Output step="2" socket="0" previewed="true"/>
       <grip:Input step="3" socket="0"/>
-    </grip:Connection>
-    <grip:Connection>
-      <grip:Output step="1" socket="0" previewed="true"/>
-      <grip:Input step="2" socket="0"/>
     </grip:Connection>
   </connections>
   <settings>
