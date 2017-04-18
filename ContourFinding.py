@@ -4,7 +4,7 @@ import Printing
 import config
 
 
-numTargets = 2
+numTargets = 1
 
 sizeWeight = 1
 ratioWeight = 0.5
@@ -24,7 +24,7 @@ def filterContours(contours): # Find 2 largest contours.
 			temp_area = cv2.contourArea(contours[i], False)
 			if temp_area > second_largest_area:
 				if temp_area > largest_area:
-					largest_contour, second_largest_contour = contours[i], largest_contour
+					largest_contour, second_l argest_contour = contours[i], largest_contour
 					largest_area, second_largest_area = temp_area, largest_area
 				else:
 					second_largest_contour = contours[i]
@@ -33,7 +33,9 @@ def filterContours(contours): # Find 2 largest contours.
 	else:
 		return contours
 
+# doesn't work for gears
 def filterContoursFancy(contours, image=None):
+	ellipse = cv2.fitEllipse(cnt) # probably
 	if len(contours) == 0:
 		return []
 

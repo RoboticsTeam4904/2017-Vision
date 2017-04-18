@@ -17,7 +17,7 @@ def main():
 	config.resolution = image.shape[1], image.shape[0]
 	config.degPerPxl = np.divide(config.nativeAngle, config.resolution)
 	contours = GripRunner.run(image)
-	targets = filterContoursFancy(contours, image=image)
+	targets = filterContours(contours, image=image)
 	isVisible, angleToGoal, distance = findSpike(targets)
 	if config.debug:
 		Printing.printResults(contours=contours, distance=distance, angleToGoal=angleToGoal, isVisible=isVisible)

@@ -22,7 +22,7 @@ def main():
 
 		image = WebCam.getImage()
 		contours = GripRunner.run(image)
-		targets = filterContoursFancy(contours)
+		targets = filterContours(contours)
 		isVisible, angleToGoal, distance = findSpike(targets)
 
 		if config.debug:
