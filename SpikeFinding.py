@@ -2,6 +2,14 @@ import cv2
 import numpy as np
 import config
 
+# Camera constants for calculation:
+displacement = 4.25/12.0 # Vertical feet from camera to bottom of vision target
+cameraTilt = 0
+width = 8.25/12.0 #from centers. targets are 2x5 inches and 6.25 inches apart
+nativeAngle  = (np.radians(64), np.radians(48)) #experimentally determined 10 pxl per deg at 640x480, going down by a v smol amount at the edge of the frame
+resolution = (640, 480)
+degPerPxl = np.divide(nativeAngle, resolution)
+
 def findSpike(contours): # returns isVisible, angleToGoal, distance
 	isVisible=False
 	numContours = len(contours)
@@ -10,13 +18,12 @@ def findSpike(contours): # returns isVisible, angleToGoal, distance
 	contour = np.concatenate(contours)
 	X,Y,W,H = cv2.boundingRect(contour)
 	center = (np.add(X, np.divide(W,2)), np.add(Y, np.true_divide(H,2)))
-	print np.degrees(np.multiply(config.degPerPxl[0], np.subtract(np.true_divide(config.resolution[0], 2), 0)))
-	angleToGoal = np.multiply(config.degPerPxl[0], np.subtract(np.true_divide(config.resolution[0], 2), center[0]))
+	angleToGoal = np.multiply(degPerPxl[0], np.subtract(np.true_divide(resolution[0], 2), center[0]))
 	if numContours == 2:
 		isVisible = True
 		x1,y1,w1,h1 = cv2.boundingRect(contours[0]) #possibly change to make more resistant to small anomalies at the top of the contour
 		x2,y2,w2,h2 = cv2.boundingRect(contours[1])
-		d1, d2 = distanceFromHeight(y1), distanceFromHeight(y2)
+		d1, d2 = distanceFromHeight(y1+h1), distanceFromHeight(y2+h2)
 		if x1 > x2:
 			d1, d2 = d2, d1
 		distance = trueDistance(d1, d2)
@@ -33,14 +40,14 @@ def findSpike(contours): # returns isVisible, angleToGoal, distance
 	return isVisible, np.degrees(angleToGoal), distance
 
 def distanceFromHeight(y):
-	degrees = np.multiply(config.degPerPxl[1], np.subtract(np.true_divide(config.resolution[1], 2), y))
-	degrees = np.add(degrees, config.cameraTilt)
-	distance = np.divide(config.displacement, np.tan(degrees))
+	degrees = np.multiply(degPerPxl[1], np.subtract(np.true_divide(resolution[1], 2), y))
+	degrees = np.add(degrees, cameraTilt)
+	distance = np.divide(displacement, np.tan(degrees))
 	return distance
 
 def trueDistance(d1, d2):
 	squares = np.add(np.square(d1), np.square(d2))
-	squared = np.subtract(np.multiply(2, squares), np.square(config.width))
+	squared = np.subtract(np.multiply(2, squares), np.square(width))
 	if squared < 0:
 		return False # Something went wrong
 	d = np.divide(np.sqrt(squared), 2)
@@ -48,7 +55,7 @@ def trueDistance(d1, d2):
 	# d = 1/2 * sqrt(2*(d1^2+d2^2)-w^2)
 
 def angle(d, d2):
-	squares = np.subtract(np.add(np.true_divide(np.square(config.width), 4), np.square(d)), np.square(d2))
-	phi = np.arccos(np.divide(squares, np.multiply(config.width, d)))
+	squares = np.subtract(np.add(np.true_divide(np.square(width), 4), np.square(d)), np.square(d2))
+	phi = np.arccos(np.divide(squares, np.multiply(width, d)))
 	return np.subtract(np.pi, phi)
 	# angle = pi - acos(1/4*w^2 + d^2 - d2^2 / wd)

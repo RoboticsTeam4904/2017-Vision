@@ -7,13 +7,15 @@ def getImage():
 	camera.capture(rawCapture, format="bgr", use_video_port=True)
 	return rawCapture.array
 
-def set(resolution=False, exposure=False, exposure_mode=False, shutter_speed=False): #e.g. 'snow'
+def set(resolution=False, exposure=False, exposure_mode=False, shutter_speed=False):
 	if resolution:
 		camera.resolution = resolution
 	if shutter_speed:
 		camera.shutter_speed = shutter_speed
 	if exposure_mode:
 		camera.exposure_mode = exposure
+	if resolution:
+		config.setResolution(getResolution())
 
 	# camera.brightness = 0 to 100 # default 50
 	# camera.contrast = -100 to 100 # default 0
@@ -28,4 +30,3 @@ def getShutterSpeed():
 def getResolution():
 	resolution = getImage().shape
 	return resolution[1], resolution[0]
-
