@@ -17,26 +17,12 @@ def main():
 
 		image = WebCam.getImage()
 		contours = GripRunner.run(image)
-<<<<<<< HEAD
-		targets = filterContours(contours)
-		isVisible, angleToGoal, distance = findSpike(targets)
-
-		if config.debug:
-			Printing.printResults(contours=contours, distance=distance, angleToGoal=angleToGoal, isVisible=isVisible)
-		if config.save or config.display:
-			Printing.drawImage(image, contours, targets)
-		if config.save:
-			Printing.save(image)
-		if config.display:
-			Printing.display(image)
-=======
-		targets = ContourFinding.filterContours(contours)
-		isVisible, angleToGoal, distance = SpikeFinding.findSpike(targets)
+		targets = ContourFinding.filterContoursByArea(contours)
+		isVisible, angleToGoal, distance = SpikeFinding.findGear(targets)
 		if lastAngle != 0 and not isVisible:
 			angleToGoal = lastAngle
 		else:
 			lastAngle = angleToGoal
->>>>>>> good-and-clean
 
 		try:
 			NetworkTabling.publishToTables(isVisible=isVisible, angleToGoal=angleToGoal, distance=distance, frameNum=frameNum)

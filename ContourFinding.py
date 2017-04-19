@@ -19,7 +19,7 @@ weights = np.array([sizeWeight, ratioWeight, rotationWeight, rectangularWeight, 
 
 minArea, maxArea = 500, 30000
 
-def filterContours(contours): # Find 2 largest contours.
+def filterContoursByArea(contours): # Find 2 largest contours.
 	numContours = len(contours)
 	if numContours > 1:
 		largest_contour, second_largest_contour, largest_area, second_largest_area = None, None, 0, 0

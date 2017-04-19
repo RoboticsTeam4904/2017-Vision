@@ -18,8 +18,8 @@ def main():
 
 		image = PiCamera.getImage()
 		contours = GripRunner.run(image)
-		targets = ContourFinding.filterContours(contours)
-		isVisible, angleToGoal, distance = SpikeFinding.findSpike(targets)
+		targets = ContourFinding.filterContoursByArea(contours)
+		isVisible, angleToGoal, distance = SpikeFinding.findGear(targets)
 		if lastAngle != 0 and not isVisible:
 			angleToGoal = lastAngle
 		else:

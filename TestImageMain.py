@@ -10,13 +10,8 @@ def main():
 	SpikeFinding.resolution = image.shape[1], image.shape[0]
 	SpikeFinding.degPerPxl = np.divide(SpikeFinding.nativeAngle, SpikeFinding.resolution)
 	contours = GripRunner.run(image)
-<<<<<<< HEAD
-	targets = filterContours(contours, image=image)
-	isVisible, angleToGoal, distance = findSpike(targets)
-=======
-	targets = ContourFinding.filterContours(contours, image=image)
-	isVisible, angleToGoal, distance = SpikeFinding.findSpike(targets)
->>>>>>> good-and-clean
+	targets = ContourFinding.filterContoursByArea(contours, image=image)
+	isVisible, angleToGoal, distance = SpikeFinding.findGear(targets)
 	if config.debug:
 		Printing.printResults(contours=contours, distance=distance, angleToGoal=angleToGoal, isVisible=isVisible)
 	if config.save or config.display:

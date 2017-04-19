@@ -4,11 +4,21 @@ import config
 
 # Camera constants for calculation:
 displacement = 4.25/12.0 # Vertical feet from camera to bottom of vision target
-cameraTilt = 0
+cameraTilt = -np.radians(25) # radians
 width = 8.25/12.0 #from centers. targets are 2x5 inches and 6.25 inches apart
 nativeAngle  = (np.radians(64), np.radians(48)) #experimentally determined 10 pxl per deg at 640x480, going down by a v smol amount at the edge of the frame
 resolution = (640, 480)
 degPerPxl = np.divide(nativeAngle, resolution)
+
+def findGear(contours): # should take in 1 contour or 0 if there aren't any
+	if len(contours) != 1:
+		return False, 0, 0
+	contour = contours[0]
+	X,Y,W,H = cv2.boundingRect(contour)
+	center = (np.add(X, np.divide(W,2)), np.add(Y, np.true_divide(H,2)))
+	angleToGoal = np.multiply(degPerPxl[0], np.subtract(np.true_divide(resolution[0], 2), center[0]))
+	distance = distanceFromHeight(Y)
+	return True, np.degrees(angleToGoal), distance
 
 def findSpike(contours): # returns isVisible, angleToGoal, distance
 	isVisible=False
