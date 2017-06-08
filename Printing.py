@@ -12,6 +12,8 @@ gripImageName = "contours"
 # folder = "match" + str(np.random.randint(1000))
 # if not os.path.exists("TestImages/" + folder):
 #     os.makedirs("TestImages/" + folder)
+if config.display:
+	cv2.namedWindow("Contours Found")
 
 def findMatchNum():
 	i = 1

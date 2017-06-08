@@ -1,7 +1,7 @@
 import cv2, copy
 import config, Printing, SpikeFinding
 import numpy as np
-# RENAME FILE
+
 numTargets = 2 # Number of targets being searched for
 badScore = 10
 
@@ -17,6 +17,14 @@ minArea, maxArea = 500, 30000
 
 def blankImage():
 	return np.zeros((SpikeFinding.resolution[1], SpikeFinding.resolution[0], 3))
+
+def filter(contours, image=blankImage()):
+	if len(contours) <= numTargets:
+		return contours
+	contourScores = scoreContours(contours, image=image)
+	correctInds, incorrectInds = sortedInds(contourScores)
+	correctContours = np.array(contours)[correctInds]
+	return correctContours
 
 def scoreContours(contours, image=blankImage()):
 	numContours = len(contours)
@@ -64,14 +72,6 @@ def scoreContours(contours, image=blankImage()):
 		cv2.destroyAllWindows()
 
 	return contourScores
-
-def filterContours(contours, image=blankImage()):
-	if len(contours) <= numTargets:
-		return contours
-	contourScores = scoreContours(contours, image=image)
-	correctInds, incorrectInds = sortedInds(contourScores)
-	correctContours = np.array(contours)[correctInds]
-	return correctContours
 
 def averageContourScore(contours, image=blankImage()):
 	if len(contours) == 0:

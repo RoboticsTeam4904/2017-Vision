@@ -46,3 +46,5 @@ def getResolution():
 	return resolution[1], resolution[0]
 
 setCamera(resolution=SpikeFinding.resolution, exposure=exposure, gain=gain, contrast=contrast)
+if config.debug:
+	print "Exposure: ", WebCam.getExposure()
