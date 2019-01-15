@@ -55,6 +55,6 @@ def angle(d, d2):
 
 def trueAngle(angle, distance):
 	robotDistance = np.sqrt(np.square(config.displacement) + np.square(distance) + 2*distance*config.displacement*np.cos(angle))
-	return np.arcsin(np.sin(angle)*np.divide(distance,trueDistance))
+	return np.pi - np.arcsin(np.sin(angle)*np.divide(distance,trueDistance))
 
 
