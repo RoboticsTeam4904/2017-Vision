@@ -23,6 +23,7 @@ degPerPxl = np.divide(nativeAngle, resolution)
 # -------------
 ip = "10.49.4.2"
 team = 4904
+networkSpeed = 0.02
 withOpenCV3 = int(cv2.__version__[0]) == 3
 edited = False
 sampleImage = "TestImages/GearTest.png"

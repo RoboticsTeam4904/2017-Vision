@@ -3,8 +3,8 @@ import config
 
 NetworkTables.setTeam(config.team)
 NetworkTables.initialize(server=config.ip)
-
 table = NetworkTables.getTable("Vision")
+table.setUpdateRate(config.networkSpeed)
 
 def publishToTables(isVisible=True, angleToGoal=0, distance=0, frameNum=0):
 	table.putBoolean('trustable', isVisible)
