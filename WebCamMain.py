@@ -2,7 +2,11 @@ import cv2
 import numpy as np
 from ContourFinding import filterContours, filterContoursFancy
 from SpikeFinding import findSpike
-import config, WebCam, GripRunner, autocalibrate, NetworkTabling, Printing, socket
+import config, WebCam, GripRunner, autocalibrate, NetworkTabling, Printing
+if config.sockets:
+	import socket
+	clientSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+	clientSocket.connect((config.ip, config.port))
 
 def main():
 	WebCam.set(exposure=config.exposure, resolution=config.resolution, contrast=config.contrast, gain=config.gain)
@@ -34,14 +38,19 @@ def main():
 		if config.display:
 			Printing.display(image)
 
-		clientSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-		try:
-			clientSocket.connect((config.ip, config.port))
-			clientSocket.send(str(angleToGoal))
-			clientSocket.close()
-		except Exception as error:
-			if config.debug:
-				print error
+		if config.sockets:
+			message = str(angleToGoal)
+			try:
+				if config.socket_reconnect_rate != 0:
+					if config.socket_reconnect_rate % frameNum == 0:
+						clientSocket.close() # is it alright to immediately reopen?
+						clientSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+						clientSocket.connect((config.ip, config.port))
+						clientSocket.close()
+				clientSocket.send(message)
+			except Exception as error:
+				if config.debug:
+					print error
 		try:
 			NetworkTabling.publishToTables(isVisible=isVisible, angleToGoal=angleToGoal, distance=distance, frameNum=frameNum)
 		except Exception as error:

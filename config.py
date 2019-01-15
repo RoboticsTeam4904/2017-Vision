@@ -6,6 +6,7 @@ debug = True
 extra_debug = False #step through each contour in the webcam by turning on extra_debug
 save = False
 display = True
+sockets = False
 
 # Camera settings
 # --------------
@@ -27,4 +28,5 @@ networkSpeed = 0.02
 withOpenCV3 = int(cv2.__version__[0]) == 3
 edited = False
 sampleImage = "TestImages/GearTest.png"
+socket_reconnect_rate = 1  # number of frames to wait until reinitializing sockets. If 0, never close the socket
 port = 5802
