@@ -27,12 +27,13 @@ def main():
 
 		if config.debug:
 			Printing.printResults(contours=contours, distance=distance, angleToGoal=angleToGoal, isVisible=isVisible)
-		if config.save or config.display:
-			Printing.drawImage(image, contours, targets)
 		if config.save:
 			Printing.save(image)
 		if config.display:
+			Printing.drawImage(image, contours, targets)
 			Printing.display(image)
+		if config.save:
+			Printing.save(image, withGrip=True)
 
 		try:
 			NetworkTabling.publishToTables(isVisible=isVisible, angleToGoal=angleToGoal, distance=distance, frameNum=frameNum)
